@@ -1,0 +1,9 @@
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/DbInitializer.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/RetakeApplication.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/config/CorsConfig.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/model/Game.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/model/User.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/repository/GameRepository.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/repository/UserRepository.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/service/GameService.java
+/Users/pqa/Desktop/year 2/retake/backend/src/main/java/be/ucll/retake/service/UserService.java
