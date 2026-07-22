@@ -1,1 +1,6 @@
-Lets add sth later... - annie
+to start:
+`docker compose up -d --build`
+
+
+to stop:
+`docker compose down`
