@@ -16,5 +16,36 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build: ./backend
+    container_name: retake-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/retake
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/games"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build: ./frontend
+    container_name: retake-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
 volumes:
   pgdata:
