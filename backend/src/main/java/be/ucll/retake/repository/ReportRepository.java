@@ -10,6 +10,7 @@ import be.ucll.retake.model.User;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findByGame(Game game);
+    List<Report> findByGameSteamAppid(Integer steamAppid);
     List<Report> findByGameId(Long gameId);
     List<Report> findByUser(User user);
 }

@@ -34,7 +34,12 @@ public class ReportService {
         return reportRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Report with id " + id + " not found"));
     }
-
+    public List<Report> getReportsBySteamAppid(Integer steamAppid) {
+        if (!gameRepository.existsBySteamAppid(steamAppid)) {
+            throw new IllegalArgumentException("Game with steam appid " + steamAppid + " not found");
+        }
+        return reportRepository.findByGameSteamAppid(steamAppid);
+    }
     public List<Report> getReportsByGameId(Long gameId) {
         if (!gameRepository.existsById(gameId)) {
             throw new IllegalArgumentException("Game with id " + gameId + " not found");
