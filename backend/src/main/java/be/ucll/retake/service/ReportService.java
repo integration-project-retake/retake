@@ -35,6 +35,13 @@ public class ReportService {
                 .orElseThrow(() -> new IllegalArgumentException("Report with id " + id + " not found"));
     }
 
+    public List<Report> getReportsByGameId(Long gameId) {
+        if (!gameRepository.existsById(gameId)) {
+            throw new IllegalArgumentException("Game with id " + gameId + " not found");
+        }
+        return reportRepository.findByGameId(gameId);
+    }
+
     public Report createReport(Long userId, Long gameId, Tier tier, String distribution) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));

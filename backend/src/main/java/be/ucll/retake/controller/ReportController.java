@@ -34,6 +34,11 @@ public class ReportController {
         return ReportDto.from(reportService.getReportById(id));
     }
 
+    @GetMapping("/game/{gameId}")
+    public List<ReportDto> getReportsByGameId(@PathVariable Long gameId){
+        return reportService.getReportsByGameId(gameId).stream().map(ReportDto::from).toList();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReportDto createReport(@RequestParam Long userId,
