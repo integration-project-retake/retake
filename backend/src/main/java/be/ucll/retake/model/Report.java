@@ -3,6 +3,8 @@ package be.ucll.retake.model;
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ public class Report {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "game_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;
 
     @Enumerated(EnumType.STRING)

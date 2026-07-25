@@ -9,10 +9,12 @@ import be.ucll.retake.repository.ReportRepository;
 import be.ucll.retake.repository.UserRepository;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 public class DbInitializer implements CommandLineRunner {
 
     private final GameRepository gameRepository;

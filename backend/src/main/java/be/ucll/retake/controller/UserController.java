@@ -1,7 +1,10 @@
 package be.ucll.retake.controller;
 
 import be.ucll.retake.dto.UserDto;
+import be.ucll.retake.dto.UserInput;
 import be.ucll.retake.service.UserService;
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +34,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestParam String username,
-                              @RequestParam String email,
-                              @RequestParam String password) {
-        return UserDto.from(userService.createUser(username, email, password));
+    public UserDto createUser(@Valid @RequestBody UserInput input) {
+        return UserDto.from(
+            userService.createUser(input.username(), input.email(), input.password())
+        );
     }
 }
