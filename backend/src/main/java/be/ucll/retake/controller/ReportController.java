@@ -49,7 +49,9 @@ public class ReportController {
     public ReportDto createReport(@RequestParam Long userId,
                                   @RequestParam Long gameId,
                                   @RequestParam Tier tier,
-                                  @RequestParam String distribution) {
-        return ReportDto.from(reportService.createReport(userId, gameId, tier, distribution));
+                                  @RequestParam String distribution,
+                                @RequestParam(required = false) String comment, 
+                                @RequestParam(required = false) String protonVersion) {
+        return ReportDto.from(reportService.createReport(userId, gameId, tier, distribution, comment, protonVersion));
     }
 }

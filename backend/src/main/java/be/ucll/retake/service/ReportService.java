@@ -47,12 +47,12 @@ public class ReportService {
         return reportRepository.findByGameId(gameId);
     }
 
-    public Report createReport(Long userId, Long gameId, Tier tier, String distribution) {
+    public Report createReport(Long userId, Long gameId, Tier tier, String distribution, String comment, String protonVersion) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));
 
-        return reportRepository.save(new Report(user, game, tier, distribution));
+        return reportRepository.save(new Report(user, game, tier, distribution, comment, protonVersion));
     }
 }

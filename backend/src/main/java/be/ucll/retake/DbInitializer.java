@@ -49,12 +49,26 @@ public class DbInitializer implements CommandLineRunner {
         if (reportRepository.count() == 0) {
             User annie = userRepository.findByUsername("annie").orElseThrow();
             User sundae = userRepository.findByUsername("sundae").orElseThrow();
+            User enis = userRepository.findByUsername("enis").orElseThrow();
             Game dota = gameRepository.findBySteamAppid(570).orElseThrow();
             Game stardew = gameRepository.findBySteamAppid(413150).orElseThrow();
-
-            reportRepository.save(new Report(annie, dota, Tier.Gold, "Ubuntu"));
-            reportRepository.save(new Report(annie, dota, Tier.Platinum, "SteamOS"));
-            reportRepository.save(new Report(sundae, stardew, Tier.Platinum, "Ubuntu"));
+            Game hollowknight = gameRepository.findBySteamAppid(367520).orElseThrow();
+            Game gtav = gameRepository.findBySteamAppid(271590).orElseThrow();
+            Game hades = gameRepository.findBySteamAppid(1145360).orElseThrow();
+            
+            
+            reportRepository.save(new Report(sundae, hades, Tier.Platinum, "Arch",
+                "Perfect, runs better than on Windows honestly -w-", "Proton 9.0-3"));
+            reportRepository.save(new Report(annie, stardew, Tier.Gold, "Ubuntu", "\n" + //
+                                "Very pleasant experience.\n" + //
+                                "\n" + //
+                                "I launched the game with Proton because it was the easiest way I found to install the Stardew Valley Very Expanded (SVVE) mod. Everything works perfectly, including multiplayer!", "Custom Proton: GE-Proton10-34"));
+            reportRepository.save(new Report(annie, stardew, Tier.Platinum, "SteamOS"));
+            reportRepository.save(new Report(sundae, hollowknight, Tier.Platinum, "Ubuntu"));
+            reportRepository.save(new Report(enis, dota, Tier.Gold, "Ubuntu",
+                "Runs great out of the box, minor stutter on load screens.", "Proton 9.0-3"));
+            reportRepository.save(new Report(enis, dota, Tier.Platinum, "SteamOS",
+                "Flawless on Steam Deck, no tweaks needed.", "Proton Experimental"));
         }
     }
 }
