@@ -55,4 +55,11 @@ public class ReportService {
 
         return reportRepository.save(new Report(user, game, tier, distribution, comment, protonVersion));
     }
+    public List<Report> getReportsByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User with id " + userId + " not found");
+        }
+        return reportRepository.findByUserId(userId);
+    }
+    
 }

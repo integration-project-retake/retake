@@ -13,4 +13,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findByGameSteamAppid(Integer steamAppid);
     List<Report> findByGameId(Long gameId);
     List<Report> findByUser(User user);
+    List<Report> findByUserId(Long userId);
 }
