@@ -15,6 +15,8 @@ export interface ReportDto {
   gameName: string;
   tier: Tier;
   distribution: string;
+  comment: string;
+  protonVersion: string;
   createdAt: string;
 }
 

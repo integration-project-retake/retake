@@ -20,12 +20,21 @@ export async function fetchReportsByGameId(gameId: number): Promise<ReportDto[]>
   return res.json();
 }
 
-export async function createReport(userId: number, gameId: number, tier: Tier, distribution: string): Promise<ReportDto> {
+export async function createReport(
+  userId: number,
+  gameId: number,
+  tier: Tier,
+  distribution: string,
+  comment: string,
+  protonVersion: string
+): Promise<ReportDto> {
   const params = new URLSearchParams({
     userId: userId.toString(),
     gameId: gameId.toString(),
     tier,
     distribution,
+    comment,
+    protonVersion,
   });
 
   const res = await fetch(`${API_BASE_URL}/reports?${params.toString()}`, {

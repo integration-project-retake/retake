@@ -27,17 +27,24 @@ export default async function GamePage({ params }: GamePageProps) {
 
         <div className="flex flex-col gap-4">
           {reports.map((report) => (
-            <div key={report.id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">
-                  {report.username} • {report.distribution} • {new Date(report.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <div className={`px-4 py-1.5 font-bold rounded ${tierColors[report.tier]}`}>
-                {report.tier}
-              </div>
-            </div>
-          ))}
+                      <div key={report.id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-gray-400 text-sm">
+                              {report.username} • {report.distribution} • Proton {report.protonVersion} • {new Date(report.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className={`px-4 py-1.5 font-bold rounded ${tierColors[report.tier]}`}>
+                            {report.tier}
+                          </div>
+                        </div>
+                        {report.comment && (
+                          <div className="text-gray-300 mt-2 bg-gray-900 p-3 rounded text-sm">
+                            {report.comment}
+                          </div>
+                        )}
+                      </div>
+                    ))}
 
           {reports.length === 0 && (
             <div className="text-gray-400 p-4 text-center border border-gray-700 rounded-lg">
