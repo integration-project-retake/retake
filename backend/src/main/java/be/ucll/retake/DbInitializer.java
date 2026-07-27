@@ -33,7 +33,7 @@ public class DbInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {
-            userRepository.save(new User("annie", "annie@ucll.be", passwordEncoder.encode("password123)")));
+            userRepository.save(new User("annie", "annie@ucll.be", passwordEncoder.encode("password123")));
             userRepository.save(new User("sundae", "sundae@ucll.be", passwordEncoder.encode("password123")));
             userRepository.save(new User("enis", "enis@ucll.be", passwordEncoder.encode("password123")));
         }
