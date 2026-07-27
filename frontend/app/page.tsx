@@ -1,40 +1,33 @@
-import { fetchReports } from '@/services/reportService';
-import { Tier } from '@/types';
-
-const tierColors: Record<Tier, string> = {
-  Platinum: 'bg-blue-200 text-blue-900',
-  Gold: 'bg-yellow-400 text-yellow-900',
-  Silver: 'bg-gray-300 text-gray-900',
-  Bronze: 'bg-orange-500 text-orange-950',
-  Borked: 'bg-red-600 text-white',
-};
+import Link from 'next/link';
+import { fetchGames } from '@/services/gameService';
 
 export default async function Home() {
-  const reports = await fetchReports();
+  const games = await fetchGames();
 
   return (
     <main className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Recent Reports</h1>
+        <h1 className="text-3xl font-bold mb-6">Games</h1>
 
-        <div className="flex flex-col gap-4">
-          {reports.map((report) => (
-            <div key={report.id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex items-center justify-between">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {games.map((game) => (
+            <Link
+              key={game.id}
+              href={`/games/${game.id}`}
+              className="bg-gray-800 border border-gray-700 p-4 rounded-lg hover:border-gray-500 transition-colors flex justify-between items-center"
+            >
               <div>
-                <h2 className="text-xl font-semibold">{report.gameName}</h2>
+                <h2 className="text-xl font-semibold">{game.name}</h2>
                 <p className="text-gray-400 text-sm mt-1">
-                  {report.username} • {report.distribution} • {new Date(report.createdAt).toLocaleDateString()}
+                  Steam App ID: {game.steamAppid}
                 </p>
               </div>
-              <div className={`px-4 py-1.5 font-bold rounded ${tierColors[report.tier]}`}>
-                {report.tier}
-              </div>
-            </div>
+            </Link>
           ))}
 
-          {reports.length === 0 && (
-            <div className="text-gray-400 p-4 text-center border border-gray-700 rounded-lg">
-              No reports found.
+          {games.length === 0 && (
+            <div className="text-gray-400 p-4 text-center border border-gray-700 rounded-lg col-span-full">
+              No games found.
             </div>
           )}
         </div>

@@ -1,6 +1,5 @@
 package be.ucll.retake.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import be.ucll.retake.dto.ReportDto;
-import be.ucll.retake.model.Report;
 import be.ucll.retake.model.Tier;
 import be.ucll.retake.service.ReportService;
 

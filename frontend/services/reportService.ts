@@ -8,6 +8,18 @@ export async function fetchReports(): Promise<ReportDto[]> {
   return res.json();
 }
 
+export async function fetchReportsBySteamAppid(steamAppid: number): Promise<ReportDto[]> {
+  const res = await fetch(`${API_BASE_URL}/reports/steam/${steamAppid}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch reports by Steam App ID');
+  return res.json();
+}
+
+export async function fetchReportsByGameId(gameId: number): Promise<ReportDto[]> {
+  const res = await fetch(`${API_BASE_URL}/reports/game/${gameId}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch reports by Game ID');
+  return res.json();
+}
+
 export async function createReport(userId: number, gameId: number, tier: Tier, distribution: string): Promise<ReportDto> {
   const params = new URLSearchParams({
     userId: userId.toString(),
