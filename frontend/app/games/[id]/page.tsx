@@ -39,7 +39,7 @@ export default async function GamePage({ params }: GamePageProps) {
                           </div>
                         </div>
                         {report.comment && (
-                          <div className="text-gray-300 mt-2 bg-gray-900 p-3 rounded text-sm">
+                          <div className="text-gray-300 mt-2 bg-gray-900 p-3 rounded text-sm whitespace-pre-line">
                             {report.comment}
                           </div>
                         )}

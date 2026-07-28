@@ -59,8 +59,7 @@ public class DbInitializer implements CommandLineRunner {
             
             reportRepository.save(new Report(sundae, hades, Tier.Platinum, "Arch",
                 "Perfect, runs better than on Windows honestly -w-", "Proton 9.0-3"));
-            reportRepository.save(new Report(annie, stardew, Tier.Gold, "Ubuntu", "\n" + //
-                                "Very pleasant experience.\n" + //
+            reportRepository.save(new Report(annie, stardew, Tier.Gold, "Ubuntu", "Very pleasant experience.\n" +
                                 "\n" + //
                                 "I launched the game with Proton because it was the easiest way I found to install the Stardew Valley Very Expanded (SVVE) mod. Everything works perfectly, including multiplayer!", "Custom Proton: GE-Proton10-34"));
             reportRepository.save(new Report(annie, stardew, Tier.Platinum, "SteamOS"));
