@@ -14,9 +14,10 @@ export default async function Home() {
             <Link
               key={game.id}
               href={`/games/${game.id}`}
-              className="bg-gray-800 border border-gray-700 p-4 rounded-lg hover:border-gray-500 transition-colors flex justify-between items-center"
+              className="bg-gray-800 border border-gray-700 p-4 rounded-lg hover:border-gray-500 transition-colors overflow-hidden"
             >
-              <div>
+              <img src={game.headerUrl} alt={game.name} className="w-full aspect-[460/215] object-cover"/>
+              <div className='p-2'>
                 <h2 className="text-xl font-semibold">{game.name}</h2>
                 <p className="text-gray-400 text-sm mt-1">
                   Steam App ID: {game.steamAppid}

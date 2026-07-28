@@ -1,9 +1,11 @@
 export type Tier = 'Platinum' | 'Gold' | 'Silver' | 'Bronze' | 'Borked';
 
 export interface GameDto {
+  headUrl: string | Blob | undefined;
   id: number;
   steamAppid: number;
   name: string;
+  headerUrl: string;
   createdAt: string;
 }
 
