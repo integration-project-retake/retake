@@ -1,5 +1,6 @@
 package be.ucll.retake.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import be.ucll.retake.dto.GameDto;
+import be.ucll.retake.model.Game;
 import be.ucll.retake.service.GameService;
 
 @RestController
@@ -40,4 +42,16 @@ public class GameController {
     public GameDto createGame(@RequestParam Integer steamAppid, @RequestParam String name) {
         return GameDto.from(gameService.createGame(steamAppid, name));
     }
+
+    @GetMapping("/search")
+    public List<GameDto> searchGames(@RequestParam(required = false, defaultValue = "") String query) {
+        List<GameDto> dtos = new ArrayList<>();
+        for (Game game : gameService.searchGames(query)) {
+            dtos.add(GameDto.from(game));
+        } 
+        return dtos;
+    }
+    //http://localhost:8081/games/search?query=star
+    // http://localhost:8081/games/search?query=570
+    // http://localhost:8081/games/search?query=
 }

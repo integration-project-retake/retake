@@ -29,4 +29,16 @@ public class GameService {
         }
         return gameRepository.save(new Game(steamAppid, name));
     }
+    public List<Game> searchGames(String query) {
+        if (query == null || query.isBlank()) {
+            return gameRepository.findAll();
+        }
+        String strimmed = query.trim();
+        // if query is all digit, treats it as steamid
+        if (strimmed.matches("\\d+")) {
+            Integer addid = Integer.parseInt(strimmed);
+            return gameRepository.findBySteamAppid(addid).map(List::of).orElse(List.of());
+        }
+        return gameRepository.findByNameContainingIgnoreCase(strimmed);
+    }
 }
