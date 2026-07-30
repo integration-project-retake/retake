@@ -1,37 +1,14 @@
-import Link from 'next/link';
 import { fetchGames } from '@/services/gameService';
+import GameSearch from '@/components/GameSearch';
 
 export default async function Home() {
   const games = await fetchGames();
 
   return (
     <main className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Games</h1>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          {games.map((game) => (
-            <Link
-              key={game.id}
-              href={`/games/${game.id}`}
-              className="bg-gray-800 border border-gray-700 p-4 rounded-lg hover:border-gray-500 transition-colors overflow-hidden"
-            >
-              <img src={game.headerUrl} alt={game.name} className="w-full aspect-[460/215] object-cover"/>
-              <div className='p-2'>
-                <h2 className="text-xl font-semibold">{game.name}</h2>
-                <p className="text-gray-400 text-sm mt-1">
-                  Steam App ID: {game.steamAppid}
-                </p>
-              </div>
-            </Link>
-          ))}
-
-          {games.length === 0 && (
-            <div className="text-gray-400 p-4 text-center border border-gray-700 rounded-lg col-span-full">
-              No games found.
-            </div>
-          )}
-        </div>
+        <GameSearch initialGames={games} />
       </div>
     </main>
   );
