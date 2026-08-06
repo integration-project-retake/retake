@@ -10,11 +10,7 @@ export default function Header() {
   const { language, setLanguage, t } = useLanguage();
   const router = useRouter();
 
-  const handleLogout = async (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-
+  const handleLogout = async () => {
     try {
       await logout();
       router.push('/');
@@ -31,21 +27,29 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-3">
-          <label className="sr-only" htmlFor="language-selector">
-            {t('language')}
-          </label>
-
-          <select
-            id="language-selector"
-            value={language}
-            onChange={(event) =>
-              setLanguage(event.target.value as 'en' | 'es')
-            }
-            className="rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-gray-400 focus:outline-none"
+          <button
+            type="button"
+            onClick={() => setLanguage('en')}
+            className={`cursor-pointer rounded px-3 py-2 ${
+              language === 'en'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
           >
-            <option value="en">{t('english')}</option>
-            <option value="es">{t('spanish')}</option>
-          </select>
+            English
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLanguage('es')}
+            className={`cursor-pointer rounded px-3 py-2 ${
+              language === 'es'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            Español
+          </button>
 
           {user ? (
             <>
@@ -56,7 +60,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+                className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
               >
                 {t('logout')}
               </button>
@@ -65,14 +69,14 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="px-4 py-2 text-gray-300 transition-colors hover:text-white"
+                className="px-4 py-2 text-gray-300 hover:text-white"
               >
                 {t('login')}
               </Link>
 
               <Link
                 href="/register"
-                className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
               >
                 {t('register')}
               </Link>

@@ -10,13 +10,6 @@ import {
 
 export type Language = 'en' | 'es';
 
-interface LanguageContextValue {
-  language: Language;
-  setLanguage: (language: Language) => void;
-  toggleLanguage: () => void;
-  t: (key: TranslationKey) => string;
-}
-
 const translations = {
   en: {
     games: 'Games',
@@ -54,6 +47,12 @@ const translations = {
 
 export type TranslationKey = keyof typeof translations.en;
 
+interface LanguageContextValue {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (key: TranslationKey) => string;
+}
+
 const LanguageContext = createContext<LanguageContextValue | undefined>(
   undefined
 );
@@ -62,11 +61,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
 
   useEffect(() => {
-    const storedLanguage = localStorage.getItem('language');
+    const savedLanguage = localStorage.getItem('language');
 
-    if (storedLanguage === 'en' || storedLanguage === 'es') {
-      setLanguageState(storedLanguage);
-      document.documentElement.lang = storedLanguage;
+    if (savedLanguage === 'en' || savedLanguage === 'es') {
+      setLanguageState(savedLanguage);
+      document.documentElement.lang = savedLanguage;
     }
   }, []);
 
@@ -76,23 +75,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = newLanguage;
   };
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'es' : 'en');
-  };
-
   const t = (key: TranslationKey): string => {
     return translations[language][key];
   };
 
   return (
-    <LanguageContext.Provider
-      value={{
-        language,
-        setLanguage,
-        toggleLanguage,
-        t,
-      }}
-    >
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -102,7 +90,7 @@ export function useLanguage(): LanguageContextValue {
   const context = useContext(LanguageContext);
 
   if (!context) {
-    throw new Error('useLanguage must be used inside a LanguageProvider');
+    throw new Error('useLanguage must be used inside LanguageProvider');
   }
 
   return context;
