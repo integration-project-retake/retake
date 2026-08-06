@@ -1,4 +1,4 @@
-import { fetchReportsByGameId } from '@/services/reportService';
+import { fetchReportsBySteamAppid } from '@/services/reportService';
 import { Tier } from '@/types';
 
 const tierColors: Record<Tier, string> = {
@@ -15,40 +15,52 @@ interface GamePageProps {
 
 export default async function GamePage({ params }: GamePageProps) {
   const { id } = await params;
-  const gameId = Number(id);
-  const reports = await fetchReportsByGameId(gameId);
+  const steamAppid = Number(id);
+
+  const reports = await fetchReportsBySteamAppid(steamAppid);
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">
-          {reports.length > 0 ? reports[0].gameName : `Game #${gameId}`} Reports
+    <main className="min-h-screen bg-gray-900 p-8 text-white">
+      <div className="mx-auto max-w-4xl">
+        <h1 className="mb-6 text-3xl font-bold">
+          {reports.length > 0
+            ? `${reports[0].gameName} Reports`
+            : `Steam App ID ${steamAppid} Reports`}
         </h1>
 
         <div className="flex flex-col gap-4">
           {reports.map((report) => (
-                      <div key={report.id} className="bg-gray-800 border border-gray-700 p-4 rounded-lg flex flex-col gap-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-gray-400 text-sm">
-                              {report.username} • {report.distribution} • Proton {report.protonVersion} • {new Date(report.createdAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <div className={`px-4 py-1.5 font-bold rounded ${tierColors[report.tier]}`}>
-                            {report.tier}
-                          </div>
-                        </div>
-                        {report.comment && (
-                          <div className="text-gray-300 mt-2 bg-gray-900 p-3 rounded text-sm whitespace-pre-line">
-                            {report.comment}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+            <div
+              key={report.id}
+              className="flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-800 p-4"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-sm text-gray-400">
+                  {report.username} • {report.distribution} •{' '}
+                  {report.protonVersion
+                    ? `Proton ${report.protonVersion} • `
+                    : ''}
+                  {new Date(report.createdAt).toLocaleDateString()}
+                </p>
+
+                <div
+                  className={`rounded px-4 py-1.5 font-bold ${tierColors[report.tier]}`}
+                >
+                  {report.tier}
+                </div>
+              </div>
+
+              {report.comment && (
+                <div className="mt-2 whitespace-pre-line rounded bg-gray-900 p-3 text-sm text-gray-300">
+                  {report.comment}
+                </div>
+              )}
+            </div>
+          ))}
 
           {reports.length === 0 && (
-            <div className="text-gray-400 p-4 text-center border border-gray-700 rounded-lg">
-              No reports found for this game ID.
+            <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
+              No reports found for this Steam App ID.
             </div>
           )}
         </div>

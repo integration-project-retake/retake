@@ -1,18 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { searchGames } from '@/services/gameService';
 import type { GameDto } from '@/types';
 
-export default function GameSearch({ initialGames }: { initialGames: GameDto[] }) {
+interface GameSearchProps {
+  initialGames: GameDto[];
+}
+
+export default function GameSearch({
+  initialGames,
+}: GameSearchProps) {
   const [query, setQuery] = useState('');
   const [games, setGames] = useState(initialGames);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      const results = await searchGames(query);
-      setGames(results);
+      try {
+        setError('');
+        const results = await searchGames(query);
+        setGames(results);
+      } catch {
+        setError('Failed to search games.');
+      }
     }, 300);
 
     return () => clearTimeout(timer);
@@ -23,32 +35,45 @@ export default function GameSearch({ initialGames }: { initialGames: GameDto[] }
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(event) => setQuery(event.target.value)}
         placeholder="Enter game name or Steam ID"
-        className="w-full mb-6 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
+        className="mb-6 w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
       />
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-700 bg-red-950 p-3 text-red-200">
+          {error}
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {games.map((game) => (
           <Link
             key={game.id}
-            href={`/games/${game.id}`}
-            className="bg-gray-800 border border-gray-700 rounded-lg hover:border-gray-500 transition-colors overflow-hidden"
+            href={`/games/${game.steamAppid}`}
+            className="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500"
           >
             <img
-              src={game.headerUrl}
+              src={
+                game.headerUrl ||
+                `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`
+              }
               alt={game.name}
-              className="w-full aspect-[460/215] object-cover"
+              className="aspect-[460/215] w-full object-cover"
+              loading="lazy"
             />
+
             <div className="p-4">
               <h2 className="text-lg font-semibold">{game.name}</h2>
-              <p className="text-gray-400 text-sm mt-1">Steam App ID: {game.steamAppid}</p>
+              <p className="mt-1 text-sm text-gray-400">
+                Steam App ID: {game.steamAppid}
+              </p>
             </div>
           </Link>
         ))}
 
-        {games.length === 0 && (
-          <div className="text-gray-400 p-4 text-center border border-gray-700 rounded-lg col-span-full">
+        {games.length === 0 && !error && (
+          <div className="col-span-full rounded-lg border border-gray-700 p-4 text-center text-gray-400">
             No games found.
           </div>
         )}
