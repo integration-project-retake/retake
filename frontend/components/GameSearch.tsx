@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { searchGames } from '@/services/gameService';
+import { useLanguage } from '@/context/LanguageContext';
 import type { GameDto } from '@/types';
 
 interface GameSearchProps {
@@ -12,6 +13,8 @@ interface GameSearchProps {
 export default function GameSearch({
   initialGames,
 }: GameSearchProps) {
+  const { t } = useLanguage();
+
   const [query, setQuery] = useState('');
   const [games, setGames] = useState(initialGames);
   const [error, setError] = useState('');
@@ -22,21 +25,22 @@ export default function GameSearch({
         setError('');
         const results = await searchGames(query);
         setGames(results);
-      } catch {
-        setError('Failed to search games.');
+      } catch (error) {
+        console.error('Game search failed:', error);
+        setError(t('searchError'));
       }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, t]);
 
   return (
     <div>
       <input
-        type="text"
+        type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Enter game name or Steam ID"
+        placeholder={t('searchPlaceholder')}
         className="mb-6 w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
       />
 
@@ -65,8 +69,9 @@ export default function GameSearch({
 
             <div className="p-4">
               <h2 className="text-lg font-semibold">{game.name}</h2>
+
               <p className="mt-1 text-sm text-gray-400">
-                Steam App ID: {game.steamAppid}
+                {t('steamAppId')}: {game.steamAppid}
               </p>
             </div>
           </Link>
@@ -74,7 +79,7 @@ export default function GameSearch({
 
         {games.length === 0 && !error && (
           <div className="col-span-full rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-            No games found.
+            {t('noGames')}
           </div>
         )}
       </div>
