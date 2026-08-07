@@ -6,6 +6,15 @@ import { searchGames } from '@/services/gameService';
 import { useLanguage } from '@/context/LanguageContext';
 import type { GameDto } from '@/types';
 
+const tierColors: Record<string, string> = {
+  Platinum: 'bg-blue-200 text-blue-900',
+  Gold: 'bg-yellow-400 text-yellow-900',
+  Silver: 'bg-gray-300 text-gray-900',
+  Bronze: 'bg-orange-500 text-orange-950',
+  Borked: 'bg-red-600 text-white',
+  Pending: 'bg-gray-600 text-gray-300',
+};
+
 interface GameSearchProps {
   initialGames: GameDto[];
 }
@@ -22,8 +31,29 @@ export default function GameSearch({
   const [error, setError] = useState('');
   const [layout, setLayout] = useState<LayoutMode>('grid');
 
+  // Restore the user's selected layout
+  useEffect(() => {
+    const savedLayout = localStorage.getItem('gameLayout');
+
+    if (savedLayout === 'grid' || savedLayout === 'list') {
+      setLayout(savedLayout);
+    }
+  }, []);
+
+  // Persist layout preference
+  useEffect(() => {
+    localStorage.setItem('gameLayout', layout);
+  }, [layout]);
+
+  // Search games after a short debounce
   useEffect(() => {
     const timer = setTimeout(async () => {
+      if (!query.trim()) {
+        setGames(initialGames);
+        setError('');
+        return;
+      }
+
       try {
         setError('');
 
@@ -36,7 +66,7 @@ export default function GameSearch({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query, t]);
+  }, [query, initialGames, t]);
 
   return (
     <div>
@@ -96,7 +126,7 @@ export default function GameSearch({
             className={`overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500 ${
               layout === 'list'
                 ? 'flex flex-col sm:flex-row'
-                : ''
+                : 'flex flex-col'
             }`}
           >
             <img
@@ -113,12 +143,24 @@ export default function GameSearch({
               loading="lazy"
             />
 
-            <div className="p-4">
-              <h2 className="text-lg font-semibold">{game.name}</h2>
+            <div className="flex flex-1 items-start justify-between p-4">
+              <div>
+                <h2 className="text-lg font-semibold">{game.name}</h2>
 
-              <p className="mt-1 text-sm text-gray-400">
-                {t('steamAppId')}: {game.steamAppid}
-              </p>
+                <p className="mt-1 text-sm text-gray-400">
+                  {t('steamAppId')}: {game.steamAppid}
+                </p>
+              </div>
+
+              <div
+                className={`ml-3 rounded px-2 py-1 text-xs font-bold ${
+                  game.tier
+                    ? tierColors[game.tier]
+                    : tierColors.Pending
+                }`}
+              >
+                {game.tier || 'Pending'}
+              </div>
             </div>
           </Link>
         ))}

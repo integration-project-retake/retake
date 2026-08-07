@@ -17,9 +17,8 @@ export default async function GamePage({ params }: GamePageProps) {
 
   return (
     <GameReports
+      game={game}
       reports={reports}
-      steamAppid={steamAppid}
-      gameId={game.id}
     />
   );
 }

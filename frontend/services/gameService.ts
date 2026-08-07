@@ -1,7 +1,7 @@
 import { GameDto } from '../types';
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export async function fetchGames(): Promise<GameDto[]> {
   const res = await fetch(`${API_BASE_URL}/games`, {
@@ -17,7 +17,8 @@ export async function fetchGames(): Promise<GameDto[]> {
 
 export async function searchGames(query: string): Promise<GameDto[]> {
   const res = await fetch(
-    `${API_BASE_URL}/games/search?query=${encodeURIComponent(query)}`
+    `${API_BASE_URL}/games/search?query=${encodeURIComponent(query)}`,
+    { cache: 'no-store' }
   );
 
   if (!res.ok) {
