@@ -5,7 +5,7 @@ import java.time.Instant;
 import be.ucll.retake.model.Report;
 import be.ucll.retake.model.Tier;
 
-public record ReportDto(Long id, Long user_id, String username, Long game_id, String gameName, Tier tier, String distribution, Instant createdAt) {
+public record ReportDto(Long id, Long user_id, String username, Long game_id, String gameName, Tier tier, String distribution, String comment, String protonVersion, Instant createdAt) {
     
     public static ReportDto from(Report report) {
         return new ReportDto(
@@ -16,6 +16,8 @@ public record ReportDto(Long id, Long user_id, String username, Long game_id, St
             report.getGame().getName(),
             report.getTier(),
             report.getDistro(),
+            report.getComment(),
+            report.getProtonVersion(),
             report.getCreatedAt()
         );
     }

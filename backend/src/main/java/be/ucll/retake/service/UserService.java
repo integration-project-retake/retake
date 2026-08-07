@@ -31,4 +31,15 @@ public class UserService {
         String hashed = passwordEncoder.encode(password);
         return userRepository.save(new User(username, email, hashed));
     }
+
+    public User authenticate(String username, String password) {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                throw new RuntimeException("Invalid credentials");
+            }
+
+            return user;
+        }
 }

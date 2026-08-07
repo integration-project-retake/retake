@@ -34,13 +34,32 @@ public class ReportService {
         return reportRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Report with id " + id + " not found"));
     }
+    public List<Report> getReportsBySteamAppid(Integer steamAppid) {
+        if (!gameRepository.existsBySteamAppid(steamAppid)) {
+            throw new IllegalArgumentException("Game with steam appid " + steamAppid + " not found");
+        }
+        return reportRepository.findByGameSteamAppid(steamAppid);
+    }
+    public List<Report> getReportsByGameId(Long gameId) {
+        if (!gameRepository.existsById(gameId)) {
+            throw new IllegalArgumentException("Game with id " + gameId + " not found");
+        }
+        return reportRepository.findByGameId(gameId);
+    }
 
-    public Report createReport(Long userId, Long gameId, Tier tier, String distribution) {
+    public Report createReport(Long userId, Long gameId, Tier tier, String distribution, String comment, String protonVersion) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new IllegalArgumentException("Game with id " + gameId + " not found"));
 
-        return reportRepository.save(new Report(user, game, tier, distribution));
+        return reportRepository.save(new Report(user, game, tier, distribution, comment, protonVersion));
     }
+    public List<Report> getReportsByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User with id " + userId + " not found");
+        }
+        return reportRepository.findByUserId(userId);
+    }
+    
 }

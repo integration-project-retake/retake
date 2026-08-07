@@ -1,9 +1,18 @@
 package be.ucll.retake.controller;
 
+import be.ucll.retake.model.User;
 import be.ucll.retake.dto.UserDto;
+import be.ucll.retake.dto.LoginRequest;
+import be.ucll.retake.dto.UserInput;
 import be.ucll.retake.service.UserService;
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,9 +40,36 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestParam String username,
-                              @RequestParam String email,
-                              @RequestParam String password) {
-        return UserDto.from(userService.createUser(username, email, password));
+    public UserDto createUser(@Valid @RequestBody UserInput input) {
+        return UserDto.from(
+            userService.createUser(input.username(), input.email(), input.password())
+        );
+    }
+
+    @PostMapping("/login")
+    public UserDto login(@Valid @RequestBody LoginRequest credentials, HttpServletRequest request) {
+        try {
+            User user = userService.authenticate(credentials.username(), credentials.password());
+            request.getSession().setAttribute("user", user);
+            return UserDto.from(user);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto register(@Valid @RequestBody UserInput input) {
+        return UserDto.from(
+            userService.createUser(input.username(), input.email(), input.password())
+        );
     }
 }
