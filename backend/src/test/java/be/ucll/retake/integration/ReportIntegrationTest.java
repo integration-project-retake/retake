@@ -87,4 +87,14 @@ public class ReportIntegrationTest {
 
         assertEquals(0, reportRepository.count());
     }
+
+    @Test
+    public void givenInvalidTier_whenCreatingReport_thenBadRequest() throws Exception {
+        mockMvc.perform(post("/reports")
+                        .param("userId", user.getId().toString())
+                        .param("gameId", game.getId().toString())
+                        .param("tier", "Diamond")
+                        .param("distribution", "Ubuntu"))
+                .andExpect(status().isBadRequest());
+    }
 }
