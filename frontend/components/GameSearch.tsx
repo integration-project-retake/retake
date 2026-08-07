@@ -31,7 +31,6 @@ export default function GameSearch({
   const [error, setError] = useState('');
   const [layout, setLayout] = useState<LayoutMode>('grid');
 
-  // Restore the user's selected layout
   useEffect(() => {
     const savedLayout = localStorage.getItem('gameLayout');
 
@@ -40,12 +39,6 @@ export default function GameSearch({
     }
   }, []);
 
-  // Persist layout preference
-  useEffect(() => {
-    localStorage.setItem('gameLayout', layout);
-  }, [layout]);
-
-  // Search games after a short debounce
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (!query.trim()) {
@@ -68,6 +61,11 @@ export default function GameSearch({
     return () => clearTimeout(timer);
   }, [query, initialGames, t]);
 
+  const handleLayoutChange = (newLayout: LayoutMode) => {
+    setLayout(newLayout);
+    localStorage.setItem('gameLayout', newLayout);
+  };
+
   return (
     <div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -82,7 +80,7 @@ export default function GameSearch({
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setLayout('grid')}
+            onClick={() => handleLayoutChange('grid')}
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'grid'
                 ? 'bg-blue-600 text-white'
@@ -94,7 +92,7 @@ export default function GameSearch({
 
           <button
             type="button"
-            onClick={() => setLayout('list')}
+            onClick={() => handleLayoutChange('list')}
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'list'
                 ? 'bg-blue-600 text-white'
