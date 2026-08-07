@@ -63,7 +63,7 @@ export default function SubmitReportForm({
 
       router.refresh();
     } catch (err) {
-      console.error(err);
+      console.error('Failed to submit report:', err);
       setError('Failed to submit report.');
     } finally {
       setSubmitting(false);
@@ -153,8 +153,8 @@ export default function SubmitReportForm({
             setDistribution(event.target.value)
           }
           placeholder="e.g. Ubuntu, Fedora, Arch"
-          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
           required
+          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
         />
       </div>
 

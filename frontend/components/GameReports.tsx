@@ -1,6 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/context/LanguageContext';
+import SubmitReportForm from '@/components/SubmitReportForm';
 import type { ReportDto, Tier } from '@/types';
 
 const tierColors: Record<Tier, string> = {
@@ -14,24 +15,30 @@ const tierColors: Record<Tier, string> = {
 interface GameReportsProps {
   reports: ReportDto[];
   steamAppid: number;
+  gameId: number;
 }
 
 export default function GameReports({
   reports,
   steamAppid,
+  gameId,
 }: GameReportsProps) {
   const { language, t } = useLanguage();
 
   const dateLocale = language === 'es' ? 'es-ES' : 'en-GB';
 
   return (
-    <main className="min-h-screen bg-gray-900 p-8 text-white">
+    <main className="min-h-screen bg-gray-900 px-6 py-10 text-white">
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-6 text-3xl font-bold">
+        <h1 className="mb-8 text-4xl font-bold">
           {reports.length > 0
             ? `${reports[0].gameName} ${t('reports')}`
             : `${t('steamAppId')} ${steamAppid} — ${t('reports')}`}
         </h1>
+
+        <div className="mb-8">
+          <SubmitReportForm gameId={gameId} />
+        </div>
 
         <div className="flex flex-col gap-4">
           {reports.map((report) => (
