@@ -1,6 +1,6 @@
 import { ReportDto, Tier } from '../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 export async function fetchReports(): Promise<ReportDto[]> {
   const res = await fetch(`${API_BASE_URL}/reports`, { cache: 'no-store' });

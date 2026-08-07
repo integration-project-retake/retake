@@ -7,6 +7,7 @@ export interface GameDto {
   name: string;
   headerUrl: string;
   createdAt: string;
+  tier: string;
 }
 
 export interface ReportDto {

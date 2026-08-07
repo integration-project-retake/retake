@@ -36,34 +36,38 @@ public class GameController {
     @GetMapping
     public List<GameDto> getAllGames() {
         return gameService.getAllGames().stream()
-                .map(GameDto::from)
+                .map(game -> GameDto.from(game, gameService.getGameOverallTier(game.getId())))
                 .toList();
     }
 
     @GetMapping("/{id}")
-    public GameDto getGameById(@PathVariable Long id) {
-        return GameDto.from(gameService.getGameById(id));
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public GameDto createGame(
-            @RequestParam Integer steamAppid,
-            @RequestParam String name
-    ) {
-        return GameDto.from(gameService.createGame(steamAppid, name));
-    }
-
-    @GetMapping("/search")
-    public List<GameDto> searchGames(
-            @RequestParam(required = false, defaultValue = "") String query
-    ) {
-        List<GameDto> dtos = new ArrayList<>();
-
-        for (Game game : gameService.searchGames(query)) {
-            dtos.add(GameDto.from(game));
+        public GameDto getGameById(@PathVariable Long id) {
+            Game game = gameService.getGameById(id);
+            String overallTier = gameService.getGameOverallTier(id);
+            return GameDto.from(game, overallTier);
         }
 
-        return dtos;
-    }
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public GameDto createGame(
+                @RequestParam Integer steamAppid,
+                @RequestParam String name
+        ) {
+            Game game = gameService.createGame(steamAppid, name);
+            return GameDto.from(game, "Pending");
+        }
+
+        @GetMapping("/search")
+        public List<GameDto> searchGames(
+                @RequestParam(required = false, defaultValue = "") String query
+        ) {
+            List<GameDto> dtos = new ArrayList<>();
+
+            for (Game game : gameService.searchGames(query)) {
+                String overallTier = gameService.getGameOverallTier(game.getId());
+                dtos.add(GameDto.from(game, overallTier));
+            }
+
+            return dtos;
+        }
 }
