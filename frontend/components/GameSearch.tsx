@@ -10,6 +10,8 @@ interface GameSearchProps {
   initialGames: GameDto[];
 }
 
+type LayoutMode = 'grid' | 'list';
+
 export default function GameSearch({
   initialGames,
 }: GameSearchProps) {
@@ -18,11 +20,13 @@ export default function GameSearch({
   const [query, setQuery] = useState('');
   const [games, setGames] = useState(initialGames);
   const [error, setError] = useState('');
+  const [layout, setLayout] = useState<LayoutMode>('grid');
 
   useEffect(() => {
     const timer = setTimeout(async () => {
       try {
         setError('');
+
         const results = await searchGames(query);
         setGames(results);
       } catch (error) {
@@ -36,13 +40,41 @@ export default function GameSearch({
 
   return (
     <div>
-      <input
-        type="search"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder={t('searchPlaceholder')}
-        className="mb-6 w-full rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
-      />
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={t('searchPlaceholder')}
+          className="w-full flex-1 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
+        />
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setLayout('grid')}
+            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
+              layout === 'grid'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            Grid
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLayout('list')}
+            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
+              layout === 'list'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            List
+          </button>
+        </div>
+      </div>
 
       {error && (
         <div className="mb-4 rounded-lg border border-red-700 bg-red-950 p-3 text-red-200">
@@ -50,12 +82,22 @@ export default function GameSearch({
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={
+          layout === 'grid'
+            ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3'
+            : 'flex flex-col gap-4'
+        }
+      >
         {games.map((game) => (
           <Link
             key={game.id}
             href={`/games/${game.steamAppid}`}
-            className="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500"
+            className={`overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500 ${
+              layout === 'list'
+                ? 'flex flex-col sm:flex-row'
+                : ''
+            }`}
           >
             <img
               src={
@@ -63,7 +105,11 @@ export default function GameSearch({
                 `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`
               }
               alt={game.name}
-              className="aspect-[460/215] w-full object-cover"
+              className={
+                layout === 'grid'
+                  ? 'aspect-[460/215] w-full object-cover'
+                  : 'aspect-[460/215] w-full object-cover sm:w-64'
+              }
               loading="lazy"
             />
 
@@ -78,7 +124,7 @@ export default function GameSearch({
         ))}
 
         {games.length === 0 && !error && (
-          <div className="col-span-full rounded-lg border border-gray-700 p-4 text-center text-gray-400">
+          <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
             {t('noGames')}
           </div>
         )}
