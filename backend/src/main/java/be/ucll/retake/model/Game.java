@@ -42,6 +42,14 @@ public class Game {
     @Column(name = "alias", nullable = false)
     private Set<String> aliases = new LinkedHashSet<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "game_genres",
+            joinColumns = @JoinColumn(name = "game_id")
+    )
+    @Column(name = "genre", nullable = false)
+    private Set<String> genres = new LinkedHashSet<>();
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -87,6 +95,22 @@ public class Game {
     public void addAlias(String alias) {
         if (alias != null && !alias.isBlank()) {
             aliases.add(alias.trim());
+        }
+    }
+
+    public Set<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<String> genres) {
+        this.genres = genres != null
+                ? new LinkedHashSet<>(genres)
+                : new LinkedHashSet<>();
+    }
+
+    public void addGenre(String genre) {
+        if (genre != null && !genre.isBlank()) {
+            genres.add(genre.trim());
         }
     }
 

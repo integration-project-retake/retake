@@ -1,8 +1,10 @@
 package be.ucll.retake.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -56,7 +58,6 @@ public class GameService {
 
         String trimmed = query.trim();
 
-        // Numeric searches are treated as exact Steam App IDs.
         if (trimmed.matches("\\d+")) {
             Integer steamAppid = Integer.parseInt(trimmed);
 
@@ -93,6 +94,46 @@ public class GameService {
                 );
 
         return nameMatches || aliasMatches;
+    }
+
+    public List<Game> getRelatedGames(Long gameId) {
+        Game selectedGame = getGameById(gameId);
+
+        Set<String> selectedGenres = selectedGame.getGenres();
+
+        if (selectedGenres == null || selectedGenres.isEmpty()) {
+            return List.of();
+        }
+
+        return gameRepository.findAll()
+                .stream()
+                .filter(game -> !game.getId().equals(gameId))
+                .filter(game -> hasSharedGenre(game, selectedGenres))
+                .sorted(
+                        Comparator.comparingInt(
+                                        (Game game) ->
+                                                countSharedGenres(game, selectedGenres)
+                                ).reversed()
+                                .thenComparing(Game::getName)
+                )
+                .toList();
+    }
+
+    private boolean hasSharedGenre(
+            Game game,
+            Set<String> selectedGenres
+    ) {
+        return countSharedGenres(game, selectedGenres) > 0;
+    }
+
+    private int countSharedGenres(
+            Game game,
+            Set<String> selectedGenres
+    ) {
+        return (int) game.getGenres()
+                .stream()
+                .filter(selectedGenres::contains)
+                .count();
     }
 
     public String getGameOverallTier(Long gameId) {
