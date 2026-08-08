@@ -7,8 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import be.ucll.retake.model.Game;
 
-public interface GameRepository extends JpaRepository<Game, Long>{
+public interface GameRepository extends JpaRepository<Game, Long> {
+
     boolean existsBySteamAppid(Integer steamAppid);
+
     Optional<Game> findBySteamAppid(Integer steamAppid);
+
     List<Game> findByNameContainingIgnoreCase(String name);
 }
