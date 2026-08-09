@@ -127,7 +127,10 @@ export default function GameReports({
             >
               <div className="flex items-center justify-between gap-4">
                 <p className="text-sm text-gray-400">
-                  {report.username} •{' '}
+                  <Link href={`/users/${report.user_id}`} className='hover:text-pink-600 font-bold transition-colors underline'>
+                    {report.username}
+                  </Link> 
+                  {' '} • {' '}
                   {report.distribution} •{' '}
                   {report.protonVersion
                     ? `Proton ${report.protonVersion} • `

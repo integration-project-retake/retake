@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import UserService from '@/services/userService'; // Adjust path as needed
 import { UserDto } from '@/types';
+import Link from 'next/link';
 
 interface AuthContextType {
   user: UserDto | null;
@@ -37,3 +38,9 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };
+
+export default function ProfileLink() {
+  const {user} = useAuth();
+  if (!user) return null;
+  return <Link href={`/users/${user.id}`} className="hover:underline">My Profile</Link>;
+}

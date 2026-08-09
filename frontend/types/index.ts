@@ -12,6 +12,7 @@ export interface GameDto {
 }
 
 export interface ReportDto {
+  steamAppid: number;
   id: number;
   user_id: number;
   username: string;

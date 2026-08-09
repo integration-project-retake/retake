@@ -39,9 +39,21 @@ const logout = async (): Promise<void> => {
   }
 };
 
+export async function fetchUser(id: string): Promise<UserDto> {
+  const url = `http://localhost:8081/users/${id}`;
+  console.log('fetchUser URL:', url);
+  const res = await fetch(url);
+  if (!res.ok) {
+    console.log('fetchUser status:', res.status);
+    throw new Error('Failed to fetch user');
+  }
+  return res.json();
+}
+
 const UserService = {
   authenticate,
   logout,
+  fetchUser
 };
 
 export default UserService;

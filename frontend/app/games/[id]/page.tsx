@@ -17,6 +17,8 @@ export default async function GamePage({
   const { id } = await params;
 
   const steamAppid = Number(id);
+  fetchGameBySteamAppid(steamAppid);
+  fetchReportsBySteamAppid(steamAppid);
 
   const [game, reports] = await Promise.all([
     fetchGameBySteamAppid(steamAppid),
