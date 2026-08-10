@@ -41,6 +41,11 @@ const translations = {
     registrationFailed:
       'Registration failed. Please try again.',
 
+    loginFailed:
+      'Login failed.',
+    invalidCredentials:
+      'Invalid username or password.',
+
     searchPlaceholder:
       'Enter game name or Steam ID',
     searchError:
@@ -142,6 +147,11 @@ const translations = {
       'Este nombre de usuario ya está en uso.',
     registrationFailed:
       'El registro falló. Inténtalo de nuevo.',
+
+    loginFailed:
+      'Error al iniciar sesión.',
+    invalidCredentials:
+      'Nombre de usuario o contraseña incorrectos.',
 
     searchPlaceholder:
       'Introduce el nombre del juego o el ID de Steam',
