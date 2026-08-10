@@ -476,6 +476,7 @@ public class GameService {
                                         Game::getName
                                 )
                 )
+                .limit(6)
                 .toList();
     }
 
