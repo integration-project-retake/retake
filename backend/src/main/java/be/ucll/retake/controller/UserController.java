@@ -143,4 +143,8 @@ public class UserController {
                 )
         );
     }
+    @PatchMapping("/{id}/avatar")
+    public UserDto updateAvatar(@PathVariable Long id, @RequestParam String avatarUrl) {
+        return UserDto.from(userService.updateAvatar(id, avatarUrl));
+    }
 }
