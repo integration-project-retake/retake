@@ -26,6 +26,21 @@ const translations = {
     registrationError:
       'An error occurred during registration.',
 
+    usernameRequired:
+      'Username is required.',
+    emailRequired:
+      'Email is required.',
+    invalidEmail:
+      'Please enter a valid email address.',
+    passwordRequired:
+      'Password is required.',
+    passwordTooShort:
+      'Password must be at least 6 characters long.',
+    usernameTaken:
+      'This username is already taken.',
+    registrationFailed:
+      'Registration failed. Please try again.',
+
     searchPlaceholder:
       'Enter game name or Steam ID',
     searchError:
@@ -113,6 +128,21 @@ const translations = {
     registrationError:
       'Se produjo un error durante el registro.',
 
+    usernameRequired:
+      'El nombre de usuario es obligatorio.',
+    emailRequired:
+      'El correo electrónico es obligatorio.',
+    invalidEmail:
+      'Introduce una dirección de correo electrónico válida.',
+    passwordRequired:
+      'La contraseña es obligatoria.',
+    passwordTooShort:
+      'La contraseña debe tener al menos 6 caracteres.',
+    usernameTaken:
+      'Este nombre de usuario ya está en uso.',
+    registrationFailed:
+      'El registro falló. Inténtalo de nuevo.',
+
     searchPlaceholder:
       'Introduce el nombre del juego o el ID de Steam',
     searchError:
@@ -194,9 +224,11 @@ export type TranslationKey =
 
 interface LanguageContextValue {
   language: Language;
+
   setLanguage: (
     language: Language
   ) => void;
+
   t: (
     key: TranslationKey
   ) => string;
