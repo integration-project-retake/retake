@@ -3,3 +3,4 @@
 .env.local
 backend/target/
 .vscode/
+.idea/

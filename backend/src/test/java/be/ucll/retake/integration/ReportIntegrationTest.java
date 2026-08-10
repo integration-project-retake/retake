@@ -39,6 +39,9 @@ public class ReportIntegrationTest {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private jakarta.persistence.EntityManager entityManager;
+
     private User user;
     private Game game;
 
@@ -77,16 +80,23 @@ public class ReportIntegrationTest {
     }
 
     @Test
-    public void givenGameHasReports_whenGameIsDeleted_thenReportsAreDeleted() throws Exception {
-        reportRepository.save(new Report(user, game, Tier.Gold, "Ubuntu"));
-        reportRepository.save(new Report(user, game, Tier.Platinum, "SteamOS"));
-        assertEquals(2, reportRepository.count());
+        public void givenGameHasReports_whenGameIsDeleted_thenReportsAreDeleted() throws Exception {
+            Game testGame = gameRepository.save(new Game(1111, "Test Game"));
+            reportRepository.save(new Report(user, testGame, Tier.Gold, "Ubuntu"));
+            reportRepository.save(new Report(user, testGame, Tier.Platinum, "SteamOS"));
 
-        gameRepository.delete(game);
-        gameRepository.flush();
+            entityManager.flush();
+            entityManager.clear();
 
-        assertEquals(0, reportRepository.count());
-    }
+            assertEquals(2, reportRepository.count());
+
+            gameRepository.deleteById(testGame.getId());
+
+            entityManager.flush();
+            entityManager.clear();
+
+            assertEquals(0, reportRepository.count());
+        }
 
     @Test
     public void givenInvalidTier_whenCreatingReport_thenBadRequest() throws Exception {

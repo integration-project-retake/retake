@@ -18,38 +18,68 @@ const translations = {
     logout: 'Logout',
     welcome: 'Welcome',
 
-    searchPlaceholder: 'Enter game name or Steam ID',
-    searchError: 'Failed to search games.',
-    noGames: 'No games found.',
+    createAccount: 'Create an Account',
+    username: 'Username',
+    email: 'Email',
+    password: 'Password',
+    alreadyHaveAccount: 'Already have an account?',
+    registrationError:
+      'An error occurred during registration.',
 
-    steamAppId: 'Steam App ID',
+    searchPlaceholder:
+      'Enter game name or Steam ID',
+    searchError:
+      'Failed to search games.',
+    noGames:
+      'No games found.',
 
-    reports: 'Reports',
-    noReports: 'No reports found for this Steam App ID.',
+    grid: 'Grid',
+    list: 'List',
 
-    language: 'Language',
-    english: 'English',
-    spanish: 'Spanish',
+    steamAppId:
+      'Steam App ID',
 
-    submitReport: 'Submit a Report',
+    reports:
+      'Reports',
+    noReports:
+      'No reports found for this Steam App ID.',
+
+    language:
+      'Language',
+    english:
+      'English',
+    spanish:
+      'Spanish',
+
+    submitReport:
+      'Submit a Report',
     loginRequiredForReport:
       'You must be logged in to submit a compatibility report.',
 
-    compatibilityRating: 'Compatibility Rating',
-    linuxDistribution: 'Linux Distribution',
-    distributionPlaceholder: 'e.g. Ubuntu, Fedora, Arch',
+    compatibilityRating:
+      'Compatibility Rating',
+    linuxDistribution:
+      'Linux Distribution',
+    distributionPlaceholder:
+      'e.g. Ubuntu, Fedora, Arch',
 
-    protonVersion: 'Proton Version',
-    protonVersionPlaceholder: 'e.g. 9.0-3',
+    protonVersion:
+      'Proton Version',
+    protonVersionPlaceholder:
+      'e.g. 9.0-3',
 
-    comment: 'Comment',
+    comment:
+      'Comment',
     commentPlaceholder:
       'Describe your experience running this game...',
 
-    submitReportButton: 'Submit Report',
-    submittingReport: 'Submitting...',
+    submitReportButton:
+      'Submit Report',
+    submittingReport:
+      'Submitting...',
 
-    distributionRequired: 'Distribution is required.',
+    distributionRequired:
+      'Distribution is required.',
     reportSubmittedSuccessfully:
       'Report submitted successfully.',
     reportSubmissionFailed:
@@ -60,6 +90,7 @@ const translations = {
     silver: 'Silver',
     bronze: 'Bronze',
     borked: 'Borked',
+    pending: 'Pending',
   },
 
   es: {
@@ -69,38 +100,72 @@ const translations = {
     logout: 'Cerrar sesión',
     welcome: 'Bienvenido',
 
+    createAccount:
+      'Crear una cuenta',
+    username:
+      'Nombre de usuario',
+    email:
+      'Correo electrónico',
+    password:
+      'Contraseña',
+    alreadyHaveAccount:
+      '¿Ya tienes una cuenta?',
+    registrationError:
+      'Se produjo un error durante el registro.',
+
     searchPlaceholder:
       'Introduce el nombre del juego o el ID de Steam',
-    searchError: 'No se pudieron buscar los juegos.',
-    noGames: 'No se encontraron juegos.',
+    searchError:
+      'No se pudieron buscar los juegos.',
+    noGames:
+      'No se encontraron juegos.',
 
-    steamAppId: 'ID de aplicación de Steam',
+    grid:
+      'Cuadrícula',
+    list:
+      'Lista',
 
-    reports: 'Informes',
+    steamAppId:
+      'ID de aplicación de Steam',
+
+    reports:
+      'Informes',
     noReports:
       'No se encontraron informes para este ID de Steam.',
 
-    language: 'Idioma',
-    english: 'Inglés',
-    spanish: 'Español',
+    language:
+      'Idioma',
+    english:
+      'Inglés',
+    spanish:
+      'Español',
 
-    submitReport: 'Enviar un informe',
+    submitReport:
+      'Enviar un informe',
     loginRequiredForReport:
       'Debes iniciar sesión para enviar un informe de compatibilidad.',
 
-    compatibilityRating: 'Clasificación de compatibilidad',
-    linuxDistribution: 'Distribución de Linux',
-    distributionPlaceholder: 'p. ej. Ubuntu, Fedora, Arch',
+    compatibilityRating:
+      'Clasificación de compatibilidad',
+    linuxDistribution:
+      'Distribución de Linux',
+    distributionPlaceholder:
+      'p. ej. Ubuntu, Fedora, Arch',
 
-    protonVersion: 'Versión de Proton',
-    protonVersionPlaceholder: 'p. ej. 9.0-3',
+    protonVersion:
+      'Versión de Proton',
+    protonVersionPlaceholder:
+      'p. ej. 9.0-3',
 
-    comment: 'Comentario',
+    comment:
+      'Comentario',
     commentPlaceholder:
       'Describe tu experiencia ejecutando este juego...',
 
-    submitReportButton: 'Enviar informe',
-    submittingReport: 'Enviando...',
+    submitReportButton:
+      'Enviar informe',
+    submittingReport:
+      'Enviando...',
 
     distributionRequired:
       'La distribución de Linux es obligatoria.',
@@ -109,11 +174,18 @@ const translations = {
     reportSubmissionFailed:
       'No se pudo enviar el informe.',
 
-    platinum: 'Platino',
-    gold: 'Oro',
-    silver: 'Plata',
-    bronze: 'Bronce',
-    borked: 'No funciona',
+    platinum:
+      'Platino',
+    gold:
+      'Oro',
+    silver:
+      'Plata',
+    bronze:
+      'Bronce',
+    borked:
+      'No funciona',
+    pending:
+      'Pendiente',
   },
 } as const;
 
@@ -122,32 +194,43 @@ export type TranslationKey =
 
 interface LanguageContextValue {
   language: Language;
-  setLanguage: (language: Language) => void;
-  t: (key: TranslationKey) => string;
+  setLanguage: (
+    language: Language
+  ) => void;
+  t: (
+    key: TranslationKey
+  ) => string;
 }
 
 const LanguageContext =
-  createContext<LanguageContextValue | undefined>(
-    undefined
-  );
+  createContext<
+    LanguageContextValue | undefined
+  >(undefined);
 
 export function LanguageProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [language, setLanguageState] =
-    useState<Language>('en');
+  const [
+    language,
+    setLanguageState,
+  ] = useState<Language>('en');
 
   useEffect(() => {
     const savedLanguage =
-      localStorage.getItem('language');
+      localStorage.getItem(
+        'language'
+      );
 
     if (
       savedLanguage === 'en' ||
       savedLanguage === 'es'
     ) {
-      setLanguageState(savedLanguage);
+      setLanguageState(
+        savedLanguage
+      );
+
       document.documentElement.lang =
         savedLanguage;
     }
@@ -156,7 +239,9 @@ export function LanguageProvider({
   const setLanguage = (
     newLanguage: Language
   ) => {
-    setLanguageState(newLanguage);
+    setLanguageState(
+      newLanguage
+    );
 
     localStorage.setItem(
       'language',
@@ -170,7 +255,9 @@ export function LanguageProvider({
   const t = (
     key: TranslationKey
   ): string => {
-    return translations[language][key];
+    return translations[
+      language
+    ][key];
   };
 
   return (
@@ -186,9 +273,12 @@ export function LanguageProvider({
   );
 }
 
-export function useLanguage(): LanguageContextValue {
+export function useLanguage():
+  LanguageContextValue {
   const context =
-    useContext(LanguageContext);
+    useContext(
+      LanguageContext
+    );
 
   if (!context) {
     throw new Error(
