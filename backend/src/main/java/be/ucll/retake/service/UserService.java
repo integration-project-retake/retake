@@ -48,4 +48,5 @@ public class UserService {
         user.setAvatarUrl(avatarUrl);
         return userRepository.save(user);
     }
+
 }

@@ -37,7 +37,6 @@ public class DbInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // USERS
         if (userRepository.count() == 0) {
             userRepository.save(
                     new User(
@@ -64,7 +63,6 @@ public class DbInitializer implements CommandLineRunner {
             );
         }
 
-        // GAMES
         if (gameRepository.count() == 0) {
 
             Game dota = new Game(570, "Dota 2");
@@ -138,7 +136,6 @@ public class DbInitializer implements CommandLineRunner {
             gameRepository.save(bg1);
         }
 
-        // REPORTS
         if (reportRepository.count() == 0) {
 
             User annie = userRepository

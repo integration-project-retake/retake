@@ -21,16 +21,11 @@ export default async function UserProfile({ params }: { params: Promise<{ id: st
 
       <div className="max-w-3xl mx-auto">
         <div className='flex items-center gap-6 mb-6'>
-          <img
-            src={user.avatarUrl || 'https://www.gravatar.com/avatar/?d=mp'}
-            alt={user.username}
-            className='w-30 -30 rounded-full'
-          />
+
+          <AvatarEditor profileId={Number(id)} currentAvatar={user.avatarUrl} username={user.username} />
           <h1 className="text-3xl font-bold mb-2 transition-colors duration-200 hover:text-pink-500">{user.username}</h1>
         </div>
         <p className="text-gray-400 mb-6">{reports.length} reports contributed</p>
-
-        <AvatarEditor profileId={Number(id)} />
         {reports.length === 0 ? (
           <div className="text-gray-400 p-6 text-center border border-gray-700 rounded-lg">
             No reports yet.
