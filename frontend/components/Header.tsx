@@ -53,9 +53,9 @@ export default function Header() {
 
           {user ? (
             <>
-              <span className="text-gray-300">
+              <Link href={`users/${user.id}`} className="rounded bg-lime-400 px-4 py-2 text-white hover:bg-lime-500">
                 {t('welcome')}, {user.username}
-              </span>
+              </Link>
 
               <button
                 type="button"
