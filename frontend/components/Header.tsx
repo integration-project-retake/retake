@@ -21,41 +21,26 @@ export default function Header() {
 
   return (
     <header className="border-b border-gray-700 bg-gray-800 p-4">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
+      <div className="mx-auto flex max-w-5xl items-center justify-between">
         <Link href="/" className="text-xl font-bold text-white">
           ProtonDB Clone
         </Link>
 
         <nav className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setLanguage('en')}
-            className={`cursor-pointer rounded px-3 py-2 ${
-              language === 'en'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
+            className="cursor-pointer rounded bg-gray-700 px-3 py-2 text-white hover:bg-gray-600"
           >
-            English
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setLanguage('es')}
-            className={`cursor-pointer rounded px-3 py-2 ${
-              language === 'es'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
-          >
-            Español
-          </button>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
 
           {user ? (
             <>
-              <span className="text-gray-300">
+              <Link href={`users/${user.id}`} className="rounded bg-lime-400 px-4 py-2 text-white hover:bg-lime-500">
                 {t('welcome')}, {user.username}
-              </span>
+              </Link>
 
               <button
                 type="button"
