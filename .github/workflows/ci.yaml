@@ -1,0 +1,53 @@
+name: Run tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  # -------- Frontend --------
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm install
+          npm run test --if-present -- --watchAll=false --passWithNoTests
+
+  # -------- Backend --------
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run backend tests
+        run: cd backend && mvn test
+
+  # -------- SAST Security Scan --------
+  sast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Semgrep OSS
+        run: pip install semgrep
+
+      - name: Run Semgrep Scan
+        run: semgrep scan --config="p/default" --config="p/java" --config="p/nextjs" --severity ERROR --error
