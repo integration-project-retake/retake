@@ -78,13 +78,16 @@ public class ReportIntegrationTest {
 
     @Test
         public void givenGameHasReports_whenGameIsDeleted_thenReportsAreDeleted() throws Exception {
-            reportRepository.save(new Report(user, game, Tier.Gold, "Ubuntu"));
-            reportRepository.save(new Report(user, game, Tier.Platinum, "SteamOS"));
+            User attachedUser = userRepository.findById(user.getId()).orElseThrow();
+            Game attachedGame = gameRepository.findById(game.getId()).orElseThrow();
+
+            reportRepository.save(new Report(attachedUser, attachedGame, Tier.Gold, "Ubuntu"));
+            reportRepository.save(new Report(attachedUser, attachedGame, Tier.Platinum, "SteamOS"));
             reportRepository.flush();
+
             assertEquals(2, reportRepository.count());
 
-            Game managedGame = gameRepository.findById(game.getId()).orElseThrow();
-            gameRepository.delete(managedGame);
+            gameRepository.deleteById(attachedGame.getId());
             gameRepository.flush();
 
             assertEquals(0, reportRepository.count());
