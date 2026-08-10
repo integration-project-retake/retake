@@ -41,5 +41,11 @@ public class UserService {
             }
 
             return user;
-        }
+    }
+    public User updateAvatar(Long id, String avatarUrl) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + id + " not found"));
+        user.setAvatarUrl(avatarUrl);
+        return userRepository.save(user);
+    }
 }

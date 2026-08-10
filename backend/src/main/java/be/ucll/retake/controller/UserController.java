@@ -72,4 +72,8 @@ public class UserController {
             userService.createUser(input.username(), input.email(), input.password())
         );
     }
+    @PatchMapping("/{id}/avatar")
+    public UserDto updateAvatar(@PathVariable Long id, @RequestParam String avatarUrl) {
+        return UserDto.from(userService.updateAvatar(id, avatarUrl));
+    }
 }
