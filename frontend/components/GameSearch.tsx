@@ -29,12 +29,17 @@ export default function GameSearch({
   const [query, setQuery] = useState('');
   const [games, setGames] = useState(initialGames);
   const [error, setError] = useState('');
-  const [layout, setLayout] = useState<LayoutMode>('grid');
+  const [layout, setLayout] =
+    useState<LayoutMode>('grid');
 
   useEffect(() => {
-    const savedLayout = localStorage.getItem('gameLayout');
+    const savedLayout =
+      localStorage.getItem('gameLayout');
 
-    if (savedLayout === 'grid' || savedLayout === 'list') {
+    if (
+      savedLayout === 'grid' ||
+      savedLayout === 'list'
+    ) {
       setLayout(savedLayout);
     }
   }, []);
@@ -50,10 +55,16 @@ export default function GameSearch({
       try {
         setError('');
 
-        const results = await searchGames(query);
+        const results =
+          await searchGames(query);
+
         setGames(results);
       } catch (error) {
-        console.error('Game search failed:', error);
+        console.error(
+          'Game search failed:',
+          error
+        );
+
         setError(t('searchError'));
       }
     }, 300);
@@ -61,18 +72,26 @@ export default function GameSearch({
     return () => clearTimeout(timer);
   }, [query, initialGames, t]);
 
-  const handleLayoutChange = (newLayout: LayoutMode) => {
+  const handleLayoutChange = (
+    newLayout: LayoutMode
+  ) => {
     setLayout(newLayout);
-    localStorage.setItem('gameLayout', newLayout);
+
+    localStorage.setItem(
+      'gameLayout',
+      newLayout
+    );
   };
 
   return (
     <div>
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mb-4 flex gap-2">
         <input
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) =>
+            setQuery(event.target.value)
+          }
           placeholder={t('searchPlaceholder')}
           className="w-full flex-1 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
         />
@@ -80,26 +99,30 @@ export default function GameSearch({
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => handleLayoutChange('grid')}
+            onClick={() =>
+              handleLayoutChange('grid')
+            }
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'grid'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
-            Grid
+            {t('grid')}
           </button>
 
           <button
             type="button"
-            onClick={() => handleLayoutChange('list')}
+            onClick={() =>
+              handleLayoutChange('list')
+            }
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'list'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
-            List
+            {t('list')}
           </button>
         </div>
       </div>
@@ -143,10 +166,13 @@ export default function GameSearch({
 
             <div className="flex flex-1 items-start justify-between p-4">
               <div>
-                <h2 className="text-lg font-semibold">{game.name}</h2>
+                <h2 className="text-lg font-semibold">
+                  {game.name}
+                </h2>
 
                 <p className="mt-1 text-sm text-gray-400">
-                  {t('steamAppId')}: {game.steamAppid}
+                  {t('steamAppId')}:{' '}
+                  {game.steamAppid}
                 </p>
               </div>
 

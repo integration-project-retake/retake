@@ -18,9 +18,19 @@ const translations = {
     logout: 'Logout',
     welcome: 'Welcome',
 
+    createAccount: 'Create an Account',
+    username: 'Username',
+    email: 'Email',
+    password: 'Password',
+    alreadyHaveAccount: 'Already have an account?',
+    registrationError: 'An error occurred during registration.',
+
     searchPlaceholder: 'Enter game name or Steam ID',
     searchError: 'Failed to search games.',
     noGames: 'No games found.',
+
+    grid: 'Grid',
+    list: 'List',
 
     steamAppId: 'Steam App ID',
 
@@ -69,12 +79,26 @@ const translations = {
     logout: 'Cerrar sesión',
     welcome: 'Bienvenido',
 
+    createAccount: 'Crear una cuenta',
+    username: 'Nombre de usuario',
+    email: 'Correo electrónico',
+    password: 'Contraseña',
+    alreadyHaveAccount: '¿Ya tienes una cuenta?',
+    registrationError:
+      'Se produjo un error durante el registro.',
+
     searchPlaceholder:
       'Introduce el nombre del juego o el ID de Steam',
-    searchError: 'No se pudieron buscar los juegos.',
-    noGames: 'No se encontraron juegos.',
+    searchError:
+      'No se pudieron buscar los juegos.',
+    noGames:
+      'No se encontraron juegos.',
 
-    steamAppId: 'ID de aplicación de Steam',
+    grid: 'Cuadrícula',
+    list: 'Lista',
+
+    steamAppId:
+      'ID de aplicación de Steam',
 
     reports: 'Informes',
     noReports:
@@ -88,19 +112,26 @@ const translations = {
     loginRequiredForReport:
       'Debes iniciar sesión para enviar un informe de compatibilidad.',
 
-    compatibilityRating: 'Clasificación de compatibilidad',
-    linuxDistribution: 'Distribución de Linux',
-    distributionPlaceholder: 'p. ej. Ubuntu, Fedora, Arch',
+    compatibilityRating:
+      'Clasificación de compatibilidad',
+    linuxDistribution:
+      'Distribución de Linux',
+    distributionPlaceholder:
+      'p. ej. Ubuntu, Fedora, Arch',
 
-    protonVersion: 'Versión de Proton',
-    protonVersionPlaceholder: 'p. ej. 9.0-3',
+    protonVersion:
+      'Versión de Proton',
+    protonVersionPlaceholder:
+      'p. ej. 9.0-3',
 
     comment: 'Comentario',
     commentPlaceholder:
       'Describe tu experiencia ejecutando este juego...',
 
-    submitReportButton: 'Enviar informe',
-    submittingReport: 'Enviando...',
+    submitReportButton:
+      'Enviar informe',
+    submittingReport:
+      'Enviando...',
 
     distributionRequired:
       'La distribución de Linux es obligatoria.',
