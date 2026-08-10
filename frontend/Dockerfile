@@ -5,4 +5,5 @@ RUN npm ci
 COPY . .
 RUN npm run build
 EXPOSE 3000
+USER non-root
 CMD ["npm", "start"]
