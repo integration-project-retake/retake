@@ -85,7 +85,7 @@ export default function GameReports({
   return (
     <main className="min-h-screen bg-gray-900 p-8 text-white">
       <div className="mx-auto max-w-5xl">
-        {/* Main game card */}
+
         <div className="mb-8 overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
           <img
             src={
@@ -169,7 +169,6 @@ export default function GameReports({
           </div>
         </div>
 
-        {/* Report submission */}
         <div className="mb-8">
           <SubmitReportForm
             gameId={
@@ -178,7 +177,6 @@ export default function GameReports({
           />
         </div>
 
-        {/* Reports */}
         <h2 className="mb-4 text-2xl font-bold">
           {t(
             'reports'
@@ -261,7 +259,6 @@ export default function GameReports({
           )}
         </div>
 
-        {/* Related games */}
         <section>
           <h2 className="mb-4 text-2xl font-bold">
             {
