@@ -72,6 +72,7 @@ jobs:
           ignore-unfixed: false
           vuln-type: "os,library"
           scanners: "vuln,secret,misconfig"
+          skip-dirs: "/usr/local/lib/node_modules/npm"
 
       - name: Build Backend Image
         run: docker build --no-cache --pull -t project-backend:test ./backend
