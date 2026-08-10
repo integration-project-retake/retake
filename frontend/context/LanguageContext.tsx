@@ -23,43 +23,63 @@ const translations = {
     email: 'Email',
     password: 'Password',
     alreadyHaveAccount: 'Already have an account?',
-    registrationError: 'An error occurred during registration.',
+    registrationError:
+      'An error occurred during registration.',
 
-    searchPlaceholder: 'Enter game name or Steam ID',
-    searchError: 'Failed to search games.',
-    noGames: 'No games found.',
+    searchPlaceholder:
+      'Enter game name or Steam ID',
+    searchError:
+      'Failed to search games.',
+    noGames:
+      'No games found.',
 
     grid: 'Grid',
     list: 'List',
 
-    steamAppId: 'Steam App ID',
+    steamAppId:
+      'Steam App ID',
 
-    reports: 'Reports',
-    noReports: 'No reports found for this Steam App ID.',
+    reports:
+      'Reports',
+    noReports:
+      'No reports found for this Steam App ID.',
 
-    language: 'Language',
-    english: 'English',
-    spanish: 'Spanish',
+    language:
+      'Language',
+    english:
+      'English',
+    spanish:
+      'Spanish',
 
-    submitReport: 'Submit a Report',
+    submitReport:
+      'Submit a Report',
     loginRequiredForReport:
       'You must be logged in to submit a compatibility report.',
 
-    compatibilityRating: 'Compatibility Rating',
-    linuxDistribution: 'Linux Distribution',
-    distributionPlaceholder: 'e.g. Ubuntu, Fedora, Arch',
+    compatibilityRating:
+      'Compatibility Rating',
+    linuxDistribution:
+      'Linux Distribution',
+    distributionPlaceholder:
+      'e.g. Ubuntu, Fedora, Arch',
 
-    protonVersion: 'Proton Version',
-    protonVersionPlaceholder: 'e.g. 9.0-3',
+    protonVersion:
+      'Proton Version',
+    protonVersionPlaceholder:
+      'e.g. 9.0-3',
 
-    comment: 'Comment',
+    comment:
+      'Comment',
     commentPlaceholder:
       'Describe your experience running this game...',
 
-    submitReportButton: 'Submit Report',
-    submittingReport: 'Submitting...',
+    submitReportButton:
+      'Submit Report',
+    submittingReport:
+      'Submitting...',
 
-    distributionRequired: 'Distribution is required.',
+    distributionRequired:
+      'Distribution is required.',
     reportSubmittedSuccessfully:
       'Report submitted successfully.',
     reportSubmissionFailed:
@@ -70,6 +90,7 @@ const translations = {
     silver: 'Silver',
     bronze: 'Bronze',
     borked: 'Borked',
+    pending: 'Pending',
   },
 
   es: {
@@ -79,11 +100,16 @@ const translations = {
     logout: 'Cerrar sesión',
     welcome: 'Bienvenido',
 
-    createAccount: 'Crear una cuenta',
-    username: 'Nombre de usuario',
-    email: 'Correo electrónico',
-    password: 'Contraseña',
-    alreadyHaveAccount: '¿Ya tienes una cuenta?',
+    createAccount:
+      'Crear una cuenta',
+    username:
+      'Nombre de usuario',
+    email:
+      'Correo electrónico',
+    password:
+      'Contraseña',
+    alreadyHaveAccount:
+      '¿Ya tienes una cuenta?',
     registrationError:
       'Se produjo un error durante el registro.',
 
@@ -94,21 +120,28 @@ const translations = {
     noGames:
       'No se encontraron juegos.',
 
-    grid: 'Cuadrícula',
-    list: 'Lista',
+    grid:
+      'Cuadrícula',
+    list:
+      'Lista',
 
     steamAppId:
       'ID de aplicación de Steam',
 
-    reports: 'Informes',
+    reports:
+      'Informes',
     noReports:
       'No se encontraron informes para este ID de Steam.',
 
-    language: 'Idioma',
-    english: 'Inglés',
-    spanish: 'Español',
+    language:
+      'Idioma',
+    english:
+      'Inglés',
+    spanish:
+      'Español',
 
-    submitReport: 'Enviar un informe',
+    submitReport:
+      'Enviar un informe',
     loginRequiredForReport:
       'Debes iniciar sesión para enviar un informe de compatibilidad.',
 
@@ -124,7 +157,8 @@ const translations = {
     protonVersionPlaceholder:
       'p. ej. 9.0-3',
 
-    comment: 'Comentario',
+    comment:
+      'Comentario',
     commentPlaceholder:
       'Describe tu experiencia ejecutando este juego...',
 
@@ -140,11 +174,18 @@ const translations = {
     reportSubmissionFailed:
       'No se pudo enviar el informe.',
 
-    platinum: 'Platino',
-    gold: 'Oro',
-    silver: 'Plata',
-    bronze: 'Bronce',
-    borked: 'No funciona',
+    platinum:
+      'Platino',
+    gold:
+      'Oro',
+    silver:
+      'Plata',
+    bronze:
+      'Bronce',
+    borked:
+      'No funciona',
+    pending:
+      'Pendiente',
   },
 } as const;
 
@@ -153,32 +194,43 @@ export type TranslationKey =
 
 interface LanguageContextValue {
   language: Language;
-  setLanguage: (language: Language) => void;
-  t: (key: TranslationKey) => string;
+  setLanguage: (
+    language: Language
+  ) => void;
+  t: (
+    key: TranslationKey
+  ) => string;
 }
 
 const LanguageContext =
-  createContext<LanguageContextValue | undefined>(
-    undefined
-  );
+  createContext<
+    LanguageContextValue | undefined
+  >(undefined);
 
 export function LanguageProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [language, setLanguageState] =
-    useState<Language>('en');
+  const [
+    language,
+    setLanguageState,
+  ] = useState<Language>('en');
 
   useEffect(() => {
     const savedLanguage =
-      localStorage.getItem('language');
+      localStorage.getItem(
+        'language'
+      );
 
     if (
       savedLanguage === 'en' ||
       savedLanguage === 'es'
     ) {
-      setLanguageState(savedLanguage);
+      setLanguageState(
+        savedLanguage
+      );
+
       document.documentElement.lang =
         savedLanguage;
     }
@@ -187,7 +239,9 @@ export function LanguageProvider({
   const setLanguage = (
     newLanguage: Language
   ) => {
-    setLanguageState(newLanguage);
+    setLanguageState(
+      newLanguage
+    );
 
     localStorage.setItem(
       'language',
@@ -201,7 +255,9 @@ export function LanguageProvider({
   const t = (
     key: TranslationKey
   ): string => {
-    return translations[language][key];
+    return translations[
+      language
+    ][key];
   };
 
   return (
@@ -217,9 +273,12 @@ export function LanguageProvider({
   );
 }
 
-export function useLanguage(): LanguageContextValue {
+export function useLanguage():
+  LanguageContextValue {
   const context =
-    useContext(LanguageContext);
+    useContext(
+      LanguageContext
+    );
 
   if (!context) {
     throw new Error(
