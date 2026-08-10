@@ -4,4 +4,3 @@
 backend/target/
 .vscode/
 .idea/
-frontend/package-lock.json
