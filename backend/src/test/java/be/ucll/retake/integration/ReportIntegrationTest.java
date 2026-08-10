@@ -77,16 +77,18 @@ public class ReportIntegrationTest {
     }
 
     @Test
-    public void givenGameHasReports_whenGameIsDeleted_thenReportsAreDeleted() throws Exception {
-        reportRepository.save(new Report(user, game, Tier.Gold, "Ubuntu"));
-        reportRepository.save(new Report(user, game, Tier.Platinum, "SteamOS"));
-        assertEquals(2, reportRepository.count());
+        public void givenGameHasReports_whenGameIsDeleted_thenReportsAreDeleted() throws Exception {
+            reportRepository.save(new Report(user, game, Tier.Gold, "Ubuntu"));
+            reportRepository.save(new Report(user, game, Tier.Platinum, "SteamOS"));
+            reportRepository.flush();
+            assertEquals(2, reportRepository.count());
 
-        gameRepository.delete(game);
-        gameRepository.flush();
+            Game managedGame = gameRepository.findById(game.getId()).orElseThrow();
+            gameRepository.delete(managedGame);
+            gameRepository.flush();
 
-        assertEquals(0, reportRepository.count());
-    }
+            assertEquals(0, reportRepository.count());
+        }
 
     @Test
     public void givenInvalidTier_whenCreatingReport_thenBadRequest() throws Exception {
