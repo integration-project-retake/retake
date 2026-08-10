@@ -78,39 +78,50 @@ const translations = {
 
     compatibilityRating:
       'Compatibility Rating',
+
     linuxDistribution:
       'Linux Distribution',
     distributionPlaceholder:
       'e.g. Ubuntu, Fedora, Arch',
+    distributionRequired:
+      'Distribution is required.',
 
     protonVersion:
       'Proton Version',
     protonVersionPlaceholder:
       'e.g. 9.0-3',
+    protonVersionRequired:
+      'Proton version is required.',
 
     comment:
       'Comment',
     commentPlaceholder:
       'Describe your experience running this game...',
+    commentRequired:
+      'Comment is required.',
 
     submitReportButton:
       'Submit Report',
     submittingReport:
       'Submitting...',
 
-    distributionRequired:
-      'Distribution is required.',
     reportSubmittedSuccessfully:
       'Report submitted successfully.',
     reportSubmissionFailed:
       'Failed to submit report.',
 
-    platinum: 'Platinum',
-    gold: 'Gold',
-    silver: 'Silver',
-    bronze: 'Bronze',
-    borked: 'Borked',
-    pending: 'Pending',
+    platinum:
+      'Platinum',
+    gold:
+      'Gold',
+    silver:
+      'Silver',
+    bronze:
+      'Bronze',
+    borked:
+      'Borked',
+    pending:
+      'Pending',
   },
 
   es: {
@@ -187,28 +198,33 @@ const translations = {
 
     compatibilityRating:
       'Clasificación de compatibilidad',
+
     linuxDistribution:
       'Distribución de Linux',
     distributionPlaceholder:
       'p. ej. Ubuntu, Fedora, Arch',
+    distributionRequired:
+      'La distribución de Linux es obligatoria.',
 
     protonVersion:
       'Versión de Proton',
     protonVersionPlaceholder:
       'p. ej. 9.0-3',
+    protonVersionRequired:
+      'La versión de Proton es obligatoria.',
 
     comment:
       'Comentario',
     commentPlaceholder:
       'Describe tu experiencia ejecutando este juego...',
+    commentRequired:
+      'El comentario es obligatorio.',
 
     submitReportButton:
       'Enviar informe',
     submittingReport:
       'Enviando...',
 
-    distributionRequired:
-      'La distribución de Linux es obligatoria.',
     reportSubmittedSuccessfully:
       'Informe enviado correctamente.',
     reportSubmissionFailed:
