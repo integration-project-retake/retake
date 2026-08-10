@@ -42,7 +42,7 @@ public class DbInitializer implements CommandLineRunner {
             gameRepository.save(new Game(12210, "Grand Theft Auto IV"));
             gameRepository.save(new Game(12100, "Grand Theft Auto III"));
             gameRepository.save(new Game(1145360, "Hades"));
-            gameRepository.save(new Game(1361510, "Hades II"));
+            gameRepository.save(new Game(1145350, "Hades II"));
             gameRepository.save(new Game(367520, "Hollow Knight"));
             gameRepository.save(new Game(413150, "Stardew Valley"));
             gameRepository.save(new Game(1086940, "Baldur's Gate 3"));
@@ -59,7 +59,7 @@ public class DbInitializer implements CommandLineRunner {
             Game gtaiv = gameRepository.findBySteamAppid(12210).orElseThrow();
             Game gtaiii = gameRepository.findBySteamAppid(12100).orElseThrow();
             Game hades = gameRepository.findBySteamAppid(1145360).orElseThrow();
-            Game hades2 = gameRepository.findBySteamAppid(1361510).orElseThrow();
+            Game hades2 = gameRepository.findBySteamAppid(1145350).orElseThrow();
             Game hollowknight = gameRepository.findBySteamAppid(367520).orElseThrow();
             Game stardew = gameRepository.findBySteamAppid(413150).orElseThrow();
             Game bg3 = gameRepository.findBySteamAppid(1086940).orElseThrow();
