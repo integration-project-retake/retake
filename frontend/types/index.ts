@@ -8,9 +8,11 @@ export interface GameDto {
   headerUrl: string;
   createdAt: string;
   tier: string;
+  genres: string[];
 }
 
 export interface ReportDto {
+  steamAppid: number;
   id: number;
   user_id: number;
   username: string;
@@ -27,5 +29,6 @@ export interface UserDto {
   id: number;
   username: string;
   email: string;
+  avatarUrl: string | null;
   createdAt: string;
 }

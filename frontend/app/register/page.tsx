@@ -2,17 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-import { useAuth } from '@/context/AuthContext';
+import UserService from '@/services/userService';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface FieldErrors {
   username?: string;
+  email?: string;
   password?: string;
 }
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [fieldErrors, setFieldErrors] =
@@ -20,9 +23,8 @@ export default function LoginPage() {
 
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
-  const { t } = useLanguage();
   const router = useRouter();
+  const { t } = useLanguage();
 
   const validateForm = (): boolean => {
     const errors: FieldErrors = {};
@@ -31,8 +33,21 @@ export default function LoginPage() {
       errors.username = t('usernameRequired');
     }
 
+    if (!email.trim()) {
+      errors.email = t('emailRequired');
+    } else {
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailPattern.test(email.trim())) {
+        errors.email = t('invalidEmail');
+      }
+    }
+
     if (!password) {
       errors.password = t('passwordRequired');
+    } else if (password.length < 6) {
+      errors.password = t('passwordTooShort');
     }
 
     setFieldErrors(errors);
@@ -52,39 +67,51 @@ export default function LoginPage() {
     }
 
     try {
-      await login({
+      await UserService.register({
         username: username.trim(),
+        email: email.trim(),
         password,
       });
 
-      router.push('/');
+      router.push('/login');
     } catch (err) {
       const message =
         err instanceof Error
-          ? err.message.toLowerCase()
+          ? err.message
           : '';
 
       if (
-        message.includes('invalid') ||
-        message.includes('authentication') ||
-        message.includes('credential') ||
-        message.includes('unauthorized')
+        message
+          .toLowerCase()
+          .includes('username') &&
+        (
+          message
+            .toLowerCase()
+            .includes('taken') ||
+          message
+            .toLowerCase()
+            .includes('already')
+        )
       ) {
-        setError(
-          t('invalidCredentials')
-        );
+        setFieldErrors((previous) => ({
+          ...previous,
+          username: t('usernameTaken'),
+        }));
 
         return;
       }
 
       setError(
-        t('loginFailed')
+        t('registrationFailed')
       );
     }
   };
 
   const usernameHasError =
     Boolean(fieldErrors.username);
+
+  const emailHasError =
+    Boolean(fieldErrors.email);
 
   const passwordHasError =
     Boolean(fieldErrors.password);
@@ -97,7 +124,7 @@ export default function LoginPage() {
         className="flex w-full max-w-md flex-col gap-4 rounded-lg border border-gray-700 bg-gray-800 p-8"
       >
         <h1 className="text-2xl font-bold">
-          {t('login')}
+          {t('createAccount')}
         </h1>
 
         {error && (
@@ -108,15 +135,14 @@ export default function LoginPage() {
 
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="username"
             className="text-sm text-gray-300"
+            htmlFor="username"
           >
             {t('username')}
           </label>
 
           <input
             id="username"
-            type="text"
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
@@ -127,12 +153,7 @@ export default function LoginPage() {
                   username: undefined,
                 }));
               }
-
-              if (error) {
-                setError('');
-              }
             }}
-            placeholder={t('username')}
             className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
               usernameHasError
                 ? 'border-red-600 focus:ring-red-600'
@@ -158,8 +179,53 @@ export default function LoginPage() {
 
         <div className="flex flex-col gap-1">
           <label
-            htmlFor="password"
             className="text-sm text-gray-300"
+            htmlFor="email"
+          >
+            {t('email')}
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+
+              if (fieldErrors.email) {
+                setFieldErrors((previous) => ({
+                  ...previous,
+                  email: undefined,
+                }));
+              }
+            }}
+            className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
+              emailHasError
+                ? 'border-red-600 focus:ring-red-600'
+                : 'border-gray-600 focus:ring-blue-500'
+            }`}
+            aria-invalid={emailHasError}
+            aria-describedby={
+              emailHasError
+                ? 'email-error'
+                : undefined
+            }
+          />
+
+          {fieldErrors.email && (
+            <p
+              id="email-error"
+              className="text-sm text-red-400"
+            >
+              {fieldErrors.email}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label
+            className="text-sm text-gray-300"
+            htmlFor="password"
           >
             {t('password')}
           </label>
@@ -177,12 +243,7 @@ export default function LoginPage() {
                   password: undefined,
                 }));
               }
-
-              if (error) {
-                setError('');
-              }
             }}
-            placeholder={t('password')}
             className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
               passwordHasError
                 ? 'border-red-600 focus:ring-red-600'
@@ -208,10 +269,21 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="rounded bg-blue-600 p-2 font-semibold text-white transition-colors hover:bg-blue-700"
+          className="mt-2 rounded bg-blue-600 p-2 font-semibold text-white transition-colors hover:bg-blue-700"
         >
-          {t('login')}
+          {t('register')}
         </button>
+
+        <p className="mt-2 text-center text-sm text-gray-400">
+          {t('alreadyHaveAccount')}{' '}
+
+          <Link
+            href="/login"
+            className="text-blue-500 hover:text-blue-400"
+          >
+            {t('login')}
+          </Link>
+        </p>
       </form>
     </main>
   );

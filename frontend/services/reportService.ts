@@ -20,6 +20,12 @@ export async function fetchReportsByGameId(gameId: number): Promise<ReportDto[]>
   return res.json();
 }
 
+export async function fetchReportsByUser(userId: string): Promise<ReportDto[]> {
+  const res = await fetch(`${API_BASE_URL}/reports/user/${userId}`);
+  if (!res.ok) throw new Error('Failed to fetch reports');
+  return res.json();
+}
+
 export async function createReport(
   userId: number,
   gameId: number,

@@ -1,4 +1,4 @@
-import { GameDto } from '../types';
+import type { GameDto } from '../types';
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
@@ -15,10 +15,14 @@ export async function fetchGames(): Promise<GameDto[]> {
   return res.json();
 }
 
-export async function searchGames(query: string): Promise<GameDto[]> {
+export async function searchGames(
+  query: string
+): Promise<GameDto[]> {
   const res = await fetch(
     `${API_BASE_URL}/games/search?query=${encodeURIComponent(query)}`,
-    { cache: 'no-store' }
+    {
+      cache: 'no-store',
+    }
   );
 
   if (!res.ok) {
@@ -44,4 +48,21 @@ export async function fetchGameBySteamAppid(
   }
 
   return game;
+}
+
+export async function fetchRelatedGames(
+  gameId: number
+): Promise<GameDto[]> {
+  const res = await fetch(
+    `${API_BASE_URL}/games/${gameId}/related`,
+    {
+      cache: 'no-store',
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch related games');
+  }
+
+  return res.json();
 }

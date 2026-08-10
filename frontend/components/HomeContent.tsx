@@ -3,6 +3,7 @@
 import GameSearch from '@/components/GameSearch';
 import { useLanguage } from '@/context/LanguageContext';
 import type { GameDto } from '@/types';
+import Link from 'next/link';
 
 interface HomeContentProps {
   games: GameDto[];

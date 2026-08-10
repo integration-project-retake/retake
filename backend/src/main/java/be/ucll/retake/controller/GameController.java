@@ -35,39 +35,90 @@ public class GameController {
 
     @GetMapping
     public List<GameDto> getAllGames() {
-        return gameService.getAllGames().stream()
-                .map(game -> GameDto.from(game, gameService.getGameOverallTier(game.getId())))
+        return gameService.getAllGames()
+                .stream()
+                .map(
+                        game -> GameDto.from(
+                                game,
+                                gameService.getGameOverallTier(game.getId())
+                        )
+                )
                 .toList();
     }
 
     @GetMapping("/{id}")
-        public GameDto getGameById(@PathVariable Long id) {
-            Game game = gameService.getGameById(id);
-            String overallTier = gameService.getGameOverallTier(id);
-            return GameDto.from(game, overallTier);
-        }
+    public GameDto getGameById(
+            @PathVariable Long id
+    ) {
+        Game game = gameService.getGameById(id);
 
-        @PostMapping
-        @ResponseStatus(HttpStatus.CREATED)
-        public GameDto createGame(
-                @RequestParam Integer steamAppid,
-                @RequestParam String name
+        String overallTier =
+                gameService.getGameOverallTier(id);
+
+        return GameDto.from(game, overallTier);
+    }
+
+    @GetMapping("/{id}/related")
+    public List<GameDto> getRelatedGames(
+            @PathVariable Long id
+    ) {
+        return gameService.getRelatedGames(id)
+                .stream()
+                .map(
+                        game -> GameDto.from(
+                                game,
+                                gameService.getGameOverallTier(game.getId())
+                        )
+                )
+                .toList();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public GameDto createGame(
+            @RequestParam Integer steamAppid,
+            @RequestParam String name
+    ) {
+        Game game =
+                gameService.createGame(
+                        steamAppid,
+                        name
+                );
+
+        return GameDto.from(
+                game,
+                "Pending"
+        );
+    }
+
+    @GetMapping("/search")
+    public List<GameDto> searchGames(
+            @RequestParam(
+                    required = false,
+                    defaultValue = ""
+            )
+            String query
+    ) {
+        List<GameDto> dtos =
+                new ArrayList<>();
+
+        for (
+                Game game :
+                gameService.searchGames(query)
         ) {
-            Game game = gameService.createGame(steamAppid, name);
-            return GameDto.from(game, "Pending");
+            String overallTier =
+                    gameService.getGameOverallTier(
+                            game.getId()
+                    );
+
+            dtos.add(
+                    GameDto.from(
+                            game,
+                            overallTier
+                    )
+            );
         }
 
-        @GetMapping("/search")
-        public List<GameDto> searchGames(
-                @RequestParam(required = false, defaultValue = "") String query
-        ) {
-            List<GameDto> dtos = new ArrayList<>();
-
-            for (Game game : gameService.searchGames(query)) {
-                String overallTier = gameService.getGameOverallTier(game.getId());
-                dtos.add(GameDto.from(game, overallTier));
-            }
-
-            return dtos;
-        }
+        return dtos;
+    }
 }

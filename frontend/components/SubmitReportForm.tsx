@@ -2,8 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { createReport } from '@/services/reportService';
+
 import type { Tier } from '@/types';
 
 interface SubmitReportFormProps {
@@ -14,18 +17,38 @@ export default function SubmitReportForm({
   gameId,
 }: SubmitReportFormProps) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
-  const [tier, setTier] = useState<Tier>('Gold');
-  const [distribution, setDistribution] = useState('');
-  const [comment, setComment] = useState('');
-  const [protonVersion, setProtonVersion] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const [tier, setTier] =
+    useState<Tier>('Gold');
+
+  const [
+    distribution,
+    setDistribution,
+  ] = useState('');
+
+  const [comment, setComment] =
+    useState('');
+
+  const [
+    protonVersion,
+    setProtonVersion,
+  ] = useState('');
+
+  const [error, setError] =
+    useState('');
+
+  const [success, setSuccess] =
+    useState('');
+
+  const [
+    submitting,
+    setSubmitting,
+  ] = useState(false);
 
   const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent
   ) => {
     event.preventDefault();
 
@@ -38,7 +61,7 @@ export default function SubmitReportForm({
     }
 
     if (!distribution.trim()) {
-      setError('Distribution is required.');
+      setError(t('distributionRequired'));
       return;
     }
 
@@ -54,7 +77,9 @@ export default function SubmitReportForm({
         protonVersion.trim()
       );
 
-      setSuccess('Report submitted successfully.');
+      setSuccess(
+        t('reportSubmittedSuccessfully')
+      );
 
       setTier('Gold');
       setDistribution('');
@@ -63,8 +88,14 @@ export default function SubmitReportForm({
 
       router.refresh();
     } catch (err) {
-      console.error('Failed to submit report:', err);
-      setError('Failed to submit report.');
+      console.error(
+        'Failed to submit report:',
+        err
+      );
+
+      setError(
+        t('reportSubmissionFailed')
+      );
     } finally {
       setSubmitting(false);
     }
@@ -73,20 +104,22 @@ export default function SubmitReportForm({
   if (!user) {
     return (
       <div className="rounded-lg border border-gray-700 bg-gray-800 p-6">
-        <h2 className="mb-2 text-xl font-bold text-white">
-          Submit a Report
+        <h2 className="mb-4 text-2xl font-bold">
+          {t('submitReport')}
         </h2>
 
         <p className="mb-4 text-gray-400">
-          You must be logged in to submit a compatibility report.
+          {t('loginRequiredForReport')}
         </p>
 
         <button
           type="button"
-          onClick={() => router.push('/login')}
+          onClick={() =>
+            router.push('/login')
+          }
           className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
         >
-          Log in
+          {t('login')}
         </button>
       </div>
     );
@@ -97,8 +130,8 @@ export default function SubmitReportForm({
       onSubmit={handleSubmit}
       className="rounded-lg border border-gray-700 bg-gray-800 p-6"
     >
-      <h2 className="mb-6 text-2xl font-bold text-white">
-        Submit a Report
+      <h2 className="mb-6 text-2xl font-bold">
+        {t('submitReport')}
       </h2>
 
       {error && (
@@ -118,22 +151,38 @@ export default function SubmitReportForm({
           htmlFor="tier"
           className="mb-2 block text-sm font-medium text-gray-300"
         >
-          Compatibility Rating
+          {t('compatibilityRating')}
         </label>
 
         <select
           id="tier"
           value={tier}
           onChange={(event) =>
-            setTier(event.target.value as Tier)
+            setTier(
+              event.target.value as Tier
+            )
           }
           className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
         >
-          <option value="Platinum">Platinum</option>
-          <option value="Gold">Gold</option>
-          <option value="Silver">Silver</option>
-          <option value="Bronze">Bronze</option>
-          <option value="Borked">Borked</option>
+          <option value="Platinum">
+            {t('platinum')}
+          </option>
+
+          <option value="Gold">
+            {t('gold')}
+          </option>
+
+          <option value="Silver">
+            {t('silver')}
+          </option>
+
+          <option value="Bronze">
+            {t('bronze')}
+          </option>
+
+          <option value="Borked">
+            {t('borked')}
+          </option>
         </select>
       </div>
 
@@ -142,7 +191,7 @@ export default function SubmitReportForm({
           htmlFor="distribution"
           className="mb-2 block text-sm font-medium text-gray-300"
         >
-          Linux Distribution
+          {t('linuxDistribution')}
         </label>
 
         <input
@@ -150,9 +199,13 @@ export default function SubmitReportForm({
           type="text"
           value={distribution}
           onChange={(event) =>
-            setDistribution(event.target.value)
+            setDistribution(
+              event.target.value
+            )
           }
-          placeholder="e.g. Ubuntu, Fedora, Arch"
+          placeholder={t(
+            'distributionPlaceholder'
+          )}
           required
           className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
         />
@@ -163,7 +216,7 @@ export default function SubmitReportForm({
           htmlFor="protonVersion"
           className="mb-2 block text-sm font-medium text-gray-300"
         >
-          Proton Version
+          {t('protonVersion')}
         </label>
 
         <input
@@ -171,9 +224,13 @@ export default function SubmitReportForm({
           type="text"
           value={protonVersion}
           onChange={(event) =>
-            setProtonVersion(event.target.value)
+            setProtonVersion(
+              event.target.value
+            )
           }
-          placeholder="e.g. 9.0-3"
+          placeholder={t(
+            'protonVersionPlaceholder'
+          )}
           className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
         />
       </div>
@@ -183,16 +240,20 @@ export default function SubmitReportForm({
           htmlFor="comment"
           className="mb-2 block text-sm font-medium text-gray-300"
         >
-          Comment
+          {t('comment')}
         </label>
 
         <textarea
           id="comment"
           value={comment}
           onChange={(event) =>
-            setComment(event.target.value)
+            setComment(
+              event.target.value
+            )
           }
-          placeholder="Describe your experience running this game..."
+          placeholder={t(
+            'commentPlaceholder'
+          )}
           rows={5}
           className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
         />
@@ -203,7 +264,9 @@ export default function SubmitReportForm({
         disabled={submitting}
         className="rounded bg-blue-600 px-5 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {submitting ? 'Submitting...' : 'Submit Report'}
+        {submitting
+          ? t('submittingReport')
+          : t('submitReportButton')}
       </button>
     </form>
   );
