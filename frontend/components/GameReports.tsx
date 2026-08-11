@@ -9,7 +9,10 @@ import { useAuth } from '@/context/AuthContext';
 
 import SubmitReportForm from '@/components/SubmitReportForm';
 
-import { updateReport } from '@/services/reportService';
+import {
+  updateReport,
+  deleteReport,
+} from '@/services/reportService';
 
 import {
   getGenreColor,
@@ -74,11 +77,30 @@ export default function GameReports({
     setEditForm,
   ] = useState<EditForm | null>(null);
 
-  const [editError, setEditError] =
-    useState('');
+  const [
+    editError,
+    setEditError,
+  ] = useState('');
 
-  const [saving, setSaving] =
-    useState(false);
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
+  const [
+    deletingReportId,
+    setDeletingReportId,
+  ] = useState<number | null>(null);
+
+  const [
+    deleteErrorReportId,
+    setDeleteErrorReportId,
+  ] = useState<number | null>(null);
+
+  const [
+    deleteError,
+    setDeleteError,
+  ] = useState('');
 
   const dateLocale =
     language === 'es'
@@ -108,6 +130,8 @@ export default function GameReports({
     report: ReportDto
   ) => {
     setEditError('');
+    setDeleteError('');
+    setDeleteErrorReportId(null);
 
     setEditingReportId(
       report.id
@@ -191,10 +215,66 @@ export default function GameReports({
     }
   };
 
+  const handleDelete = async (
+    reportId: number
+  ) => {
+    const confirmed =
+      window.confirm(
+        language === 'es'
+          ? '¿Seguro que quieres eliminar este informe? Esta acción no se puede deshacer.'
+          : 'Are you sure you want to delete this report? This action cannot be undone.'
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeleteError('');
+    setDeleteErrorReportId(null);
+
+    try {
+      setDeletingReportId(
+        reportId
+      );
+
+      await deleteReport(
+        reportId
+      );
+
+      if (
+        editingReportId ===
+        reportId
+      ) {
+        setEditingReportId(null);
+        setEditForm(null);
+      }
+
+      router.refresh();
+    } catch (err) {
+      console.error(
+        'Failed to delete report:',
+        err
+      );
+
+      setDeleteErrorReportId(
+        reportId
+      );
+
+      setDeleteError(
+        language === 'es'
+          ? 'No se pudo eliminar el informe.'
+          : 'Failed to delete report.'
+      );
+    } finally {
+      setDeletingReportId(null);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gray-900 p-8 text-white">
       <div className="mx-auto max-w-5xl">
 
+        {/* Main game card */}
         <div className="mb-8 overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
           <img
             src={gameHeaderUrl}
@@ -259,12 +339,14 @@ export default function GameReports({
           </div>
         </div>
 
+        {/* Submit report */}
         <div className="mb-8">
           <SubmitReportForm
             gameId={game.id}
           />
         </div>
 
+        {/* Reports */}
         <h2 className="mb-4 text-2xl font-bold">
           {t('reports')}
         </h2>
@@ -278,6 +360,10 @@ export default function GameReports({
 
             const isEditing =
               editingReportId ===
+              report.id;
+
+            const isDeleting =
+              deletingReportId ===
               report.id;
 
             return (
@@ -333,8 +419,16 @@ export default function GameReports({
                       </div>
                     )}
 
+                    {deleteErrorReportId ===
+                      report.id &&
+                      deleteError && (
+                        <div className="mt-2 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                          {deleteError}
+                        </div>
+                      )}
+
                     {isOwnReport && (
-                      <div className="mt-2">
+                      <div className="mt-2 flex gap-2">
                         <button
                           type="button"
                           onClick={() =>
@@ -342,11 +436,35 @@ export default function GameReports({
                               report
                             )
                           }
-                          className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                          disabled={
+                            isDeleting
+                          }
+                          className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {language === 'es'
                             ? 'Editar'
                             : 'Edit'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDelete(
+                              report.id
+                            )
+                          }
+                          disabled={
+                            isDeleting
+                          }
+                          className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isDeleting
+                            ? language === 'es'
+                              ? 'Eliminando...'
+                              : 'Deleting...'
+                            : language === 'es'
+                              ? 'Eliminar'
+                              : 'Delete'}
                         </button>
                       </div>
                     )}
@@ -560,6 +678,7 @@ export default function GameReports({
           )}
         </div>
 
+        {/* Related games */}
         <section>
           <h2 className="mb-4 text-2xl font-bold">
             {relatedGamesTitle}

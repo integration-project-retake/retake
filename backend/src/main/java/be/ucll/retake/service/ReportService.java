@@ -42,7 +42,9 @@ public class ReportService {
                 );
     }
 
-    public List<Report> getReportsBySteamAppid(Integer steamAppid) {
+    public List<Report> getReportsBySteamAppid(
+            Integer steamAppid
+    ) {
         if (!gameRepository.existsBySteamAppid(steamAppid)) {
             throw new IllegalArgumentException(
                     "Game with steam appid " + steamAppid + " not found"
@@ -52,7 +54,9 @@ public class ReportService {
         return reportRepository.findByGameSteamAppid(steamAppid);
     }
 
-    public List<Report> getReportsByGameId(Long gameId) {
+    public List<Report> getReportsByGameId(
+            Long gameId
+    ) {
         if (!gameRepository.existsById(gameId)) {
             throw new IllegalArgumentException(
                     "Game with id " + gameId + " not found"
@@ -103,7 +107,9 @@ public class ReportService {
         return reportRepository.save(report);
     }
 
-    public List<Report> getReportsByUserId(Long userId) {
+    public List<Report> getReportsByUserId(
+            Long userId
+    ) {
         if (!userRepository.existsById(userId)) {
             throw new IllegalArgumentException(
                     "User with id " + userId + " not found"
@@ -147,6 +153,26 @@ public class ReportService {
         report.setProtonVersion(protonVersion.trim());
 
         return reportRepository.save(report);
+    }
+
+    public void deleteReport(
+            Long reportId,
+            Long userId
+    ) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Report with id " + reportId + " not found"
+                        )
+                );
+
+        if (!report.getUser().getId().equals(userId)) {
+            throw new SecurityException(
+                    "You cannot delete a report created by another user"
+            );
+        }
+
+        reportRepository.delete(report);
     }
 
     private void validateReportData(

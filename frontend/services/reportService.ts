@@ -164,3 +164,31 @@ export async function updateReport(
 
   return res.json();
 }
+
+export async function deleteReport(
+  reportId: number
+): Promise<void> {
+  const res = await fetch(
+    `${API_BASE_URL}/reports/${reportId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    }
+  );
+
+  if (!res.ok) {
+    const message =
+      await res.text();
+
+    console.error(
+      'Delete report failed:',
+      res.status,
+      message
+    );
+
+    throw new Error(
+      message ||
+        'Failed to delete report'
+    );
+  }
+}

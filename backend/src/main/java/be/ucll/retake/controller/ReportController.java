@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -132,25 +133,11 @@ public class ReportController {
             @RequestParam String protonVersion,
             HttpServletRequest request
     ) {
-        HttpSession session =
-                request.getSession(false);
-
-        if (session == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "You must be logged in to edit a report"
-            );
-        }
-
         User user =
-                (User) session.getAttribute("user");
-
-        if (user == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "You must be logged in to edit a report"
-            );
-        }
+                getAuthenticatedUser(
+                        request,
+                        "You must be logged in to edit a report"
+                );
 
         try {
             return ReportDto.from(
@@ -174,5 +161,64 @@ public class ReportController {
                     e.getMessage()
             );
         }
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReport(
+            @PathVariable Long id,
+            HttpServletRequest request
+    ) {
+        User user =
+                getAuthenticatedUser(
+                        request,
+                        "You must be logged in to delete a report"
+                );
+
+        try {
+            reportService.deleteReport(
+                    id,
+                    user.getId()
+            );
+        } catch (SecurityException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    e.getMessage()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    e.getMessage()
+            );
+        }
+    }
+
+    private User getAuthenticatedUser(
+            HttpServletRequest request,
+            String errorMessage
+    ) {
+        HttpSession session =
+                request.getSession(false);
+
+        if (session == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    errorMessage
+            );
+        }
+
+        User user =
+                (User) session.getAttribute(
+                        "user"
+                );
+
+        if (user == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    errorMessage
+            );
+        }
+
+        return user;
     }
 }

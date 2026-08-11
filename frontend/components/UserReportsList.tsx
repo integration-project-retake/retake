@@ -5,9 +5,21 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { useAuth } from '@/context/AuthContext';
-import { updateReport } from '@/services/reportService';
+import { useLanguage } from '@/context/LanguageContext';
 
-import type { ReportDto, Tier } from '@/types';
+import {
+  updateReport,
+  deleteReport,
+} from '@/services/reportService';
+
+import {
+  getTierLabel,
+} from '@/utils/tierLabels';
+
+import type {
+  ReportDto,
+  Tier,
+} from '@/types';
 
 interface UserReportsListProps {
   profileId: number;
@@ -26,40 +38,89 @@ export default function UserReportsList({
   reports,
 }: UserReportsListProps) {
   const { user } = useAuth();
+
+  const {
+    language,
+    t,
+  } = useLanguage();
+
   const router = useRouter();
 
-  const [editingReportId, setEditingReportId] =
-    useState<number | null>(null);
+  const [
+    editingReportId,
+    setEditingReportId,
+  ] = useState<number | null>(null);
 
-  const [editForm, setEditForm] =
-    useState<EditForm | null>(null);
+  const [
+    editForm,
+    setEditForm,
+  ] = useState<EditForm | null>(null);
 
-  const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [
+    error,
+    setError,
+  ] = useState('');
+
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
+  const [
+    deletingReportId,
+    setDeletingReportId,
+  ] = useState<number | null>(null);
+
+  const [
+    deleteErrorReportId,
+    setDeleteErrorReportId,
+  ] = useState<number | null>(null);
+
+  const [
+    deleteError,
+    setDeleteError,
+  ] = useState('');
 
   const tierColors: Record<string, string> = {
-    Platinum: 'bg-blue-200 text-blue-900',
-    Gold: 'bg-yellow-400 text-yellow-900',
-    Silver: 'bg-gray-300 text-gray-900',
-    Bronze: 'bg-orange-500 text-orange-950',
-    Borked: 'bg-red-600 text-white',
-    Pending: 'bg-gray-600 text-gray-300',
+    Platinum:
+      'bg-blue-200 text-blue-900',
+    Gold:
+      'bg-yellow-400 text-yellow-900',
+    Silver:
+      'bg-gray-300 text-gray-900',
+    Bronze:
+      'bg-orange-500 text-orange-950',
+    Borked:
+      'bg-red-600 text-white',
+    Pending:
+      'bg-gray-600 text-gray-300',
   };
 
   const isOwnProfile =
     user !== null &&
-    Number(user.id) === profileId;
+    Number(user.id) ===
+      profileId;
 
-  const startEditing = (report: ReportDto) => {
+  const startEditing = (
+    report: ReportDto
+  ) => {
     setError('');
+    setDeleteError('');
+    setDeleteErrorReportId(null);
 
-    setEditingReportId(report.id);
+    setEditingReportId(
+      report.id
+    );
 
     setEditForm({
-      tier: report.tier as Tier,
-      distribution: report.distribution ?? '',
-      protonVersion: report.protonVersion ?? '',
-      comment: report.comment ?? '',
+      tier:
+        report.tier as Tier,
+      distribution:
+        report.distribution ?? '',
+      protonVersion:
+        report.protonVersion ?? '',
+      comment:
+        report.comment ?? '',
     });
   };
 
@@ -89,7 +150,12 @@ export default function UserReportsList({
       !editForm.protonVersion.trim() ||
       !editForm.comment.trim()
     ) {
-      setError('All fields are required.');
+      setError(
+        language === 'es'
+          ? 'Todos los campos son obligatorios.'
+          : 'All fields are required.'
+      );
+
       return;
     }
 
@@ -116,8 +182,8 @@ export default function UserReportsList({
       );
 
       setError(
-        err instanceof Error
-          ? err.message
+        language === 'es'
+          ? 'No se pudo actualizar el informe.'
           : 'Failed to update report.'
       );
     } finally {
@@ -125,10 +191,67 @@ export default function UserReportsList({
     }
   };
 
+  const handleDelete = async (
+    reportId: number
+  ) => {
+    const confirmed =
+      window.confirm(
+        language === 'es'
+          ? '¿Seguro que quieres eliminar este informe? Esta acción no se puede deshacer.'
+          : 'Are you sure you want to delete this report? This action cannot be undone.'
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeleteError('');
+    setDeleteErrorReportId(null);
+
+    try {
+      setDeletingReportId(
+        reportId
+      );
+
+      await deleteReport(
+        reportId
+      );
+
+      if (
+        editingReportId ===
+        reportId
+      ) {
+        setEditingReportId(null);
+        setEditForm(null);
+      }
+
+      router.refresh();
+    } catch (err) {
+      console.error(
+        'Failed to delete report:',
+        err
+      );
+
+      setDeleteErrorReportId(
+        reportId
+      );
+
+      setDeleteError(
+        language === 'es'
+          ? 'No se pudo eliminar el informe.'
+          : 'Failed to delete report.'
+      );
+    } finally {
+      setDeletingReportId(null);
+    }
+  };
+
   if (reports.length === 0) {
     return (
       <div className="rounded-lg border border-gray-700 p-6 text-center text-gray-400">
-        No reports yet.
+        {language === 'es'
+          ? 'Aún no hay informes.'
+          : 'No reports yet.'}
       </div>
     );
   }
@@ -137,7 +260,12 @@ export default function UserReportsList({
     <div className="space-y-4">
       {reports.map((report) => {
         const isEditing =
-          editingReportId === report.id;
+          editingReportId ===
+          report.id;
+
+        const isDeleting =
+          deletingReportId ===
+          report.id;
 
         return (
           <div
@@ -158,17 +286,27 @@ export default function UserReportsList({
                 <div
                   className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
                     report.tier
-                      ? tierColors[report.tier]
+                      ? tierColors[
+                          report.tier
+                        ]
                       : tierColors.Pending
                   }`}
                 >
-                  {report.tier}
+                  {getTierLabel(
+                    report.tier ||
+                      'Pending',
+                    t
+                  )}
                 </div>
 
                 <span className="text-sm italic text-gray-500">
                   {new Date(
                     report.createdAt
-                  ).toLocaleDateString()}
+                  ).toLocaleDateString(
+                    language === 'es'
+                      ? 'es-ES'
+                      : 'en-GB'
+                  )}
                 </span>
               </div>
             </div>
@@ -176,8 +314,10 @@ export default function UserReportsList({
             {!isEditing && (
               <>
                 <p className="mb-2 text-sm text-gray-400">
-                  {report.distribution} •{' '}
-                  {report.protonVersion ?? 'N/A'}
+                  {report.distribution}
+                  {' • '}
+                  {report.protonVersion ??
+                    'N/A'}
                 </p>
 
                 {report.comment && (
@@ -186,168 +326,259 @@ export default function UserReportsList({
                   </p>
                 )}
 
+                {deleteErrorReportId ===
+                  report.id &&
+                  deleteError && (
+                    <div className="mt-3 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                      {deleteError}
+                    </div>
+                  )}
+
                 {isOwnProfile && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      startEditing(report)
-                    }
-                    className="mt-4 rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-                  >
-                    Edit
-                  </button>
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        startEditing(
+                          report
+                        )
+                      }
+                      disabled={
+                        isDeleting
+                      }
+                      className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {language === 'es'
+                        ? 'Editar'
+                        : 'Edit'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDelete(
+                          report.id
+                        )
+                      }
+                      disabled={
+                        isDeleting
+                      }
+                      className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isDeleting
+                        ? language === 'es'
+                          ? 'Eliminando...'
+                          : 'Deleting...'
+                        : language === 'es'
+                          ? 'Eliminar'
+                          : 'Delete'}
+                    </button>
+                  </div>
                 )}
               </>
             )}
 
-            {isEditing && editForm && (
-              <form
-                onSubmit={handleUpdate}
-                className="mt-4 space-y-4"
-              >
-                {error && (
-                  <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
-                    {error}
+            {isEditing &&
+              editForm && (
+                <form
+                  onSubmit={
+                    handleUpdate
+                  }
+                  className="mt-4 space-y-4"
+                >
+                  {error && (
+                    <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                      {error}
+                    </div>
+                  )}
+
+                  <div>
+                    <label
+                      htmlFor={`tier-${report.id}`}
+                      className="mb-1 block text-sm font-medium text-gray-300"
+                    >
+                      {t(
+                        'compatibilityRating'
+                      )}
+                    </label>
+
+                    <select
+                      id={`tier-${report.id}`}
+                      value={
+                        editForm.tier
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setEditForm({
+                          ...editForm,
+                          tier:
+                            event.target
+                              .value as Tier,
+                        })
+                      }
+                      required
+                      className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                    >
+                      <option value="Platinum">
+                        {t(
+                          'platinum'
+                        )}
+                      </option>
+
+                      <option value="Gold">
+                        {t('gold')}
+                      </option>
+
+                      <option value="Silver">
+                        {t(
+                          'silver'
+                        )}
+                      </option>
+
+                      <option value="Bronze">
+                        {t(
+                          'bronze'
+                        )}
+                      </option>
+
+                      <option value="Borked">
+                        {t(
+                          'borked'
+                        )}
+                      </option>
+                    </select>
                   </div>
-                )}
 
-                <div>
-                  <label
-                    htmlFor={`tier-${report.id}`}
-                    className="mb-1 block text-sm font-medium text-gray-300"
-                  >
-                    Compatibility Rating
-                  </label>
+                  <div>
+                    <label
+                      htmlFor={`distribution-${report.id}`}
+                      className="mb-1 block text-sm font-medium text-gray-300"
+                    >
+                      {t(
+                        'linuxDistribution'
+                      )}
+                    </label>
 
-                  <select
-                    id={`tier-${report.id}`}
-                    value={editForm.tier}
-                    onChange={(event) =>
-                      setEditForm({
-                        ...editForm,
-                        tier: event.target
-                          .value as Tier,
-                      })
-                    }
-                    required
-                    className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
-                  >
-                    <option value="Platinum">
-                      Platinum
-                    </option>
+                    <input
+                      id={`distribution-${report.id}`}
+                      type="text"
+                      value={
+                        editForm.distribution
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setEditForm({
+                          ...editForm,
+                          distribution:
+                            event.target
+                              .value,
+                        })
+                      }
+                      required
+                      className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
 
-                    <option value="Gold">
-                      Gold
-                    </option>
+                  <div>
+                    <label
+                      htmlFor={`proton-${report.id}`}
+                      className="mb-1 block text-sm font-medium text-gray-300"
+                    >
+                      {t(
+                        'protonVersion'
+                      )}
+                    </label>
 
-                    <option value="Silver">
-                      Silver
-                    </option>
+                    <input
+                      id={`proton-${report.id}`}
+                      type="text"
+                      value={
+                        editForm.protonVersion
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setEditForm({
+                          ...editForm,
+                          protonVersion:
+                            event.target
+                              .value,
+                        })
+                      }
+                      required
+                      className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
 
-                    <option value="Bronze">
-                      Bronze
-                    </option>
+                  <div>
+                    <label
+                      htmlFor={`comment-${report.id}`}
+                      className="mb-1 block text-sm font-medium text-gray-300"
+                    >
+                      {t(
+                        'comment'
+                      )}
+                    </label>
 
-                    <option value="Borked">
-                      Borked
-                    </option>
-                  </select>
-                </div>
+                    <textarea
+                      id={`comment-${report.id}`}
+                      value={
+                        editForm.comment
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setEditForm({
+                          ...editForm,
+                          comment:
+                            event.target
+                              .value,
+                        })
+                      }
+                      required
+                      rows={4}
+                      className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
 
-                <div>
-                  <label
-                    htmlFor={`distribution-${report.id}`}
-                    className="mb-1 block text-sm font-medium text-gray-300"
-                  >
-                    Linux Distribution
-                  </label>
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      disabled={
+                        saving
+                      }
+                      className="rounded bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {saving
+                        ? language ===
+                          'es'
+                          ? 'Guardando...'
+                          : 'Saving...'
+                        : language ===
+                            'es'
+                          ? 'Guardar cambios'
+                          : 'Save Changes'}
+                    </button>
 
-                  <input
-                    id={`distribution-${report.id}`}
-                    type="text"
-                    value={editForm.distribution}
-                    onChange={(event) =>
-                      setEditForm({
-                        ...editForm,
-                        distribution:
-                          event.target.value,
-                      })
-                    }
-                    required
-                    className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor={`proton-${report.id}`}
-                    className="mb-1 block text-sm font-medium text-gray-300"
-                  >
-                    Proton Version
-                  </label>
-
-                  <input
-                    id={`proton-${report.id}`}
-                    type="text"
-                    value={editForm.protonVersion}
-                    onChange={(event) =>
-                      setEditForm({
-                        ...editForm,
-                        protonVersion:
-                          event.target.value,
-                      })
-                    }
-                    required
-                    className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor={`comment-${report.id}`}
-                    className="mb-1 block text-sm font-medium text-gray-300"
-                  >
-                    Comment
-                  </label>
-
-                  <textarea
-                    id={`comment-${report.id}`}
-                    value={editForm.comment}
-                    onChange={(event) =>
-                      setEditForm({
-                        ...editForm,
-                        comment:
-                          event.target.value,
-                      })
-                    }
-                    required
-                    rows={4}
-                    className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="rounded bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {saving
-                      ? 'Saving...'
-                      : 'Save Changes'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={cancelEditing}
-                    disabled={saving}
-                    className="rounded bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            )}
+                    <button
+                      type="button"
+                      onClick={
+                        cancelEditing
+                      }
+                      disabled={
+                        saving
+                      }
+                      className="rounded bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {language === 'es'
+                        ? 'Cancelar'
+                        : 'Cancel'}
+                    </button>
+                  </div>
+                </form>
+              )}
           </div>
         );
       })}
