@@ -93,6 +93,11 @@ export default function GameReports({
   ] = useState<number | null>(null);
 
   const [
+    reportToDelete,
+    setReportToDelete,
+  ] = useState<number | null>(null);
+
+  const [
     deleteErrorReportId,
     setDeleteErrorReportId,
   ] = useState<number | null>(null);
@@ -218,17 +223,6 @@ export default function GameReports({
   const handleDelete = async (
     reportId: number
   ) => {
-    const confirmed =
-      window.confirm(
-        language === 'es'
-          ? '¿Seguro que quieres eliminar este informe? Esta acción no se puede deshacer.'
-          : 'Are you sure you want to delete this report? This action cannot be undone.'
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
     setDeleteError('');
     setDeleteErrorReportId(null);
 
@@ -240,6 +234,8 @@ export default function GameReports({
       await deleteReport(
         reportId
       );
+
+      setReportToDelete(null);
 
       if (
         editingReportId ===
@@ -265,6 +261,8 @@ export default function GameReports({
           ? 'No se pudo eliminar el informe.'
           : 'Failed to delete report.'
       );
+
+      setReportToDelete(null);
     } finally {
       setDeletingReportId(null);
     }
@@ -273,8 +271,6 @@ export default function GameReports({
   return (
     <main className="min-h-screen bg-gray-900 p-8 text-white">
       <div className="mx-auto max-w-5xl">
-
-        {/* Main game card */}
         <div className="mb-8 overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
           <img
             src={gameHeaderUrl}
@@ -324,29 +320,24 @@ export default function GameReports({
             <div
               className={`shrink-0 rounded px-4 py-2 text-lg font-bold ${
                 game.tier
-                  ? tierColors[
-                      game.tier
-                    ]
+                  ? tierColors[game.tier]
                   : tierColors.Pending
               }`}
             >
               {getTierLabel(
-                game.tier ||
-                  'Pending',
+                game.tier || 'Pending',
                 t
               )}
             </div>
           </div>
         </div>
 
-        {/* Submit report */}
         <div className="mb-8">
           <SubmitReportForm
             gameId={game.id}
           />
         </div>
 
-        {/* Reports */}
         <h2 className="mb-4 text-2xl font-bold">
           {t('reports')}
         </h2>
@@ -380,11 +371,9 @@ export default function GameReports({
                       {report.username}
                     </Link>
 
-                    {' '}
-                    •{' '}
+                    {' '}•{' '}
                     {report.distribution}
-                    {' '}
-                    •{' '}
+                    {' '}•{' '}
 
                     {report.protonVersion
                       ? `Proton ${report.protonVersion} • `
@@ -449,7 +438,7 @@ export default function GameReports({
                         <button
                           type="button"
                           onClick={() =>
-                            handleDelete(
+                            setReportToDelete(
                               report.id
                             )
                           }
@@ -505,18 +494,16 @@ export default function GameReports({
                           ) =>
                             setEditForm({
                               ...editForm,
-                              tier: event
-                                .target
-                                .value as Tier,
+                              tier:
+                                event.target
+                                  .value as Tier,
                             })
                           }
                           required
                           className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
                         >
                           <option value="Platinum">
-                            {t(
-                              'platinum'
-                            )}
+                            {t('platinum')}
                           </option>
 
                           <option value="Gold">
@@ -559,8 +546,7 @@ export default function GameReports({
                             setEditForm({
                               ...editForm,
                               distribution:
-                                event
-                                  .target
+                                event.target
                                   .value,
                             })
                           }
@@ -591,8 +577,7 @@ export default function GameReports({
                             setEditForm({
                               ...editForm,
                               protonVersion:
-                                event
-                                  .target
+                                event.target
                                   .value,
                             })
                           }
@@ -620,8 +605,7 @@ export default function GameReports({
                             setEditForm({
                               ...editForm,
                               comment:
-                                event
-                                  .target
+                                event.target
                                   .value,
                             })
                           }
@@ -640,12 +624,10 @@ export default function GameReports({
                           className="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {saving
-                            ? language ===
-                              'es'
+                            ? language === 'es'
                               ? 'Guardando...'
                               : 'Saving...'
-                            : language ===
-                                'es'
+                            : language === 'es'
                               ? 'Guardar cambios'
                               : 'Save Changes'}
                         </button>
@@ -678,7 +660,6 @@ export default function GameReports({
           )}
         </div>
 
-        {/* Related games */}
         <section>
           <h2 className="mb-4 text-2xl font-bold">
             {relatedGamesTitle}
@@ -731,8 +712,7 @@ export default function GameReports({
                           className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
                             relatedGame.tier
                               ? tierColors[
-                                  relatedGame
-                                    .tier
+                                  relatedGame.tier
                                 ]
                               : tierColors.Pending
                           }`}
@@ -746,15 +726,11 @@ export default function GameReports({
                       </div>
 
                       {relatedGame.genres &&
-                        relatedGame
-                          .genres
-                          .length >
-                          0 && (
+                        relatedGame.genres
+                          .length > 0 && (
                           <div className="mt-3 flex flex-wrap gap-1.5">
                             {relatedGame.genres.map(
-                              (
-                                genre
-                              ) => (
+                              (genre) => (
                                 <span
                                   key={
                                     genre
@@ -784,6 +760,77 @@ export default function GameReports({
           )}
         </section>
       </div>
+
+      {reportToDelete !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onMouseDown={(event) => {
+            if (
+              event.target ===
+              event.currentTarget &&
+              deletingReportId === null
+            ) {
+              setReportToDelete(null);
+            }
+          }}
+        >
+          <div className="w-full max-w-md rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-2xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-950 text-2xl text-red-400">
+              !
+            </div>
+
+            <h2 className="mt-4 text-xl font-bold text-white">
+              {language === 'es'
+                ? 'Eliminar informe'
+                : 'Delete Report'}
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-gray-300">
+              {language === 'es'
+                ? '¿Seguro que quieres eliminar este informe? Esta acción es permanente y no se puede deshacer.'
+                : 'Are you sure you want to delete this report? This action is permanent and cannot be undone.'}
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setReportToDelete(null)
+                }
+                disabled={
+                  deletingReportId !== null
+                }
+                className="rounded-lg bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {language === 'es'
+                  ? 'Cancelar'
+                  : 'Cancel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleDelete(
+                    reportToDelete
+                  )
+                }
+                disabled={
+                  deletingReportId !== null
+                }
+                className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deletingReportId !== null
+                  ? language === 'es'
+                    ? 'Eliminando...'
+                    : 'Deleting...'
+                  : language === 'es'
+                    ? 'Eliminar informe'
+                    : 'Delete Report'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
