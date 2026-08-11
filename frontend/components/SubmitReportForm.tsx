@@ -120,6 +120,10 @@ export default function SubmitReportForm({
         t('reportSubmittedSuccessfully')
       );
 
+      setTimeout(() => {
+        setSuccess('');
+      }, 5000);
+
       setTier('Gold');
       setDistribution('');
       setProtonVersion('');
