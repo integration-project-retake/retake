@@ -27,6 +27,9 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-3">
+          <Link href="/" className='px-4 py-2 text-gray-300 hover:text-white'>
+            Home
+          </Link>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
