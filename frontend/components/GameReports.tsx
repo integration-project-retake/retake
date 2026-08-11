@@ -1,12 +1,15 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import {
-  useLanguage,
-} from '@/context/LanguageContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 
 import SubmitReportForm from '@/components/SubmitReportForm';
+
+import { updateReport } from '@/services/reportService';
 
 import {
   getGenreColor,
@@ -23,29 +26,29 @@ import {
 import type {
   ReportDto,
   GameDto,
+  Tier,
 } from '@/types';
 
-const tierColors:
-  Record<string, string> = {
-    Platinum:
-      'bg-blue-200 text-blue-900',
-    Gold:
-      'bg-yellow-400 text-yellow-900',
-    Silver:
-      'bg-gray-300 text-gray-900',
-    Bronze:
-      'bg-orange-500 text-orange-950',
-    Borked:
-      'bg-red-600 text-white',
-    Pending:
-      'bg-gray-600 text-gray-300',
-  };
+const tierColors: Record<string, string> = {
+  Platinum: 'bg-blue-200 text-blue-900',
+  Gold: 'bg-yellow-400 text-yellow-900',
+  Silver: 'bg-gray-300 text-gray-900',
+  Bronze: 'bg-orange-500 text-orange-950',
+  Borked: 'bg-red-600 text-white',
+  Pending: 'bg-gray-600 text-gray-300',
+};
 
 interface GameReportsProps {
   game: GameDto;
   reports: ReportDto[];
-  relatedGames:
-    GameDto[];
+  relatedGames: GameDto[];
+}
+
+interface EditForm {
+  tier: Tier;
+  distribution: string;
+  protonVersion: string;
+  comment: string;
 }
 
 export default function GameReports({
@@ -57,6 +60,25 @@ export default function GameReports({
     language,
     t,
   } = useLanguage();
+
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const [
+    editingReportId,
+    setEditingReportId,
+  ] = useState<number | null>(null);
+
+  const [
+    editForm,
+    setEditForm,
+  ] = useState<EditForm | null>(null);
+
+  const [editError, setEditError] =
+    useState('');
+
+  const [saving, setSaving] =
+    useState(false);
 
   const dateLocale =
     language === 'es'
@@ -82,15 +104,100 @@ export default function GameReports({
     game.headerUrl ||
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
 
+  const startEditing = (
+    report: ReportDto
+  ) => {
+    setEditError('');
+
+    setEditingReportId(
+      report.id
+    );
+
+    setEditForm({
+      tier: report.tier as Tier,
+      distribution:
+        report.distribution ?? '',
+      protonVersion:
+        report.protonVersion ?? '',
+      comment:
+        report.comment ?? '',
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingReportId(null);
+    setEditForm(null);
+    setEditError('');
+  };
+
+  const handleUpdate = async (
+    event: React.FormEvent
+  ) => {
+    event.preventDefault();
+
+    if (
+      !user ||
+      editingReportId === null ||
+      editForm === null
+    ) {
+      return;
+    }
+
+    setEditError('');
+
+    if (
+      !editForm.distribution.trim() ||
+      !editForm.protonVersion.trim() ||
+      !editForm.comment.trim()
+    ) {
+      setEditError(
+        language === 'es'
+          ? 'Todos los campos son obligatorios.'
+          : 'All fields are required.'
+      );
+
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await updateReport(
+        editingReportId,
+        Number(user.id),
+        editForm.tier,
+        editForm.distribution.trim(),
+        editForm.comment.trim(),
+        editForm.protonVersion.trim()
+      );
+
+      setEditingReportId(null);
+      setEditForm(null);
+
+      router.refresh();
+    } catch (err) {
+      console.error(
+        'Failed to update report:',
+        err
+      );
+
+      setEditError(
+        language === 'es'
+          ? 'No se pudo actualizar el informe.'
+          : 'Failed to update report.'
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gray-900 p-8 text-white">
       <div className="mx-auto max-w-5xl">
 
         <div className="mb-8 overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
           <img
-            src={
-              gameHeaderUrl
-            }
+            src={gameHeaderUrl}
             alt={`${game.name} banner`}
             className="aspect-[460/215] w-full object-cover"
           />
@@ -98,42 +205,26 @@ export default function GameReports({
           <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h1 className="text-4xl font-bold">
-                {
-                  game.name
-                }
+                {game.name}
               </h1>
 
               <p className="mt-2 text-gray-400">
-                {t(
-                  'steamAppId'
-                )}
-                :{' '}
-                {
-                  game.steamAppid
-                }
+                {t('steamAppId')}:{' '}
+                {game.steamAppid}
               </p>
 
               {game.genres &&
-                game
-                  .genres
-                  .length >
-                  0 && (
+                game.genres.length > 0 && (
                   <div className="mt-4">
                     <p className="mb-2 text-sm text-gray-400">
-                      {
-                        genresLabel
-                      }
+                      {genresLabel}
                     </p>
 
                     <div className="flex flex-wrap gap-2">
                       {game.genres.map(
-                        (
-                          genre
-                        ) => (
+                        (genre) => (
                           <span
-                            key={
-                              genre
-                            }
+                            key={genre}
                             className={`rounded-full px-3 py-1 text-sm ${getGenreColor(
                               genre
                             )}`}
@@ -154,8 +245,7 @@ export default function GameReports({
               className={`shrink-0 rounded px-4 py-2 text-lg font-bold ${
                 game.tier
                   ? tierColors[
-                      game
-                        .tier
+                      game.tier
                     ]
                   : tierColors.Pending
               }`}
@@ -171,27 +261,28 @@ export default function GameReports({
 
         <div className="mb-8">
           <SubmitReportForm
-            gameId={
-              game.id
-            }
+            gameId={game.id}
           />
         </div>
 
         <h2 className="mb-4 text-2xl font-bold">
-          {t(
-            'reports'
-          )}
+          {t('reports')}
         </h2>
 
         <div className="mb-12 flex flex-col gap-4">
-          {reports.map(
-            (
-              report
-            ) => (
+          {reports.map((report) => {
+            const isOwnReport =
+              user !== null &&
+              Number(user.id) ===
+                Number(report.user_id);
+
+            const isEditing =
+              editingReportId ===
+              report.id;
+
+            return (
               <div
-                key={
-                  report.id
-                }
+                key={report.id}
                 className="flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-800 p-4"
               >
                 <div className="flex items-center justify-between gap-4">
@@ -200,16 +291,13 @@ export default function GameReports({
                       href={`/users/${report.user_id}`}
                       className="font-bold underline transition-colors hover:text-pink-600"
                     >
-                      {
-                        report.username
-                      }
+                      {report.username}
                     </Link>
 
                     {' '}
                     •{' '}
-                    {
-                      report.distribution
-                    }{' '}
+                    {report.distribution}
+                    {' '}
                     •{' '}
 
                     {report.protonVersion
@@ -226,8 +314,7 @@ export default function GameReports({
                   <div
                     className={`rounded px-4 py-1.5 font-bold ${
                       tierColors[
-                        report
-                          .tier
+                        report.tier
                       ]
                     }`}
                   >
@@ -238,41 +325,250 @@ export default function GameReports({
                   </div>
                 </div>
 
-                {report.comment && (
-                  <div className="mt-2 whitespace-pre-line rounded bg-gray-900 p-3 text-sm text-gray-300">
-                    {
-                      report.comment
-                    }
-                  </div>
-                )}
-              </div>
-            )
-          )}
+                {!isEditing && (
+                  <>
+                    {report.comment && (
+                      <div className="mt-2 whitespace-pre-line rounded bg-gray-900 p-3 text-sm text-gray-300">
+                        {report.comment}
+                      </div>
+                    )}
 
-          {reports.length ===
-            0 && (
+                    {isOwnReport && (
+                      <div className="mt-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            startEditing(
+                              report
+                            )
+                          }
+                          className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                        >
+                          {language === 'es'
+                            ? 'Editar'
+                            : 'Edit'}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {isEditing &&
+                  editForm && (
+                    <form
+                      onSubmit={
+                        handleUpdate
+                      }
+                      className="mt-3 space-y-4 rounded border border-gray-700 bg-gray-900 p-4"
+                    >
+                      {editError && (
+                        <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                          {editError}
+                        </div>
+                      )}
+
+                      <div>
+                        <label
+                          htmlFor={`tier-${report.id}`}
+                          className="mb-1 block text-sm font-medium text-gray-300"
+                        >
+                          {t(
+                            'compatibilityRating'
+                          )}
+                        </label>
+
+                        <select
+                          id={`tier-${report.id}`}
+                          value={
+                            editForm.tier
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm({
+                              ...editForm,
+                              tier: event
+                                .target
+                                .value as Tier,
+                            })
+                          }
+                          required
+                          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        >
+                          <option value="Platinum">
+                            {t(
+                              'platinum'
+                            )}
+                          </option>
+
+                          <option value="Gold">
+                            {t('gold')}
+                          </option>
+
+                          <option value="Silver">
+                            {t('silver')}
+                          </option>
+
+                          <option value="Bronze">
+                            {t('bronze')}
+                          </option>
+
+                          <option value="Borked">
+                            {t('borked')}
+                          </option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor={`distribution-${report.id}`}
+                          className="mb-1 block text-sm font-medium text-gray-300"
+                        >
+                          {t(
+                            'linuxDistribution'
+                          )}
+                        </label>
+
+                        <input
+                          id={`distribution-${report.id}`}
+                          type="text"
+                          value={
+                            editForm.distribution
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm({
+                              ...editForm,
+                              distribution:
+                                event
+                                  .target
+                                  .value,
+                            })
+                          }
+                          required
+                          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor={`proton-${report.id}`}
+                          className="mb-1 block text-sm font-medium text-gray-300"
+                        >
+                          {t(
+                            'protonVersion'
+                          )}
+                        </label>
+
+                        <input
+                          id={`proton-${report.id}`}
+                          type="text"
+                          value={
+                            editForm.protonVersion
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm({
+                              ...editForm,
+                              protonVersion:
+                                event
+                                  .target
+                                  .value,
+                            })
+                          }
+                          required
+                          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor={`comment-${report.id}`}
+                          className="mb-1 block text-sm font-medium text-gray-300"
+                        >
+                          {t('comment')}
+                        </label>
+
+                        <textarea
+                          id={`comment-${report.id}`}
+                          value={
+                            editForm.comment
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm({
+                              ...editForm,
+                              comment:
+                                event
+                                  .target
+                                  .value,
+                            })
+                          }
+                          required
+                          rows={4}
+                          className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          type="submit"
+                          disabled={
+                            saving
+                          }
+                          className="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {saving
+                            ? language ===
+                              'es'
+                              ? 'Guardando...'
+                              : 'Saving...'
+                            : language ===
+                                'es'
+                              ? 'Guardar cambios'
+                              : 'Save Changes'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={
+                            cancelEditing
+                          }
+                          disabled={
+                            saving
+                          }
+                          className="rounded bg-gray-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {language === 'es'
+                            ? 'Cancelar'
+                            : 'Cancel'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+              </div>
+            );
+          })}
+
+          {reports.length === 0 && (
             <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-              {t(
-                'noReports'
-              )}
+              {t('noReports')}
             </div>
           )}
         </div>
 
         <section>
           <h2 className="mb-4 text-2xl font-bold">
-            {
-              relatedGamesTitle
-            }
+            {relatedGamesTitle}
           </h2>
 
-          {relatedGames.length >
-          0 ? (
+          {relatedGames.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedGames.map(
-                (
-                  relatedGame
-                ) => (
+                (relatedGame) => (
                   <Link
                     key={
                       relatedGame.id
@@ -364,9 +660,7 @@ export default function GameReports({
             </div>
           ) : (
             <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-              {
-                noRelatedGames
-              }
+              {noRelatedGames}
             </div>
           )}
         </section>
