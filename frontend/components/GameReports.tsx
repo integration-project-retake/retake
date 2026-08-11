@@ -23,6 +23,7 @@ import type {
   GameDto,
   Tier,
 } from '@/types';
+import PlayerCount from './PlayerCount';
 
 const tierColors: Record<string, string> = {
   Platinum: 'bg-blue-200 text-blue-900',
@@ -239,6 +240,7 @@ export default function GameReports({
               <p className="mt-2 text-gray-400">
                 {t('steamAppId')}: {game.steamAppid}
               </p>
+              <PlayerCount steamAppid={game.steamAppid} />
 
               {game.genres &&
                 game.genres.length > 0 && (

@@ -2,6 +2,7 @@ package be.ucll.retake.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import be.ucll.retake.dto.GameDto;
 import be.ucll.retake.model.Game;
 import be.ucll.retake.service.GameService;
+import be.ucll.retake.service.SteamService;
 
 @RestController
 @RequestMapping("/games")
@@ -28,9 +30,11 @@ import be.ucll.retake.service.GameService;
 public class GameController {
 
     private final GameService gameService;
+    private final SteamService steamService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, SteamService steamService) {
         this.gameService = gameService;
+        this.steamService = steamService;
     }
 
     @GetMapping
@@ -121,4 +125,16 @@ public class GameController {
 
         return dtos;
     }
+        @GetMapping("/{steamAppid}/players")
+        public Map<String, Object> getPlayerCount(
+                @PathVariable Integer steamAppid
+        ) {
+        Integer count =
+                steamService.getCurrentPlayers(steamAppid);
+
+        return Map.of(
+                "playerCount",
+                count == null ? -1 : count
+        );
+        }
 }
