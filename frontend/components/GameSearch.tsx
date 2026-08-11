@@ -112,6 +112,37 @@ export default function GameSearch({
     'default'
   );
 
+  const [
+    selectedGenre,
+    setSelectedGenre,
+  ] = useState('all');
+
+  const availableGenres =
+    useMemo(() => {
+      const genres =
+        initialGames.flatMap(
+          (game) =>
+            game.genres || []
+        );
+
+      return Array.from(
+        new Set(genres)
+      ).sort((first, second) =>
+        getGenreLabel(
+          first,
+          language
+        ).localeCompare(
+          getGenreLabel(
+            second,
+            language
+          )
+        )
+      );
+    }, [
+      initialGames,
+      language,
+    ]);
+
   useEffect(() => {
     const savedLayout =
       localStorage.getItem(
@@ -183,10 +214,30 @@ export default function GameSearch({
     t,
   ]);
 
+  const filteredGames =
+    useMemo(() => {
+      if (
+        selectedGenre ===
+        'all'
+      ) {
+        return games;
+      }
+
+      return games.filter(
+        (game) =>
+          game.genres?.includes(
+            selectedGenre
+          )
+      );
+    }, [
+      games,
+      selectedGenre,
+    ]);
+
   const sortedGames =
     useMemo(() => {
       const copy =
-        [...games];
+        [...filteredGames];
 
       switch (
         sortMode
@@ -284,7 +335,7 @@ export default function GameSearch({
           return copy;
       }
     }, [
-      games,
+      filteredGames,
       sortMode,
       language,
     ]);
@@ -333,6 +384,44 @@ export default function GameSearch({
         />
 
         <div className="flex flex-wrap gap-2">
+          <select
+            value={
+              selectedGenre
+            }
+            onChange={(
+              event
+            ) =>
+              setSelectedGenre(
+                event.target
+                  .value
+              )
+            }
+            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            aria-label="Filter games by genre"
+          >
+            <option value="all">
+              All Genres
+            </option>
+
+            {availableGenres.map(
+              (genre) => (
+                <option
+                  key={
+                    genre
+                  }
+                  value={
+                    genre
+                  }
+                >
+                  {getGenreLabel(
+                    genre,
+                    language
+                  )}
+                </option>
+              )
+            )}
+          </select>
+
           <select
             value={sortMode}
             onChange={(
@@ -530,9 +619,15 @@ export default function GameSearch({
           0 &&
           !error && (
             <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-              {t(
-                'noGames'
-              )}
+              {selectedGenre !==
+              'all'
+                ? `No games found for ${getGenreLabel(
+                    selectedGenre,
+                    language
+                  )}.`
+                : t(
+                    'noGames'
+                  )}
             </div>
           )}
       </div>
