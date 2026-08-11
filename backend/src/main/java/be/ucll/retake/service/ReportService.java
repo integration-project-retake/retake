@@ -8,8 +8,9 @@ import be.ucll.retake.repository.GameRepository;
 import be.ucll.retake.repository.ReportRepository;
 import be.ucll.retake.repository.UserRepository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Service
@@ -40,18 +41,6 @@ public class ReportService {
                                 "Report with id " + id + " not found"
                         )
                 );
-    }
-
-    public List<Report> getReportsBySteamAppid(
-            Integer steamAppid
-    ) {
-        if (!gameRepository.existsBySteamAppid(steamAppid)) {
-            throw new IllegalArgumentException(
-                    "Game with steam appid " + steamAppid + " not found"
-            );
-        }
-
-        return reportRepository.findByGameSteamAppid(steamAppid);
     }
 
     public List<Report> getReportsByGameId(
@@ -214,4 +203,12 @@ public class ReportService {
             );
         }
     }
+
+
+        public List<Report> getReportsBySteamAppid(Integer steamAppid) {
+        if (!gameRepository.existsBySteamAppid(steamAppid)) {
+                throw new IllegalArgumentException("Game with steam appid " + steamAppid + " not found");
+        }
+        return reportRepository.findByGameSteamAppid(steamAppid);
+        }
 }

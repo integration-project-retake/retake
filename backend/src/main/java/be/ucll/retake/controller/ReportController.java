@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.data.domain.Page;
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
@@ -54,16 +54,15 @@ public class ReportController {
         );
     }
 
-    @GetMapping("/steam/{steamAppid}")
-    public List<ReportDto> getReportsBySteamAppid(
-            @PathVariable Integer steamAppid
-    ) {
-        return reportService
-                .getReportsBySteamAppid(steamAppid)
-                .stream()
-                .map(ReportDto::from)
-                .toList();
-    }
+
+        @GetMapping("/steam/{steamAppid}")
+        public List<ReportDto> getReportsBySteamAppid(@PathVariable Integer steamAppid) {
+        List<ReportDto> dtos = new ArrayList<>();
+        for (Report report : reportService.getReportsBySteamAppid(steamAppid)) {
+                dtos.add(ReportDto.from(report));
+        }
+        return dtos;
+        }
 
     @GetMapping("/game/{gameId}")
     public List<ReportDto> getReportsByGameId(
@@ -94,6 +93,7 @@ public class ReportController {
 
         return dtos;
     }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

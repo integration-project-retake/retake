@@ -358,6 +358,10 @@ public class DbInitializer implements CommandLineRunner {
                             "Proton 8.0-5"
                     )
             );
+
+                for (int i = 0; i < 15; i++) {
+                        reportRepository.save(new Report(annie, dota, Tier.Gold, "Ubuntu " + i, "Test report number " + i, "Proton 9.0-3"));
+                }
         }
     }
 }

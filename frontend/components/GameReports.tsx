@@ -102,6 +102,8 @@ export default function GameReports({
     setDeleteError,
   ] = useState('');
 
+  const [visibleCount, setVisibleCount] = useState(10);
+
   const dateLocale =
     language === 'es'
       ? 'es-ES'
@@ -352,7 +354,7 @@ export default function GameReports({
         </h2>
 
         <div className="mb-12 flex flex-col gap-4">
-          {reports.map((report) => {
+          {reports.slice(0, visibleCount).map((report) => {
             const isOwnReport =
               user !== null &&
               Number(user.id) ===
@@ -675,6 +677,14 @@ export default function GameReports({
             <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
               {t('noReports')}
             </div>
+          )}
+          {reports.length > visibleCount && (
+            <button
+              onClick={() => setVisibleCount(visibleCount + 10)}
+              className="self-center rounded bg-gray-700 px-4 py-2 hover:bg-gray-600"
+            >
+              {language === 'es' ? 'Mostrar más' : 'Show more'}
+            </button>
           )}
         </div>
 
