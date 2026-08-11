@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  NEXT_PUBLIC_API_URL: "https://backend-itip-retake.apps.okd.ucll.cloud/"
+  NEXT_PUBLIC_API_URL: "https://backend-itip-retake.apps.okd.ucll.cloud"
 
 jobs:
   build-backend:
