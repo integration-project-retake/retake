@@ -12,9 +12,7 @@ import {
   deleteReport,
 } from '@/services/reportService';
 
-import {
-  getTierLabel,
-} from '@/utils/tierLabels';
+import { getTierLabel } from '@/utils/tierLabels';
 
 import type {
   ReportDto,
@@ -33,78 +31,47 @@ interface EditForm {
   comment: string;
 }
 
+const tierColors: Record<string, string> = {
+  Platinum: 'bg-blue-200 text-blue-900',
+  Gold: 'bg-yellow-400 text-yellow-900',
+  Silver: 'bg-gray-300 text-gray-900',
+  Bronze: 'bg-orange-500 text-orange-950',
+  Borked: 'bg-red-600 text-white',
+  Pending: 'bg-gray-600 text-gray-300',
+};
+
 export default function UserReportsList({
   profileId,
   reports,
 }: UserReportsListProps) {
   const { user } = useAuth();
-
-  const {
-    language,
-    t,
-  } = useLanguage();
-
+  const { language, t } = useLanguage();
   const router = useRouter();
 
-  const [
-    editingReportId,
-    setEditingReportId,
-  ] = useState<number | null>(null);
+  const [editingReportId, setEditingReportId] =
+    useState<number | null>(null);
 
-  const [
-    editForm,
-    setEditForm,
-  ] = useState<EditForm | null>(null);
+  const [editForm, setEditForm] =
+    useState<EditForm | null>(null);
 
-  const [
-    error,
-    setError,
-  ] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const [
-    saving,
-    setSaving,
-  ] = useState(false);
+  const [deletingReportId, setDeletingReportId] =
+    useState<number | null>(null);
 
-  const [
-    deletingReportId,
-    setDeletingReportId,
-  ] = useState<number | null>(null);
+  const [reportToDelete, setReportToDelete] =
+    useState<number | null>(null);
 
-  const [
-    reportToDelete,
-    setReportToDelete,
-  ] = useState<number | null>(null);
+  const [deleteErrorReportId, setDeleteErrorReportId] =
+    useState<number | null>(null);
 
-  const [
-    deleteErrorReportId,
-    setDeleteErrorReportId,
-  ] = useState<number | null>(null);
-
-  const [
-    deleteError,
-    setDeleteError,
-  ] = useState('');
-
-  const tierColors: Record<string, string> = {
-    Platinum:
-      'bg-blue-200 text-blue-900',
-    Gold:
-      'bg-yellow-400 text-yellow-900',
-    Silver:
-      'bg-gray-300 text-gray-900',
-    Bronze:
-      'bg-orange-500 text-orange-950',
-    Borked:
-      'bg-red-600 text-white',
-    Pending:
-      'bg-gray-600 text-gray-300',
-  };
+  const [deleteError, setDeleteError] =
+    useState('');
 
   const isOwnProfile =
     user !== null &&
-    Number(user.id) ===
-      profileId;
+    Number(user.id) === profileId;
 
   const startEditing = (
     report: ReportDto
@@ -113,13 +80,10 @@ export default function UserReportsList({
     setDeleteError('');
     setDeleteErrorReportId(null);
 
-    setEditingReportId(
-      report.id
-    );
+    setEditingReportId(report.id);
 
     setEditForm({
-      tier:
-        report.tier as Tier,
+      tier: report.tier as Tier,
       distribution:
         report.distribution ?? '',
       protonVersion:
@@ -203,20 +167,13 @@ export default function UserReportsList({
     setDeleteErrorReportId(null);
 
     try {
-      setDeletingReportId(
-        reportId
-      );
+      setDeletingReportId(reportId);
 
-      await deleteReport(
-        reportId
-      );
+      await deleteReport(reportId);
 
       setReportToDelete(null);
 
-      if (
-        editingReportId ===
-        reportId
-      ) {
+      if (editingReportId === reportId) {
         setEditingReportId(null);
         setEditForm(null);
       }
@@ -228,9 +185,7 @@ export default function UserReportsList({
         err
       );
 
-      setDeleteErrorReportId(
-        reportId
-      );
+      setDeleteErrorReportId(reportId);
 
       setDeleteError(
         language === 'es'
@@ -246,10 +201,33 @@ export default function UserReportsList({
 
   if (reports.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-700 p-6 text-center text-gray-400">
-        {language === 'es'
-          ? 'Aún no hay informes.'
-          : 'No reports yet.'}
+      <div className="rounded-xl border border-dashed border-gray-700 bg-gray-800/40 px-6 py-10 text-center">
+        <h3 className="text-lg font-semibold text-white">
+          {language === 'es'
+            ? 'Aún no hay contribuciones'
+            : 'No contributions yet'}
+        </h3>
+
+        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-400">
+          {isOwnProfile
+            ? language === 'es'
+              ? 'Todavía no has enviado ningún informe de compatibilidad. Explora los juegos y comparte tu experiencia.'
+              : 'You have not submitted any compatibility reports yet. Browse the catalogue and share your experience.'
+            : language === 'es'
+              ? 'Este usuario todavía no ha enviado ningún informe de compatibilidad.'
+              : 'This user has not submitted any compatibility reports yet.'}
+        </p>
+
+        {isOwnProfile && (
+          <Link
+            href="/"
+            className="mt-5 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            {language === 'es'
+              ? 'Explorar juegos'
+              : 'Browse Games'}
+          </Link>
+        )}
       </div>
     );
   }
@@ -259,12 +237,10 @@ export default function UserReportsList({
       <div className="space-y-4">
         {reports.map((report) => {
           const isEditing =
-            editingReportId ===
-            report.id;
+            editingReportId === report.id;
 
           const isDeleting =
-            deletingReportId ===
-            report.id;
+            deletingReportId === report.id;
 
           return (
             <div
@@ -320,9 +296,11 @@ export default function UserReportsList({
                   </p>
 
                   {report.comment && (
-                    <p className="whitespace-pre-line text-gray-300">
-                      {report.comment}
-                    </p>
+                    <div className="rounded bg-gray-900 p-3 text-gray-300">
+                      <p className="whitespace-pre-line">
+                        {report.comment}
+                      </p>
+                    </div>
                   )}
 
                   {deleteErrorReportId ===
@@ -334,7 +312,7 @@ export default function UserReportsList({
                     )}
 
                   {isOwnProfile && (
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex justify-end gap-2">
                       <button
                         type="button"
                         onClick={() =>
@@ -403,12 +381,8 @@ export default function UserReportsList({
 
                       <select
                         id={`tier-${report.id}`}
-                        value={
-                          editForm.tier
-                        }
-                        onChange={(
-                          event
-                        ) =>
+                        value={editForm.tier}
+                        onChange={(event) =>
                           setEditForm({
                             ...editForm,
                             tier:
@@ -457,14 +431,11 @@ export default function UserReportsList({
                         value={
                           editForm.distribution
                         }
-                        onChange={(
-                          event
-                        ) =>
+                        onChange={(event) =>
                           setEditForm({
                             ...editForm,
                             distribution:
-                              event.target
-                                .value,
+                              event.target.value,
                           })
                         }
                         required
@@ -488,14 +459,11 @@ export default function UserReportsList({
                         value={
                           editForm.protonVersion
                         }
-                        onChange={(
-                          event
-                        ) =>
+                        onChange={(event) =>
                           setEditForm({
                             ...editForm,
                             protonVersion:
-                              event.target
-                                .value,
+                              event.target.value,
                           })
                         }
                         required
@@ -516,14 +484,11 @@ export default function UserReportsList({
                         value={
                           editForm.comment
                         }
-                        onChange={(
-                          event
-                        ) =>
+                        onChange={(event) =>
                           setEditForm({
                             ...editForm,
                             comment:
-                              event.target
-                                .value,
+                              event.target.value,
                           })
                         }
                         required
@@ -535,9 +500,7 @@ export default function UserReportsList({
                     <div className="flex gap-3">
                       <button
                         type="submit"
-                        disabled={
-                          saving
-                        }
+                        disabled={saving}
                         className="rounded bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {saving
@@ -554,9 +517,7 @@ export default function UserReportsList({
                         onClick={
                           cancelEditing
                         }
-                        disabled={
-                          saving
-                        }
+                        disabled={saving}
                         className="rounded bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {language === 'es'
@@ -577,7 +538,7 @@ export default function UserReportsList({
           onMouseDown={(event) => {
             if (
               event.target ===
-              event.currentTarget &&
+                event.currentTarget &&
               deletingReportId === null
             ) {
               setReportToDelete(null);
