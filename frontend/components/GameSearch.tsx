@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import Link from 'next/link';
@@ -46,12 +47,31 @@ const tierColors:
       'bg-gray-600 text-gray-300',
   };
 
+const tierOrder:
+  Record<string, number> = {
+    Platinum: 5,
+    Gold: 4,
+    Silver: 3,
+    Bronze: 2,
+    Borked: 1,
+    Pending: 0,
+  };
+
 interface GameSearchProps {
   initialGames: GameDto[];
 }
 
 type LayoutMode =
   'grid' | 'list';
+
+type SortMode =
+  | 'default'
+  | 'az'
+  | 'za'
+  | 'steamAsc'
+  | 'steamDesc'
+  | 'tierBest'
+  | 'tierWorst';
 
 export default function GameSearch({
   initialGames,
@@ -85,6 +105,13 @@ export default function GameSearch({
     'grid'
   );
 
+  const [
+    sortMode,
+    setSortMode,
+  ] = useState<SortMode>(
+    'default'
+  );
+
   useEffect(() => {
     const savedLayout =
       localStorage.getItem(
@@ -92,10 +119,8 @@ export default function GameSearch({
       );
 
     if (
-      savedLayout ===
-        'grid' ||
-      savedLayout ===
-        'list'
+      savedLayout === 'grid' ||
+      savedLayout === 'list'
     ) {
       setLayout(
         savedLayout
@@ -158,6 +183,112 @@ export default function GameSearch({
     t,
   ]);
 
+  const sortedGames =
+    useMemo(() => {
+      const copy =
+        [...games];
+
+      switch (
+        sortMode
+      ) {
+        case 'az':
+          return copy.sort(
+            (
+              first,
+              second
+            ) =>
+              first.name.localeCompare(
+                second.name,
+                language === 'es'
+                  ? 'es'
+                  : 'en',
+                {
+                  sensitivity:
+                    'base',
+                }
+              )
+          );
+
+        case 'za':
+          return copy.sort(
+            (
+              first,
+              second
+            ) =>
+              second.name.localeCompare(
+                first.name,
+                language === 'es'
+                  ? 'es'
+                  : 'en',
+                {
+                  sensitivity:
+                    'base',
+                }
+              )
+          );
+
+        case 'steamAsc':
+          return copy.sort(
+            (
+              first,
+              second
+            ) =>
+              first.steamAppid -
+              second.steamAppid
+          );
+
+        case 'steamDesc':
+          return copy.sort(
+            (
+              first,
+              second
+            ) =>
+              second.steamAppid -
+              first.steamAppid
+          );
+
+        case 'tierBest':
+          return copy.sort(
+            (
+              first,
+              second
+            ) =>
+              tierOrder[
+                second.tier ||
+                  'Pending'
+              ] -
+              tierOrder[
+                first.tier ||
+                  'Pending'
+              ]
+          );
+
+        case 'tierWorst':
+          return copy.sort(
+            (
+              first,
+              second
+            ) =>
+              tierOrder[
+                first.tier ||
+                  'Pending'
+              ] -
+              tierOrder[
+                second.tier ||
+                  'Pending'
+              ]
+          );
+
+        case 'default':
+        default:
+          return copy;
+      }
+    }, [
+      games,
+      sortMode,
+      language,
+    ]);
+
   const handleLayoutChange = (
     newLayout:
       LayoutMode
@@ -172,9 +303,18 @@ export default function GameSearch({
     );
   };
 
+  const handleSortChange = (
+    newSort:
+      SortMode
+  ) => {
+    setSortMode(
+      newSort
+    );
+  };
+
   return (
     <div>
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4 flex flex-col gap-2 lg:flex-row">
         <input
           type="search"
           value={query}
@@ -192,7 +332,53 @@ export default function GameSearch({
           className="w-full flex-1 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
         />
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <select
+            value={sortMode}
+            onChange={(
+              event
+            ) =>
+              handleSortChange(
+                event.target
+                  .value as SortMode
+              )
+            }
+            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            aria-label="Sort games"
+          >
+            <option value="default">
+              Default
+            </option>
+
+            <option value="az">
+              Name A–Z
+            </option>
+
+            <option value="za">
+              Name Z–A
+            </option>
+
+            <option value="steamAsc">
+              Steam App ID:
+              Low → High
+            </option>
+
+            <option value="steamDesc">
+              Steam App ID:
+              High → Low
+            </option>
+
+            <option value="tierBest">
+              Compatibility:
+              Best → Worst
+            </option>
+
+            <option value="tierWorst">
+              Compatibility:
+              Worst → Best
+            </option>
+          </select>
+
           <button
             type="button"
             onClick={() =>
@@ -243,7 +429,7 @@ export default function GameSearch({
             : 'flex flex-col gap-4'
         }
       >
-        {games.map(
+        {sortedGames.map(
           (game) => (
             <Link
               key={
@@ -324,8 +510,7 @@ export default function GameSearch({
                   className={`ml-3 shrink-0 rounded px-2 py-1 text-xs font-bold ${
                     game.tier
                       ? tierColors[
-                          game
-                            .tier
+                          game.tier
                         ]
                       : tierColors.Pending
                   }`}
@@ -341,7 +526,7 @@ export default function GameSearch({
           )
         )}
 
-        {games.length ===
+        {sortedGames.length ===
           0 &&
           !error && (
             <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
