@@ -232,6 +232,7 @@ public class GameService {
                         queryLength - 3
                 );
 
+        //
         int maximumWindow =
                 Math.min(
                         candidate.length(),
