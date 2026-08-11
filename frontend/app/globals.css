@@ -3,24 +3,81 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --surface: #f1f5f9;
+  --surface-secondary: #e2e8f0;
+  --border-color: #cbd5e1;
+}
+
+/* LIGHT THEME */
+html[data-theme="light"] {
+  --background: #f8fafc;
+  --foreground: #171717;
+
+  --surface: #ffffff;
+  --surface-secondary: #e2e8f0;
+  --border-color: #cbd5e1;
+}
+
+/* DARK THEME */
+html[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #ededed;
+
+  --surface: #1e293b;
+  --surface-secondary: #334155;
+  --border-color: #475569;
+}
+
+/* SCENIC THEME */
+html[data-theme="scenic"] {
+  --background: transparent;
+  --foreground: #ffffff;
+
+  --surface: rgba(15, 23, 42, 0.88);
+  --surface-secondary: rgba(30, 41, 59, 0.9);
+  --border-color: rgba(148, 163, 184, 0.35);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* SCENIC BACKGROUND */
+html[data-theme="scenic"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 15, 32, 0.25),
+      rgba(8, 15, 32, 0.4)
+    ),
+    url("/Website-Background.avif");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Allow the scenic image to show behind the page */
+html[data-theme="scenic"] main {
+  background-color: transparent !important;
 }
