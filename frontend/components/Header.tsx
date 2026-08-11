@@ -20,19 +20,30 @@ export default function Header() {
   };
 
   return (
-    <header className="border-b border-gray-700 bg-gray-800 p-4">
-      <div className="mx-auto flex max-w-5xl items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-white">
+    <header className="bg-gray-800 p-4">
+      <div className="flex w-full items-center justify-between">
+        <Link
+          href="/"
+          className="text-xl font-bold text-white"
+        >
           ProtonDB Clone
         </Link>
 
         <nav className="flex items-center gap-3">
-          <Link href="/" className='px-4 py-2 text-gray-300 hover:text-white'>
+          <Link
+            href="/"
+            className="px-4 py-2 text-gray-300 hover:text-white"
+          >
             Home
           </Link>
+
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
+            onChange={(e) =>
+              setLanguage(
+                e.target.value as 'en' | 'es'
+              )
+            }
             className="cursor-pointer rounded bg-gray-700 px-3 py-2 text-white hover:bg-gray-600"
           >
             <option value="en">English</option>
@@ -51,9 +62,12 @@ export default function Header() {
 
               <Link href={`/users/${user.id}`}>
                 <img
-                  src={user.avatarUrl || 'https://www.gravatar.com/avatar/?d=mp'}
+                  src={
+                    user.avatarUrl ||
+                    'https://www.gravatar.com/avatar/?d=mp'
+                  }
                   alt={user.username}
-                  className="w-9 h-9 rounded-full object-cover opacity-100 hover:opacity-80 transition-opacity"
+                  className="h-9 w-9 rounded-full object-cover opacity-100 transition-opacity hover:opacity-80"
                 />
               </Link>
             </>
