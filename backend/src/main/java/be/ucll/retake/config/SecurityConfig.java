@@ -28,8 +28,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/users/register", "/users/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/games", "/games/**").permitAll()
                 .anyRequest().authenticated()
-            );
         return http.build();
     }
 
