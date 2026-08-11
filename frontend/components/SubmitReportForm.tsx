@@ -13,6 +13,12 @@ interface SubmitReportFormProps {
   gameId: number;
 }
 
+interface FieldErrors {
+  distribution?: string;
+  protonVersion?: string;
+  comment?: string;
+}
+
 export default function SubmitReportForm({
   gameId,
 }: SubmitReportFormProps) {
@@ -28,24 +34,58 @@ export default function SubmitReportForm({
     setDistribution,
   ] = useState('');
 
-  const [comment, setComment] =
-    useState('');
-
   const [
     protonVersion,
     setProtonVersion,
   ] = useState('');
 
-  const [error, setError] =
-    useState('');
+  const [
+    comment,
+    setComment,
+  ] = useState('');
 
-  const [success, setSuccess] =
-    useState('');
+  const [
+    fieldErrors,
+    setFieldErrors,
+  ] = useState<FieldErrors>({});
+
+  const [
+    error,
+    setError,
+  ] = useState('');
+
+  const [
+    success,
+    setSuccess,
+  ] = useState('');
 
   const [
     submitting,
     setSubmitting,
   ] = useState(false);
+
+  const validateForm = (): boolean => {
+    const errors: FieldErrors = {};
+
+    if (!distribution.trim()) {
+      errors.distribution =
+        t('distributionRequired');
+    }
+
+    if (!protonVersion.trim()) {
+      errors.protonVersion =
+        t('protonVersionRequired');
+    }
+
+    if (!comment.trim()) {
+      errors.comment =
+        t('commentRequired');
+    }
+
+    setFieldErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (
     event: React.FormEvent
@@ -60,8 +100,7 @@ export default function SubmitReportForm({
       return;
     }
 
-    if (!distribution.trim()) {
-      setError(t('distributionRequired'));
+    if (!validateForm()) {
       return;
     }
 
@@ -83,8 +122,9 @@ export default function SubmitReportForm({
 
       setTier('Gold');
       setDistribution('');
-      setComment('');
       setProtonVersion('');
+      setComment('');
+      setFieldErrors({});
 
       router.refresh();
     } catch (err) {
@@ -101,6 +141,21 @@ export default function SubmitReportForm({
     }
   };
 
+  const distributionHasError =
+    Boolean(
+      fieldErrors.distribution
+    );
+
+  const protonVersionHasError =
+    Boolean(
+      fieldErrors.protonVersion
+    );
+
+  const commentHasError =
+    Boolean(
+      fieldErrors.comment
+    );
+
   if (!user) {
     return (
       <div className="rounded-lg border border-gray-700 bg-gray-800 p-6">
@@ -109,7 +164,9 @@ export default function SubmitReportForm({
         </h2>
 
         <p className="mb-4 text-gray-400">
-          {t('loginRequiredForReport')}
+          {t(
+            'loginRequiredForReport'
+          )}
         </p>
 
         <button
@@ -128,9 +185,10 @@ export default function SubmitReportForm({
   return (
     <form
       onSubmit={handleSubmit}
+      noValidate
       className="rounded-lg border border-gray-700 bg-gray-800 p-6"
     >
-      <h2 className="mb-6 text-2xl font-bold">
+      <h2 className="mb-4 text-2xl font-bold">
         {t('submitReport')}
       </h2>
 
@@ -151,7 +209,9 @@ export default function SubmitReportForm({
           htmlFor="tier"
           className="mb-2 block text-sm font-medium text-gray-300"
         >
-          {t('compatibilityRating')}
+          {t(
+            'compatibilityRating'
+          )}
         </label>
 
         <select
@@ -159,7 +219,8 @@ export default function SubmitReportForm({
           value={tier}
           onChange={(event) =>
             setTier(
-              event.target.value as Tier
+              event.target
+                .value as Tier
             )
           }
           className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
@@ -191,24 +252,64 @@ export default function SubmitReportForm({
           htmlFor="distribution"
           className="mb-2 block text-sm font-medium text-gray-300"
         >
-          {t('linuxDistribution')}
+          {t(
+            'linuxDistribution'
+          )}
         </label>
 
         <input
           id="distribution"
           type="text"
           value={distribution}
-          onChange={(event) =>
+          onChange={(event) => {
             setDistribution(
               event.target.value
-            )
-          }
+            );
+
+            if (
+              fieldErrors.distribution
+            ) {
+              setFieldErrors(
+                (previous) => ({
+                  ...previous,
+                  distribution:
+                    undefined,
+                })
+              );
+            }
+
+            if (error) {
+              setError('');
+            }
+          }}
           placeholder={t(
             'distributionPlaceholder'
           )}
-          required
-          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          aria-invalid={
+            distributionHasError
+          }
+          aria-describedby={
+            distributionHasError
+              ? 'distribution-error'
+              : undefined
+          }
+          className={`w-full rounded border bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:outline-none ${
+            distributionHasError
+              ? 'border-red-600 focus:border-red-600'
+              : 'border-gray-600 focus:border-blue-500'
+          }`}
         />
+
+        {fieldErrors.distribution && (
+          <p
+            id="distribution-error"
+            className="mt-1 text-sm text-red-400"
+          >
+            {
+              fieldErrors.distribution
+            }
+          </p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -223,16 +324,55 @@ export default function SubmitReportForm({
           id="protonVersion"
           type="text"
           value={protonVersion}
-          onChange={(event) =>
+          onChange={(event) => {
             setProtonVersion(
               event.target.value
-            )
-          }
+            );
+
+            if (
+              fieldErrors.protonVersion
+            ) {
+              setFieldErrors(
+                (previous) => ({
+                  ...previous,
+                  protonVersion:
+                    undefined,
+                })
+              );
+            }
+
+            if (error) {
+              setError('');
+            }
+          }}
           placeholder={t(
             'protonVersionPlaceholder'
           )}
-          className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          aria-invalid={
+            protonVersionHasError
+          }
+          aria-describedby={
+            protonVersionHasError
+              ? 'proton-version-error'
+              : undefined
+          }
+          className={`w-full rounded border bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:outline-none ${
+            protonVersionHasError
+              ? 'border-red-600 focus:border-red-600'
+              : 'border-gray-600 focus:border-blue-500'
+          }`}
         />
+
+        {fieldErrors.protonVersion && (
+          <p
+            id="proton-version-error"
+            className="mt-1 text-sm text-red-400"
+          >
+            {
+              fieldErrors.protonVersion
+            }
+          </p>
+        )}
       </div>
 
       <div className="mb-6">
@@ -246,17 +386,54 @@ export default function SubmitReportForm({
         <textarea
           id="comment"
           value={comment}
-          onChange={(event) =>
+          onChange={(event) => {
             setComment(
               event.target.value
-            )
-          }
+            );
+
+            if (
+              fieldErrors.comment
+            ) {
+              setFieldErrors(
+                (previous) => ({
+                  ...previous,
+                  comment:
+                    undefined,
+                })
+              );
+            }
+
+            if (error) {
+              setError('');
+            }
+          }}
           placeholder={t(
             'commentPlaceholder'
           )}
           rows={5}
-          className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          aria-invalid={
+            commentHasError
+          }
+          aria-describedby={
+            commentHasError
+              ? 'comment-error'
+              : undefined
+          }
+          className={`w-full resize-y rounded border bg-gray-700 px-3 py-2 text-white placeholder-gray-500 focus:outline-none ${
+            commentHasError
+              ? 'border-red-600 focus:border-red-600'
+              : 'border-gray-600 focus:border-blue-500'
+          }`}
         />
+
+        {fieldErrors.comment && (
+          <p
+            id="comment-error"
+            className="mt-1 text-sm text-red-400"
+          >
+            {fieldErrors.comment}
+          </p>
+        )}
       </div>
 
       <button
@@ -265,8 +442,12 @@ export default function SubmitReportForm({
         className="rounded bg-blue-600 px-5 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting
-          ? t('submittingReport')
-          : t('submitReportButton')}
+          ? t(
+              'submittingReport'
+            )
+          : t(
+              'submitReportButton'
+            )}
       </button>
     </form>
   );

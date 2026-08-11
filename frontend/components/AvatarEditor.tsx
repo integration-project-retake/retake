@@ -34,11 +34,11 @@ export default function AvatarEditor({ profileId, currentAvatar, username }:
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative w-20 h-20 group">
+      <div className="relative w-40 h-40 group">
         <img
           src={currentAvatar || 'https://www.gravatar.com/avatar/?d=mp'}
           alt={username}
-          className="w-20 h-20 rounded-full object-cover border border-gray-700"
+          className="w-40 h-40 rounded-full"
         />
         {isOwner && (
           <button

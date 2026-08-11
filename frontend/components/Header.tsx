@@ -38,10 +38,6 @@ export default function Header() {
 
           {user ? (
             <>
-              <Link href={`users/${user.id}`} className="rounded bg-lime-400 px-4 py-2 text-white hover:bg-lime-500">
-                {t('welcome')}, {user.username}
-              </Link>
-
               <button
                 type="button"
                 onClick={handleLogout}
@@ -49,6 +45,14 @@ export default function Header() {
               >
                 {t('logout')}
               </button>
+
+              <Link href={`/users/${user.id}`}>
+                <img
+                  src={user.avatarUrl || 'https://www.gravatar.com/avatar/?d=mp'}
+                  alt={user.username}
+                  className="w-9 h-9 rounded-full object-cover opacity-100 hover:opacity-80 transition-opacity"
+                />
+              </Link>
             </>
           ) : (
             <>
