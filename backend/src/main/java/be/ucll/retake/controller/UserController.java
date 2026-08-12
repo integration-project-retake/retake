@@ -114,7 +114,19 @@ public class UserController {
             );
         }
 
-        return UserDto.from(user);
+        User freshUser =
+                userService.getUserById(
+                        user.getId()
+                );
+
+        session.setAttribute(
+                "user",
+                freshUser
+        );
+
+        return UserDto.from(
+                freshUser
+        );
     }
 
     @PostMapping("/logout")
@@ -143,9 +155,40 @@ public class UserController {
                 )
         );
     }
+
     @PatchMapping("/{id}/avatar")
-    public UserDto updateAvatar(@PathVariable Long id, @RequestParam String avatarUrl) {
-        return UserDto.from(userService.updateAvatar(id, avatarUrl));
+    public UserDto updateAvatar(
+            @PathVariable Long id,
+            @RequestParam String avatarUrl,
+            HttpServletRequest request
+    ) {
+        User updatedUser =
+                userService.updateAvatar(
+                        id,
+                        avatarUrl
+                );
+
+        HttpSession session =
+                request.getSession(false);
+
+        if (session != null) {
+            Object sessionUser =
+                    session.getAttribute("user");
+
+            if (
+                    sessionUser instanceof User user &&
+                            user.getId().equals(id)
+            ) {
+                session.setAttribute(
+                        "user",
+                        updatedUser
+                );
+            }
+        }
+
+        return UserDto.from(
+                updatedUser
+        );
     }
     @PatchMapping("/{id}/profile")
         public UserDto updateProfile(@PathVariable Long id,

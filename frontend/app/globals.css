@@ -33,7 +33,7 @@
 
 /* =========================================================
    LIGHT THEME
-   Soft warm / muted rose-gray palette
+   Soft warm / muted rose-gray
    ========================================================= */
 
 html[data-theme="light"] {
@@ -52,7 +52,6 @@ html[data-theme="light"] {
   --text-primary: #292428;
   --text-secondary: #6f6468;
 
-  /* Header links need stronger contrast against the mauve header */
   --header-link: #f5eff0;
   --header-link-hover: #ffffff;
 
@@ -65,6 +64,7 @@ html[data-theme="light"] {
 
 /* =========================================================
    DARK THEME
+   Classic navy / slate
    ========================================================= */
 
 html[data-theme="dark"] {
@@ -95,129 +95,129 @@ html[data-theme="dark"] {
 
 /* =========================================================
    SCENIC THEME
-   Temporary component colours.
-   We will refine this theme later.
+   Dusk purple / neon violet / translucent surfaces
    ========================================================= */
 
 html[data-theme="scenic"] {
   --background: transparent;
-  --foreground: #ededed;
+  --foreground: #faf7ff;
 
-  --header-bg: #1f2937;
-  --footer-bg: #1f2937;
+  --header-bg: rgba(31, 25, 62, 0.94);
+  --footer-bg: rgba(31, 25, 62, 0.94);
 
-  --surface: #1e293b;
-  --surface-secondary: #111827;
-  --surface-hover: #334155;
+  --surface: rgba(61, 48, 108, 0.84);
+  --surface-secondary: rgba(32, 27, 72, 0.9);
+  --surface-hover: rgba(80, 63, 137, 0.9);
 
-  --input-bg: #1f2937;
+  --input-bg: rgba(39, 33, 82, 0.92);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-primary: #fbf8ff;
+  --text-secondary: #cbbfe8;
 
-  --header-link: #cbd5e1;
+  --header-link: #e3daf8;
   --header-link-hover: #ffffff;
 
-  --border-color: #374151;
+  --border-color: rgba(167, 139, 250, 0.6);
 
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
 }
 
 
 /* =========================================================
    WITCHER THEME
-   Temporary component colours.
-   We will refine this theme later.
+   Charcoal / forest / antique bronze
    ========================================================= */
 
 html[data-theme="witcher"] {
   --background: transparent;
-  --foreground: #ededed;
+  --foreground: #eeeae2;
 
-  --header-bg: #1f2937;
-  --footer-bg: #1f2937;
+  --header-bg: rgba(20, 23, 20, 0.96);
+  --footer-bg: rgba(20, 23, 20, 0.96);
 
-  --surface: #1e293b;
-  --surface-secondary: #111827;
-  --surface-hover: #334155;
+  --surface: rgba(34, 40, 34, 0.9);
+  --surface-secondary: rgba(20, 25, 21, 0.94);
+  --surface-hover: rgba(50, 59, 49, 0.94);
 
-  --input-bg: #1f2937;
+  --input-bg: rgba(28, 34, 29, 0.94);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-primary: #f1eee6;
+  --text-secondary: #b5b09f;
 
-  --header-link: #cbd5e1;
+  --header-link: #dad5c8;
   --header-link-hover: #ffffff;
 
-  --border-color: #374151;
+  --border-color: rgba(128, 137, 113, 0.55);
 
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
+  --accent: #9a7b3f;
+  --accent-hover: #b4934f;
 }
 
 
 /* =========================================================
    RDR2 THEME
-   Temporary component colours.
-   We will refine this theme later.
+   Deep crimson / blackened red / weathered leather
    ========================================================= */
 
 html[data-theme="rdr2"] {
   --background: transparent;
-  --foreground: #ededed;
+  --foreground: #f5eeee;
 
-  --header-bg: #1f2937;
-  --footer-bg: #1f2937;
+  --header-bg: rgba(29, 8, 10, 0.97);
+  --footer-bg: rgba(29, 8, 10, 0.97);
 
-  --surface: #1e293b;
-  --surface-secondary: #111827;
-  --surface-hover: #334155;
+  --surface: rgba(66, 18, 22, 0.9);
+  --surface-secondary: rgba(35, 9, 12, 0.95);
+  --surface-hover: rgba(91, 20, 25, 0.94);
 
-  --input-bg: #1f2937;
+  --input-bg: rgba(43, 11, 14, 0.95);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-primary: #f8f0ed;
+  --text-secondary: #c9aaa8;
 
-  --header-link: #cbd5e1;
+  --header-link: #ead9d7;
   --header-link-hover: #ffffff;
 
-  --border-color: #374151;
+  --border-color: rgba(125, 15, 20, 0.7);
 
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
+  --accent: #4b3028;
+  --accent-hover: #634036;
 }
 
 
 /* =========================================================
    GOD OF WAR THEME
-   Temporary component colours.
-   We will refine this theme later.
+   Deep violet / midnight blue / cold steel
    ========================================================= */
 
 html[data-theme="gow"] {
   --background: transparent;
-  --foreground: #ededed;
+  --foreground: #f4f2ff;
 
-  --header-bg: #1f2937;
-  --footer-bg: #1f2937;
+  --header-bg: rgba(12, 10, 35, 0.97);
+  --footer-bg: rgba(12, 10, 35, 0.97);
 
-  --surface: #1e293b;
-  --surface-secondary: #111827;
-  --surface-hover: #334155;
+  --surface: rgba(38, 31, 88, 0.9);
+  --surface-secondary: rgba(18, 14, 48, 0.95);
+  --surface-hover: rgba(53, 43, 112, 0.94);
 
-  --input-bg: #1f2937;
+  --input-bg: rgba(25, 20, 62, 0.95);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-primary: #f6f4ff;
+  --text-secondary: #b9b4d8;
 
-  --header-link: #cbd5e1;
+  --header-link: #dedaff;
   --header-link-hover: #ffffff;
 
-  --border-color: #374151;
+  --border-color: rgba(74, 54, 190, 0.65);
 
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
+  /*
+     Submit Report / Edit:
+     cold steel blue instead of red.
+  */
+  --accent: #3f6f8f;
+  --accent-hover: #568cac;
 }
 
 
@@ -243,7 +243,6 @@ body {
   min-height: 100%;
 }
 
-
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -258,9 +257,6 @@ body {
 
 /* =========================================================
    REUSABLE THEME CLASSES
-
-   Components will gradually be converted to these during
-   the Theme Integration user story.
    ========================================================= */
 
 .theme-header {
@@ -268,12 +264,10 @@ body {
   color: var(--text-primary);
 }
 
-
 .theme-footer {
   background-color: var(--footer-bg);
   color: var(--text-primary);
 }
-
 
 .theme-surface {
   background-color: var(--surface);
@@ -281,12 +275,11 @@ body {
   border-color: var(--border-color);
 }
 
-
 .theme-surface-secondary {
   background-color: var(--surface-secondary);
   color: var(--text-primary);
+  border-color: var(--border-color);
 }
-
 
 .theme-input {
   background-color: var(--input-bg);
@@ -294,37 +287,30 @@ body {
   border-color: var(--border-color);
 }
 
-
 .theme-input::placeholder {
   color: var(--text-secondary);
 }
-
 
 .theme-primary-text {
   color: var(--text-primary);
 }
 
-
 .theme-secondary-text {
   color: var(--text-secondary);
 }
-
 
 .theme-header-link {
   color: var(--header-link);
   transition: color 0.2s ease;
 }
 
-
 .theme-header-link:hover {
   color: var(--header-link-hover);
 }
 
-
 .theme-border {
   border-color: var(--border-color);
 }
-
 
 .theme-hover:hover {
   background-color: var(--surface-hover);
@@ -335,7 +321,26 @@ body {
    LIGHT PAGE BACKGROUND
    ========================================================= */
 
+html[data-theme="light"] body {
+  background-image: none;
+  background-color: var(--background);
+}
+
 html[data-theme="light"] main {
+  background-color: var(--background) !important;
+}
+
+
+/* =========================================================
+   DARK PAGE BACKGROUND
+   ========================================================= */
+
+html[data-theme="dark"] body {
+  background-image: none;
+  background-color: var(--background);
+}
+
+html[data-theme="dark"] main {
   background-color: var(--background) !important;
 }
 
@@ -345,10 +350,12 @@ html[data-theme="light"] main {
    ========================================================= */
 
 html[data-theme="scenic"] body {
+  background-color: #1f1839;
+
   background-image:
     linear-gradient(
-      rgba(8, 15, 32, 0.25),
-      rgba(8, 15, 32, 0.4)
+      rgba(25, 18, 58, 0.08),
+      rgba(38, 18, 66, 0.22)
     ),
     url("/Website-Background.avif");
 
@@ -357,7 +364,6 @@ html[data-theme="scenic"] body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
 
 html[data-theme="scenic"] main {
   background-color: transparent !important;
@@ -369,10 +375,12 @@ html[data-theme="scenic"] main {
    ========================================================= */
 
 html[data-theme="witcher"] body {
+  background-color: #151815;
+
   background-image:
     linear-gradient(
-      rgba(8, 15, 20, 0.18),
-      rgba(8, 15, 20, 0.28)
+      rgba(8, 12, 9, 0.16),
+      rgba(8, 12, 9, 0.3)
     ),
     url("/Witcher-3-Background.avif");
 
@@ -381,7 +389,6 @@ html[data-theme="witcher"] body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
 
 html[data-theme="witcher"] main {
   background-color: transparent !important;
@@ -393,10 +400,12 @@ html[data-theme="witcher"] main {
    ========================================================= */
 
 html[data-theme="rdr2"] body {
+  background-color: #21080b;
+
   background-image:
     linear-gradient(
-      rgba(8, 10, 12, 0.18),
-      rgba(8, 10, 12, 0.3)
+      rgba(35, 5, 7, 0.12),
+      rgba(65, 5, 10, 0.24)
     ),
     url("/RDR2-Background.png");
 
@@ -405,7 +414,6 @@ html[data-theme="rdr2"] body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
 
 html[data-theme="rdr2"] main {
   background-color: transparent !important;
@@ -417,10 +425,12 @@ html[data-theme="rdr2"] main {
    ========================================================= */
 
 html[data-theme="gow"] body {
+  background-color: #100d2c;
+
   background-image:
     linear-gradient(
-      rgba(8, 12, 20, 0.12),
-      rgba(8, 12, 20, 0.22)
+      rgba(23, 10, 82, 0.08),
+      rgba(39, 13, 186, 0.16)
     ),
     url("/GOW-Background.avif");
 
@@ -429,7 +439,6 @@ html[data-theme="gow"] body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
 
 html[data-theme="gow"] main {
   background-color: transparent !important;

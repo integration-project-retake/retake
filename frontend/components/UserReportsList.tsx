@@ -201,14 +201,14 @@ export default function UserReportsList({
 
   if (reports.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-700 bg-gray-800/40 px-6 py-10 text-center">
-        <h3 className="text-lg font-semibold text-white">
+      <div className="theme-surface theme-border rounded-xl border border-dashed px-6 py-10 text-center transition-colors duration-200">
+        <h3 className="theme-primary-text text-lg font-semibold">
           {language === 'es'
             ? 'Aún no hay contribuciones'
             : 'No contributions yet'}
         </h3>
 
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-400">
+        <p className="theme-secondary-text mx-auto mt-2 max-w-md text-sm leading-6">
           {isOwnProfile
             ? language === 'es'
               ? 'Todavía no has enviado ningún informe de compatibilidad. Explora los juegos y comparte tu experiencia.'
@@ -221,7 +221,7 @@ export default function UserReportsList({
         {isOwnProfile && (
           <Link
             href="/"
-            className="mt-5 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+            className="mt-5 inline-block rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)]"
           >
             {language === 'es'
               ? 'Explorar juegos'
@@ -245,13 +245,13 @@ export default function UserReportsList({
           return (
             <div
               key={report.id}
-              className="rounded-lg border border-gray-700 bg-gray-800 p-4"
+              className="theme-surface theme-border rounded-lg border p-4 shadow-sm transition-colors duration-200"
             >
               <div className="mb-2 flex items-start justify-between gap-4">
-                <h2 className="text-lg font-semibold underline">
+                <h2 className="theme-primary-text text-lg font-semibold underline">
                   <Link
                     href={`/games/${report.steamAppid}`}
-                    className="transition-colors duration-300 hover:text-lime-400"
+                    className="transition-colors duration-300 hover:text-[var(--accent)]"
                   >
                     {report.gameName}
                   </Link>
@@ -274,7 +274,7 @@ export default function UserReportsList({
                     )}
                   </div>
 
-                  <span className="text-sm italic text-gray-500">
+                  <span className="theme-secondary-text text-sm italic">
                     {new Date(
                       report.createdAt
                     ).toLocaleDateString(
@@ -288,7 +288,7 @@ export default function UserReportsList({
 
               {!isEditing && (
                 <>
-                  <p className="mb-2 text-sm text-gray-400">
+                  <p className="theme-secondary-text mb-2 text-sm">
                     {report.distribution}
                     {' • '}
                     {report.protonVersion ??
@@ -296,8 +296,8 @@ export default function UserReportsList({
                   </p>
 
                   {report.comment && (
-                    <div className="rounded bg-gray-900 p-3 text-gray-300">
-                      <p className="whitespace-pre-line">
+                    <div className="theme-surface-secondary theme-border rounded border p-3">
+                      <p className="theme-primary-text whitespace-pre-line">
                         {report.comment}
                       </p>
                     </div>
@@ -323,7 +323,7 @@ export default function UserReportsList({
                         disabled={
                           isDeleting
                         }
-                        className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {language === 'es'
                           ? 'Editar'
@@ -372,7 +372,7 @@ export default function UserReportsList({
                     <div>
                       <label
                         htmlFor={`tier-${report.id}`}
-                        className="mb-1 block text-sm font-medium text-gray-300"
+                        className="theme-primary-text mb-1 block text-sm font-medium"
                       >
                         {t(
                           'compatibilityRating'
@@ -391,7 +391,7 @@ export default function UserReportsList({
                           })
                         }
                         required
-                        className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
                       >
                         <option value="Platinum">
                           {t('platinum')}
@@ -418,7 +418,7 @@ export default function UserReportsList({
                     <div>
                       <label
                         htmlFor={`distribution-${report.id}`}
-                        className="mb-1 block text-sm font-medium text-gray-300"
+                        className="theme-primary-text mb-1 block text-sm font-medium"
                       >
                         {t(
                           'linuxDistribution'
@@ -439,14 +439,14 @@ export default function UserReportsList({
                           })
                         }
                         required
-                        className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
 
                     <div>
                       <label
                         htmlFor={`proton-${report.id}`}
-                        className="mb-1 block text-sm font-medium text-gray-300"
+                        className="theme-primary-text mb-1 block text-sm font-medium"
                       >
                         {t(
                           'protonVersion'
@@ -467,14 +467,14 @@ export default function UserReportsList({
                           })
                         }
                         required
-                        className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
 
                     <div>
                       <label
                         htmlFor={`comment-${report.id}`}
-                        className="mb-1 block text-sm font-medium text-gray-300"
+                        className="theme-primary-text mb-1 block text-sm font-medium"
                       >
                         {t('comment')}
                       </label>
@@ -493,7 +493,7 @@ export default function UserReportsList({
                         }
                         required
                         rows={4}
-                        className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                        className="theme-input w-full resize-y rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
 
@@ -518,7 +518,7 @@ export default function UserReportsList({
                           cancelEditing
                         }
                         disabled={saving}
-                        className="rounded bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="theme-surface-secondary theme-border theme-primary-text rounded border px-4 py-2 font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {language === 'es'
                           ? 'Cancelar'
@@ -545,18 +545,18 @@ export default function UserReportsList({
             }
           }}
         >
-          <div className="w-full max-w-md rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-2xl">
+          <div className="theme-surface theme-border w-full max-w-md rounded-xl border p-6 shadow-2xl">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-950 text-2xl font-bold text-red-400">
               !
             </div>
 
-            <h2 className="mt-4 text-xl font-bold text-white">
+            <h2 className="theme-primary-text mt-4 text-xl font-bold">
               {language === 'es'
                 ? 'Eliminar informe'
                 : 'Delete Report'}
             </h2>
 
-            <p className="mt-3 text-sm leading-6 text-gray-300">
+            <p className="theme-secondary-text mt-3 text-sm leading-6">
               {language === 'es'
                 ? '¿Seguro que quieres eliminar este informe? Esta acción es permanente y no se puede deshacer.'
                 : 'Are you sure you want to delete this report? This action is permanent and cannot be undone.'}
@@ -571,7 +571,7 @@ export default function UserReportsList({
                 disabled={
                   deletingReportId !== null
                 }
-                className="rounded-lg bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className="theme-surface-secondary theme-border theme-primary-text rounded-lg border px-4 py-2 font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {language === 'es'
                   ? 'Cancelar'

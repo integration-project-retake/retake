@@ -18,7 +18,7 @@ services:
 
   backend:
     build: ./backend
-    container_name: retake-backend
+    container_name: backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/retake
       SPRING_DATASOURCE_USERNAME: postgres
@@ -38,9 +38,9 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: retake-frontend
+    container_name: frontend
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:8080
+      NEXT_PUBLIC_API_URL: http://localhost:8080
       INTERNAL_API_URL: http://backend:8080
     ports:
       - "3000:3000"

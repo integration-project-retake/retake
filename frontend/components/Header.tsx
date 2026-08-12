@@ -24,6 +24,10 @@ export default function Header() {
     }
   };
 
+  const avatarUrl =
+    user?.avatarUrl?.trim() ||
+    'https://www.gravatar.com/avatar/?d=mp';
+
   return (
     <header className="theme-header theme-border border-b p-4 transition-colors duration-200">
       <div className="flex w-full items-center justify-between">
