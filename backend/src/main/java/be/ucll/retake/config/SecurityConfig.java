@@ -29,13 +29,14 @@ public class SecurityConfig {
                 auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
-                    .requestMatchers(
-                        HttpMethod.POST,
-                        "/users/register",
-                        "/users/login"
-                    )
+                    .requestMatchers(HttpMethod.POST, "/users", "/users/login")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/games", "/games/**")
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/games",
+                        "/games/**",
+                        "/reports/steam/**"
+                    )
                     .permitAll()
                     .anyRequest()
                     .authenticated()
