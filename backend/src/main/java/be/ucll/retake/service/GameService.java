@@ -41,6 +41,20 @@ public class GameService {
                 );
     }
 
+    public Game getGameBySteamAppid(
+            Integer steamAppid
+    ) {
+        return gameRepository
+                .findBySteamAppid(steamAppid)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Game with Steam App ID "
+                                        + steamAppid
+                                        + " not found"
+                        )
+                );
+    }
+
     public Game createGame(Integer steamAppid, String name) {
         if (gameRepository.existsBySteamAppid(steamAppid)) {
             throw new IllegalArgumentException(

@@ -32,7 +32,10 @@ public class GameController {
     private final GameService gameService;
     private final SteamService steamService;
 
-    public GameController(GameService gameService, SteamService steamService) {
+    public GameController(
+            GameService gameService,
+            SteamService steamService
+    ) {
         this.gameService = gameService;
         this.steamService = steamService;
     }
@@ -44,24 +47,46 @@ public class GameController {
                 .map(
                         game -> GameDto.from(
                                 game,
-                                gameService.getGameOverallTier(game.getId())
+                                gameService.getGameOverallTier(
+                                        game.getId()
+                                )
                         )
                 )
                 .toList();
     }
 
-    @GetMapping("/{id}")
-    public GameDto getGameById(
-            @PathVariable Long id
+    /*
+     * Individual game pages use the Steam App ID.
+     *
+     * Example:
+     * /games/570 -> Dota 2
+     * /games/1174180 -> Red Dead Redemption 2
+     */
+    @GetMapping("/{steamAppid}")
+    public GameDto getGameBySteamAppid(
+            @PathVariable Integer steamAppid
     ) {
-        Game game = gameService.getGameById(id);
+        Game game =
+                gameService.getGameBySteamAppid(
+                        steamAppid
+                );
 
         String overallTier =
-                gameService.getGameOverallTier(id);
+                gameService.getGameOverallTier(
+                        game.getId()
+                );
 
-        return GameDto.from(game, overallTier);
+        return GameDto.from(
+                game,
+                overallTier
+        );
     }
 
+    /*
+     * Related-games lookup still uses the internal database ID.
+     *
+     * The frontend already calls this with game.id.
+     */
     @GetMapping("/{id}/related")
     public List<GameDto> getRelatedGames(
             @PathVariable Long id
@@ -71,7 +96,9 @@ public class GameController {
                 .map(
                         game -> GameDto.from(
                                 game,
-                                gameService.getGameOverallTier(game.getId())
+                                gameService.getGameOverallTier(
+                                        game.getId()
+                                )
                         )
                 )
                 .toList();
@@ -125,16 +152,19 @@ public class GameController {
 
         return dtos;
     }
-        @GetMapping("/{steamAppid}/players")
-        public Map<String, Object> getPlayerCount(
-                @PathVariable Integer steamAppid
-        ) {
+
+    @GetMapping("/{steamAppid}/players")
+    public Map<String, Object> getPlayerCount(
+            @PathVariable Integer steamAppid
+    ) {
         Integer count =
-                steamService.getCurrentPlayers(steamAppid);
+                steamService.getCurrentPlayers(
+                        steamAppid
+                );
 
         return Map.of(
                 "playerCount",
                 count == null ? -1 : count
         );
-        }
+    }
 }
