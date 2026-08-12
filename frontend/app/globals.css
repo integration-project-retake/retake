@@ -85,3 +85,31 @@ html[data-theme="scenic"] body {
 html[data-theme="scenic"] main {
   background-color: transparent !important;
 }
+
+/* =========================================================
+   WITCHER THEME
+   ========================================================= */
+
+html[data-theme="witcher"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
+html[data-theme="witcher"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 15, 20, 0.18),
+      rgba(8, 15, 20, 0.28)
+    ),
+    url("/Witcher-3-Background.avif");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Allow the Witcher background to show behind the page */
+html[data-theme="witcher"] main {
+  background-color: transparent !important;
+}
