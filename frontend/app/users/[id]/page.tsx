@@ -17,6 +17,8 @@ export default async function UserProfile({
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-4xl">
+
+        {/* Profile header */}
         <section className="theme-surface theme-border mb-10 rounded-xl border p-6 shadow-sm transition-colors duration-200 sm:p-8">
           <div className="flex items-center gap-6">
             <AvatarEditor
@@ -25,12 +27,13 @@ export default async function UserProfile({
               username={user.username}
             />
 
-            <h1 className="theme-primary-text text-3xl font-bold transition-colors duration-200 hover:text-pink-500">
+            <h1 className="theme-primary-text text-3xl font-bold transition-colors duration-200 hover:text-[var(--accent)]">
               {user.username}
             </h1>
           </div>
         </section>
 
+        {/* Contribution count */}
         <p className="theme-secondary-text mb-6">
           {reports.length}{' '}
           {reports.length === 1
@@ -38,6 +41,7 @@ export default async function UserProfile({
             : 'reports contributed'}
         </p>
 
+        {/* User reports */}
         <UserReportsList
           profileId={Number(id)}
           reports={reports}
