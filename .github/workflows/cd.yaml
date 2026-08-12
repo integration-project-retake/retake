@@ -7,6 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   NEXT_PUBLIC_API_URL: "https://backend-itip-retake.apps.okd.ucll.cloud"
+  INTERNAL_API_URL: "http://backend:8080"
 
 jobs:
   build-backend:
@@ -72,3 +73,4 @@ jobs:
           labels: ${{ steps.meta-frontend.outputs.labels }}
           build-args: |
             NEXT_PUBLIC_API_URL=${{ env.NEXT_PUBLIC_API_URL }}
+            INTERNAL_API_URL=${{ env.INTERNAL_API_URL }}
