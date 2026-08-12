@@ -23,6 +23,10 @@ export default function Header() {
     }
   };
 
+  const avatarUrl =
+    user?.avatarUrl?.trim() ||
+    'https://www.gravatar.com/avatar/?d=mp';
+
   return (
     <header className="theme-header theme-border border-b p-4 transition-colors duration-200">
       <div className="flex w-full items-center justify-between">
@@ -81,14 +85,19 @@ export default function Header() {
                 {t('logout')}
               </button>
 
-              <Link href={`/users/${user.id}`}>
+              <Link
+                href={`/users/${user.id}`}
+                className="flex items-center"
+                aria-label={`${user.username} profile`}
+              >
                 <img
-                  src={
-                    user.avatarUrl ||
-                    'https://www.gravatar.com/avatar/?d=mp'
-                  }
+                  src={avatarUrl}
                   alt={user.username}
-                  className="h-9 w-9 rounded-full object-cover opacity-100 transition-opacity hover:opacity-80"
+                  className="h-9 w-9 rounded-full border border-[var(--border-color)] object-cover opacity-100 transition-opacity hover:opacity-80"
+                  onError={(event) => {
+                    event.currentTarget.src =
+                      'https://www.gravatar.com/avatar/?d=mp';
+                  }}
                 />
               </Link>
             </>
