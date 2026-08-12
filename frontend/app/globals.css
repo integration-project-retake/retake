@@ -1,43 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
 
-  --surface: #f1f5f9;
-  --surface-secondary: #e2e8f0;
-  --border-color: #cbd5e1;
+:root {
+  --background: #0f172a;
+  --foreground: #ededed;
 }
+
 
 /* LIGHT THEME */
 html[data-theme="light"] {
-  --background: #f8fafc;
-  --foreground: #171717;
-
-  --surface: #ffffff;
-  --surface-secondary: #e2e8f0;
-  --border-color: #cbd5e1;
+  --background: #d6cbcc;
+  --foreground: #ededed;
 }
+
 
 /* DARK THEME */
 html[data-theme="dark"] {
   --background: #0f172a;
   --foreground: #ededed;
-
-  --surface: #1e293b;
-  --surface-secondary: #334155;
-  --border-color: #475569;
 }
+
 
 /* SCENIC THEME */
 html[data-theme="scenic"] {
   --background: transparent;
-  --foreground: #ffffff;
-
-  --surface: rgba(15, 23, 42, 0.88);
-  --surface-secondary: rgba(30, 41, 59, 0.9);
-  --border-color: rgba(148, 163, 184, 0.35);
+  --foreground: #ededed;
 }
+
 
 @theme inline {
   --color-background: var(--background);
@@ -47,22 +36,37 @@ html[data-theme="scenic"] {
   --font-mono: var(--font-geist-mono);
 }
 
+
 html,
 body {
   min-height: 100%;
 }
 
+
 body {
   background-color: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-/* SCENIC BACKGROUND */
+
+/* =========================================================
+   LIGHT THEME
+   Only change the page background.
+   Existing components keep their original styling.
+   ========================================================= */
+
+html[data-theme="light"] main {
+  background-color: #d6cbcc !important;
+}
+
+
+/* =========================================================
+   SCENIC THEME
+   Only replace the page background with the scenic image.
+   ========================================================= */
+
 html[data-theme="scenic"] body {
   background-image:
     linear-gradient(
@@ -77,7 +81,7 @@ html[data-theme="scenic"] body {
   background-attachment: fixed;
 }
 
-/* Allow the scenic image to show behind the page */
+
 html[data-theme="scenic"] main {
   background-color: transparent !important;
 }
