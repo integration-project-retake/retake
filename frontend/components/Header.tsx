@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme, type Theme } from '@/context/ThemeContext';
+import AccountMenu from './AccountMenu';
 
 export default function Header() {
   const { user, logout } = useAuth();
