@@ -6,11 +6,11 @@ export type ChatMessage = {
 };
 
 async function buildContext(): Promise<string> {
-  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   try {
     const [gamesRes, reportsRes] = await Promise.all([
-      fetch(`${API}/games`, { cache: "no-store" }),
-      fetch(`${API}/reports`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/games`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/reports`, { cache: "no-store" }),
     ]);
     const games = await gamesRes.json();
     const reports = await reportsRes.json();
