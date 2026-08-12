@@ -157,7 +157,7 @@ html[data-theme="witcher"] {
 
 /* =========================================================
    RDR2 THEME
-   Deep crimson / blackened red / weathered parchment
+   Deep crimson / blackened red / weathered leather
    ========================================================= */
 
 html[data-theme="rdr2"] {
@@ -181,7 +181,6 @@ html[data-theme="rdr2"] {
 
   --border-color: rgba(125, 15, 20, 0.7);
 
-  /* Normal actions: dark leather brown */
   --accent: #4b3028;
   --accent-hover: #634036;
 }
@@ -189,46 +188,36 @@ html[data-theme="rdr2"] {
 
 /* =========================================================
    GOD OF WAR THEME
-   Silhouette navy / cold midnight / muted frost
+   Deep violet / midnight blue / cold steel
    ========================================================= */
 
 html[data-theme="gow"] {
   --background: transparent;
-  --foreground: #edf4f7;
+  --foreground: #f4f2ff;
 
-  /*
-     Much darker than before.
-     This gives the header a silhouette-like Norse look.
-  */
-  --header-bg: rgba(12, 25, 38, 0.97);
-  --footer-bg: rgba(12, 25, 38, 0.97);
+  --header-bg: rgba(12, 10, 35, 0.97);
+  --footer-bg: rgba(12, 10, 35, 0.97);
 
-  /*
-     Deep midnight blue surfaces rather than bright teal.
-  */
-  --surface: rgba(23, 43, 58, 0.91);
-  --surface-secondary: rgba(13, 29, 42, 0.95);
-  --surface-hover: rgba(34, 58, 75, 0.95);
+  --surface: rgba(38, 31, 88, 0.9);
+  --surface-secondary: rgba(18, 14, 48, 0.95);
+  --surface-hover: rgba(53, 43, 112, 0.94);
 
-  --input-bg: rgba(18, 37, 51, 0.95);
+  --input-bg: rgba(25, 20, 62, 0.95);
 
-  --text-primary: #f3f8fa;
-  --text-secondary: #afc2cc;
+  --text-primary: #f6f4ff;
+  --text-secondary: #b9b4d8;
 
-  --header-link: #d9e6ec;
+  --header-link: #dedaff;
   --header-link-hover: #ffffff;
 
-  /*
-     Cold blue-gray border.
-  */
-  --border-color: rgba(104, 143, 164, 0.58);
+  --border-color: rgba(74, 54, 190, 0.65);
 
   /*
-     Muted frost-blue primary action.
-     Distinct from Dark's bright generic blue.
+     Submit Report / Edit:
+     cold steel blue instead of red.
   */
-  --accent: #477d99;
-  --accent-hover: #5d94af;
+  --accent: #3f6f8f;
+  --accent-hover: #568cac;
 }
 
 
@@ -436,12 +425,12 @@ html[data-theme="rdr2"] main {
    ========================================================= */
 
 html[data-theme="gow"] body {
-  background-color: #0b1b29;
+  background-color: #100d2c;
 
   background-image:
     linear-gradient(
-      rgba(5, 17, 30, 0.12),
-      rgba(5, 21, 35, 0.28)
+      rgba(23, 10, 82, 0.08),
+      rgba(39, 13, 186, 0.16)
     ),
     url("/GOW-Background.avif");
 
