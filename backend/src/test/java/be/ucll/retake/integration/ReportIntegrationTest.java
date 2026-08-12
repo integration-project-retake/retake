@@ -61,7 +61,9 @@ public class ReportIntegrationTest {
                         .param("userId", user.getId().toString())
                         .param("gameId", game.getId().toString())
                         .param("tier", "Gold")
-                        .param("distribution", "Ubuntu"))
+                        .param("distribution", "Ubuntu")
+                        .param("comment", "test")
+                        .param("protonVersion", "version"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.tier").value("Gold"))
                 .andExpect(jsonPath("$.distribution").value("Ubuntu"));
