@@ -140,10 +140,14 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
         );
 
       case 'steamAsc':
-        return copy.sort((a, b) => a.steamAppid - b.steamAppid);
+        return copy.sort(
+          (a, b) => a.steamAppid - b.steamAppid
+        );
 
       case 'steamDesc':
-        return copy.sort((a, b) => b.steamAppid - a.steamAppid);
+        return copy.sort(
+          (a, b) => b.steamAppid - a.steamAppid
+        );
 
       case 'tierBest':
         return copy.sort(
@@ -177,14 +181,16 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={t('searchPlaceholder')}
-          className="w-full flex-1 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
+          className="theme-input w-full flex-1 rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
         />
 
         <div className="flex flex-wrap gap-2">
           <select
             value={selectedGenre}
-            onChange={(event) => setSelectedGenre(event.target.value)}
-            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            onChange={(event) =>
+              setSelectedGenre(event.target.value)
+            }
+            className="theme-input cursor-pointer rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
             aria-label="Filter games by genre"
           >
             <option value="all">All Genres</option>
@@ -199,9 +205,11 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           <select
             value={selectedTier}
             onChange={(event) =>
-              setSelectedTier(event.target.value as TierFilter)
+              setSelectedTier(
+                event.target.value as TierFilter
+              )
             }
-            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            className="theme-input cursor-pointer rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
             aria-label="Filter games by compatibility tier"
           >
             <option value="all">All Tiers</option>
@@ -218,14 +226,18 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
             onChange={(event) =>
               setSortMode(event.target.value as SortMode)
             }
-            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            className="theme-input cursor-pointer rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
             aria-label="Sort games"
           >
             <option value="default">Default</option>
             <option value="az">Name A–Z</option>
             <option value="za">Name Z–A</option>
-            <option value="steamAsc">Steam App ID: Low → High</option>
-            <option value="steamDesc">Steam App ID: High → Low</option>
+            <option value="steamAsc">
+              Steam App ID: Low → High
+            </option>
+            <option value="steamDesc">
+              Steam App ID: High → Low
+            </option>
             <option value="tierBest">
               Compatibility: Best → Worst
             </option>
@@ -239,8 +251,8 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
             onClick={() => handleLayoutChange('grid')}
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'grid'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]'
+                : 'theme-input hover:bg-[var(--surface-hover)]'
             }`}
           >
             {t('grid')}
@@ -251,8 +263,8 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
             onClick={() => handleLayoutChange('list')}
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'list'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]'
+                : 'theme-input hover:bg-[var(--surface-hover)]'
             }`}
           >
             {t('list')}
@@ -277,7 +289,7 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           <Link
             key={game.id}
             href={`/games/${game.steamAppid}`}
-            className={`overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500 ${
+            className={`theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)] ${
               layout === 'list'
                 ? 'flex flex-col sm:flex-row'
                 : 'flex flex-col'
@@ -299,9 +311,11 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
 
             <div className="flex flex-1 items-start justify-between p-4">
               <div className="min-w-0">
-                <h2 className="text-lg font-semibold">{game.name}</h2>
+                <h2 className="theme-primary-text text-lg font-semibold">
+                  {game.name}
+                </h2>
 
-                <p className="mt-1 text-sm text-gray-400">
+                <p className="theme-secondary-text mt-1 text-sm">
                   {t('steamAppId')}: {game.steamAppid}
                 </p>
 
@@ -328,15 +342,19 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
                     : tierColors.Pending
                 }`}
               >
-                {getTierLabel(game.tier || 'Pending', t)}
+                {getTierLabel(
+                  game.tier || 'Pending',
+                  t
+                )}
               </div>
             </div>
           </Link>
         ))}
 
         {sortedGames.length === 0 && !error && (
-          <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-            {selectedGenre !== 'all' || selectedTier !== 'all'
+          <div className="theme-surface theme-secondary-text rounded-lg border p-4 text-center">
+            {selectedGenre !== 'all' ||
+            selectedTier !== 'all'
               ? 'No games match the selected filters.'
               : t('noGames')}
           </div>

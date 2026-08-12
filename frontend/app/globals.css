@@ -1,32 +1,229 @@
 @import "tailwindcss";
 
 
+/* =========================================================
+   DEFAULT / FALLBACK
+   ========================================================= */
+
 :root {
   --background: #0f172a;
   --foreground: #ededed;
+
+  --header-bg: #1f2937;
+  --footer-bg: #1f2937;
+
+  --surface: #1e293b;
+  --surface-secondary: #111827;
+  --surface-hover: #334155;
+
+  --input-bg: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --header-link: #cbd5e1;
+  --header-link-hover: #ffffff;
+
+  --border-color: #374151;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
 
-/* LIGHT THEME */
+/* =========================================================
+   LIGHT THEME
+   Soft warm / muted rose-gray palette
+   ========================================================= */
+
 html[data-theme="light"] {
   --background: #d6cbcc;
-  --foreground: #ededed;
+  --foreground: #292428;
+
+  --header-bg: #716569;
+  --footer-bg: #716569;
+
+  --surface: #eee8e9;
+  --surface-secondary: #e2d9db;
+  --surface-hover: #ddd2d4;
+
+  --input-bg: #e8e0e2;
+
+  --text-primary: #292428;
+  --text-secondary: #6f6468;
+
+  /* Header links need stronger contrast against the mauve header */
+  --header-link: #f5eff0;
+  --header-link-hover: #ffffff;
+
+  --border-color: #b9adaf;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
 
-/* DARK THEME */
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
 html[data-theme="dark"] {
   --background: #0f172a;
   --foreground: #ededed;
+
+  --header-bg: #1f2937;
+  --footer-bg: #1f2937;
+
+  --surface: #1e293b;
+  --surface-secondary: #111827;
+  --surface-hover: #334155;
+
+  --input-bg: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --header-link: #cbd5e1;
+  --header-link-hover: #ffffff;
+
+  --border-color: #374151;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
 
-/* SCENIC THEME */
+/* =========================================================
+   SCENIC THEME
+   Temporary component colours.
+   We will refine this theme later.
+   ========================================================= */
+
 html[data-theme="scenic"] {
   --background: transparent;
   --foreground: #ededed;
+
+  --header-bg: #1f2937;
+  --footer-bg: #1f2937;
+
+  --surface: #1e293b;
+  --surface-secondary: #111827;
+  --surface-hover: #334155;
+
+  --input-bg: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --header-link: #cbd5e1;
+  --header-link-hover: #ffffff;
+
+  --border-color: #374151;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
+
+/* =========================================================
+   WITCHER THEME
+   Temporary component colours.
+   We will refine this theme later.
+   ========================================================= */
+
+html[data-theme="witcher"] {
+  --background: transparent;
+  --foreground: #ededed;
+
+  --header-bg: #1f2937;
+  --footer-bg: #1f2937;
+
+  --surface: #1e293b;
+  --surface-secondary: #111827;
+  --surface-hover: #334155;
+
+  --input-bg: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --header-link: #cbd5e1;
+  --header-link-hover: #ffffff;
+
+  --border-color: #374151;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+}
+
+
+/* =========================================================
+   RDR2 THEME
+   Temporary component colours.
+   We will refine this theme later.
+   ========================================================= */
+
+html[data-theme="rdr2"] {
+  --background: transparent;
+  --foreground: #ededed;
+
+  --header-bg: #1f2937;
+  --footer-bg: #1f2937;
+
+  --surface: #1e293b;
+  --surface-secondary: #111827;
+  --surface-hover: #334155;
+
+  --input-bg: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --header-link: #cbd5e1;
+  --header-link-hover: #ffffff;
+
+  --border-color: #374151;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+}
+
+
+/* =========================================================
+   GOD OF WAR THEME
+   Temporary component colours.
+   We will refine this theme later.
+   ========================================================= */
+
+html[data-theme="gow"] {
+  --background: transparent;
+  --foreground: #ededed;
+
+  --header-bg: #1f2937;
+  --footer-bg: #1f2937;
+
+  --surface: #1e293b;
+  --surface-secondary: #111827;
+  --surface-hover: #334155;
+
+  --input-bg: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --header-link: #cbd5e1;
+  --header-link-hover: #ffffff;
+
+  --border-color: #374151;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+}
+
+
+/* =========================================================
+   TAILWIND THEME VARIABLES
+   ========================================================= */
 
 @theme inline {
   --color-background: var(--background);
@@ -37,6 +234,10 @@ html[data-theme="scenic"] {
 }
 
 
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
 html,
 body {
   min-height: 100%;
@@ -45,26 +246,102 @@ body {
 
 body {
   background-color: var(--background);
+  color: var(--foreground);
+
   font-family: Arial, Helvetica, sans-serif;
 
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 
 /* =========================================================
-   LIGHT THEME
-   Only change the page background.
-   Existing components keep their original styling.
+   REUSABLE THEME CLASSES
+
+   Components will gradually be converted to these during
+   the Theme Integration user story.
+   ========================================================= */
+
+.theme-header {
+  background-color: var(--header-bg);
+  color: var(--text-primary);
+}
+
+
+.theme-footer {
+  background-color: var(--footer-bg);
+  color: var(--text-primary);
+}
+
+
+.theme-surface {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+
+.theme-surface-secondary {
+  background-color: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+
+.theme-input {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+
+.theme-input::placeholder {
+  color: var(--text-secondary);
+}
+
+
+.theme-primary-text {
+  color: var(--text-primary);
+}
+
+
+.theme-secondary-text {
+  color: var(--text-secondary);
+}
+
+
+.theme-header-link {
+  color: var(--header-link);
+  transition: color 0.2s ease;
+}
+
+
+.theme-header-link:hover {
+  color: var(--header-link-hover);
+}
+
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+
+.theme-hover:hover {
+  background-color: var(--surface-hover);
+}
+
+
+/* =========================================================
+   LIGHT PAGE BACKGROUND
    ========================================================= */
 
 html[data-theme="light"] main {
-  background-color: #d6cbcc !important;
+  background-color: var(--background) !important;
 }
 
 
 /* =========================================================
-   SCENIC THEME
-   Only replace the page background with the scenic image.
+   SCENIC BACKGROUND
    ========================================================= */
 
 html[data-theme="scenic"] body {
@@ -86,14 +363,10 @@ html[data-theme="scenic"] main {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   WITCHER THEME
-   ========================================================= */
 
-html[data-theme="witcher"] {
-  --background: transparent;
-  --foreground: #ededed;
-}
+/* =========================================================
+   WITCHER BACKGROUND
+   ========================================================= */
 
 html[data-theme="witcher"] body {
   background-image:
@@ -109,19 +382,15 @@ html[data-theme="witcher"] body {
   background-attachment: fixed;
 }
 
-/* Allow the Witcher background to show behind the page */
+
 html[data-theme="witcher"] main {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   RDR2 THEME
-   ========================================================= */
 
-html[data-theme="rdr2"] {
-  --background: transparent;
-  --foreground: #ededed;
-}
+/* =========================================================
+   RDR2 BACKGROUND
+   ========================================================= */
 
 html[data-theme="rdr2"] body {
   background-image:
@@ -137,18 +406,15 @@ html[data-theme="rdr2"] body {
   background-attachment: fixed;
 }
 
+
 html[data-theme="rdr2"] main {
   background-color: transparent !important;
 }
 
-/* =========================================================
-   GOD OF WAR THEME
-   ========================================================= */
 
-html[data-theme="gow"] {
-  --background: transparent;
-  --foreground: #ededed;
-}
+/* =========================================================
+   GOD OF WAR BACKGROUND
+   ========================================================= */
 
 html[data-theme="gow"] body {
   background-image:
@@ -163,6 +429,7 @@ html[data-theme="gow"] body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+
 
 html[data-theme="gow"] main {
   background-color: transparent !important;

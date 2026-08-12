@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme, type Theme } from '@/context/ThemeContext';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -24,11 +24,11 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gray-800 p-4">
+    <header className="theme-header theme-border border-b p-4 transition-colors duration-200">
       <div className="flex w-full items-center justify-between">
         <Link
           href="/"
-          className="text-xl font-bold text-white"
+          className="theme-primary-text text-xl font-bold transition-opacity hover:opacity-80"
         >
           ProtonDB Clone
         </Link>
@@ -36,7 +36,7 @@ export default function Header() {
         <nav className="flex items-center gap-3">
           <Link
             href="/"
-            className="px-4 py-2 text-gray-300 hover:text-white"
+            className="theme-header-link px-4 py-2"
           >
             Home
           </Link>
@@ -45,11 +45,10 @@ export default function Header() {
           <select
             value={language}
             onChange={(e) =>
-              setLanguage(
-                e.target.value as 'en' | 'es'
-              )
+              setLanguage(e.target.value as 'en' | 'es')
             }
-            className="cursor-pointer rounded bg-gray-700 px-3 py-2 text-white hover:bg-gray-600"
+            className="theme-input cursor-pointer rounded border px-3 py-2 transition-colors"
+            aria-label="Select language"
           >
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -59,17 +58,9 @@ export default function Header() {
           <select
             value={theme}
             onChange={(e) =>
-              setTheme(
-                e.target.value as
-                  | 'dark'
-                  | 'light'
-                  | 'scenic'
-                  | 'witcher'
-                  | 'rdr2'
-                  | 'gow'
-              )
+              setTheme(e.target.value as Theme)
             }
-            className="cursor-pointer rounded bg-gray-700 px-3 py-2 text-white hover:bg-gray-600"
+            className="theme-input cursor-pointer rounded border px-3 py-2 transition-colors"
             aria-label="Select theme"
           >
             <option value="dark">Dark</option>
@@ -85,7 +76,7 @@ export default function Header() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
               >
                 {t('logout')}
               </button>
@@ -105,14 +96,14 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="px-4 py-2 text-gray-300 hover:text-white"
+                className="theme-header-link px-4 py-2"
               >
                 {t('login')}
               </Link>
 
               <Link
                 href="/register"
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                className="rounded bg-[var(--accent)] px-4 py-2 text-white transition-colors hover:bg-[var(--accent-hover)]"
               >
                 {t('register')}
               </Link>

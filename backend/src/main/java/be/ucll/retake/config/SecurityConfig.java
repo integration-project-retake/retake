@@ -1,9 +1,9 @@
 package be.ucll.retake.config;
 
 import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,45 +23,54 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth ->
-                auth
-                    .requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/users", "/users/login")
-                    .permitAll()
-                    .requestMatchers(
-                        HttpMethod.GET,
-                        "/games",
-                        "/games/**",
-                        "/reports/steam/**"
-                    )
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
-            );
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth ->
+                        auth
+                                .anyRequest()
+                                .permitAll()
+                );
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+
         configuration.setAllowedOrigins(
-            Arrays.asList(
-                "http://localhost:3000",
-                "https://frontend-itip-retake.apps.okd.ucll.cloud"
-            )
+                Arrays.asList(
+                        "http://localhost:3000",
+                        "https://frontend-itip-retake.apps.okd.ucll.cloud"
+                )
         );
+
         configuration.setAllowedMethods(
-            Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "PATCH",
+                        "OPTIONS"
+                )
         );
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        configuration.setAllowedHeaders(
+                Arrays.asList("*")
+        );
+
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration(
+                "/**",
+                configuration
+        );
+
         return source;
     }
 }
