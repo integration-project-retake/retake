@@ -95,7 +95,6 @@ export default function Header() {
                   }
                   alt={user.username}
                   className="h-9 w-9 rounded-full object-cover opacity-100 transition-opacity hover:opacity-80"
-                  className="h-9 w-9 rounded-full object-cover opacity-100 transition-opacity hover:opacity-80"
                 />
               </Link>
             </>
