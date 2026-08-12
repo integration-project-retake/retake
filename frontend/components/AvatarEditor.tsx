@@ -38,12 +38,12 @@ export default function AvatarEditor({ profileId, currentAvatar, username }:
         <img
           src={currentAvatar || 'https://www.gravatar.com/avatar/?d=mp'}
           alt={username}
-          className="w-40 h-40 rounded-full"
+          className="w-40 h-40 rounded-3xl object-cover"
         />
         {isOwner && (
           <button
             onClick={() => setEditing(!editing)}
-            className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-sm font-medium"
+            className="absolute inset-0 rounded-3xl bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-sm font-medium"
           >
             Change
           </button>
@@ -51,12 +51,13 @@ export default function AvatarEditor({ profileId, currentAvatar, username }:
         </div>
 
     {isOwner && editing && (
-        <div className="flex gap-2 flex-wrap">
+      // flex gap-2 flex-wrap
+        <div className="flex w-40 flex-col flex-wrap gap-2">
             <input
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Image URL"
-            className="flex-1 px-3 py-2 rounded bg-gray-800 border border-gray-700 text-white text-sm"
+            className="w-40 rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white"
             />
             <button onClick={save} className="px-4 py-2 rounded bg-pink-500 hover:bg-pink-600 text-white text-sm">
             Save
@@ -67,7 +68,6 @@ export default function AvatarEditor({ profileId, currentAvatar, username }:
                 </button>
             )}
         </div>
-
     )}
     </div>
     );

@@ -147,4 +147,9 @@ public class UserController {
     public UserDto updateAvatar(@PathVariable Long id, @RequestParam String avatarUrl) {
         return UserDto.from(userService.updateAvatar(id, avatarUrl));
     }
+    @PatchMapping("/{id}/profile")
+        public UserDto updateProfile(@PathVariable Long id,
+                                @RequestParam(required = false) String bio) {
+        return UserDto.from(userService.updateProfile(id, bio));
+        }
 }

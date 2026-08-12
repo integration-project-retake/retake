@@ -73,26 +73,7 @@ export default function Header() {
           </select>
 
           {user ? (
-            <>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
-              >
-                {t('logout')}
-              </button>
-
-              <Link href={`/users/${user.id}`}>
-                <img
-                  src={
-                    user.avatarUrl ||
-                    'https://www.gravatar.com/avatar/?d=mp'
-                  }
-                  alt={user.username}
-                  className="h-9 w-9 rounded-full object-cover opacity-100 transition-opacity hover:opacity-80"
-                />
-              </Link>
-            </>
+            <AccountMenu />
           ) : (
             <>
               <Link
