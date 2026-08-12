@@ -15,8 +15,9 @@ export default async function UserProfile({
   const reports = await fetchReportsByUser(id);
 
   return (
-    <main className="min-h-screen bg-gray-900 p-8 text-white">
-      <div className="mx-auto max-w-3xl">
+    <main className="min-h-screen bg-gray-900 px-4 py-10 text-white sm:px-6">
+      <div className="mx-auto max-w-4xl">
+        <section className="mb-10 rounded-xl bg-gray-800 p-6 sm:p-8">
         <div className="mb-6 flex items-center gap-6">
           <AvatarEditor
             profileId={Number(id)}
@@ -28,11 +29,11 @@ export default async function UserProfile({
             {user.username}
           </h1>
         </div>
+        </section>
 
         <p className="mb-6 text-gray-400">
-          {reports.length} reports contributed
+          {reports.length}{' '} {reports.length === 1 ? 'report contributed' : "reports contributed"}
         </p>
-
         <UserReportsList
           profileId={Number(id)}
           reports={reports}
