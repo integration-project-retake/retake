@@ -41,6 +41,7 @@ services:
     container_name: retake-frontend
     environment:
       NEXT_PUBLIC_API_URL: http://backend:8080
+      INTERNAL_API_URL: http://backend:8080
     ports:
       - "3000:3000"
     depends_on:
