@@ -3,4 +3,4 @@ to start:
 
 
 to stop:
-`docker compose down`
+`docker compose down -v`

@@ -62,15 +62,10 @@ public class GameService {
 
         String trimmed = query.trim();
 
-        // Exact Steam App ID search
+        // Partial Steam App ID Search
         if (trimmed.matches("\\d+")) {
-            Integer steamAppid =
-                    Integer.parseInt(trimmed);
-
             return gameRepository
-                    .findBySteamAppid(steamAppid)
-                    .map(List::of)
-                    .orElse(List.of());
+                    .findBySteamAppidStartingWith(trimmed);
         }
 
         String normalizedQuery =
@@ -237,6 +232,7 @@ public class GameService {
                         queryLength - 3
                 );
 
+        //
         int maximumWindow =
                 Math.min(
                         candidate.length(),

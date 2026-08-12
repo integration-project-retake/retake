@@ -1,26 +1,169 @@
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f172a;
+  --foreground: #ededed;
 }
+
+
+/* LIGHT THEME */
+html[data-theme="light"] {
+  --background: #d6cbcc;
+  --foreground: #ededed;
+}
+
+
+/* DARK THEME */
+html[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #ededed;
+}
+
+
+/* SCENIC THEME */
+html[data-theme="scenic"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+html,
+body {
+  min-height: 100%;
 }
 
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+
+  transition: background-color 0.2s ease;
+}
+
+
+/* =========================================================
+   LIGHT THEME
+   Only change the page background.
+   Existing components keep their original styling.
+   ========================================================= */
+
+html[data-theme="light"] main {
+  background-color: #d6cbcc !important;
+}
+
+
+/* =========================================================
+   SCENIC THEME
+   Only replace the page background with the scenic image.
+   ========================================================= */
+
+html[data-theme="scenic"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 15, 32, 0.25),
+      rgba(8, 15, 32, 0.4)
+    ),
+    url("/Website-Background.avif");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+
+html[data-theme="scenic"] main {
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   WITCHER THEME
+   ========================================================= */
+
+html[data-theme="witcher"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
+html[data-theme="witcher"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 15, 20, 0.18),
+      rgba(8, 15, 20, 0.28)
+    ),
+    url("/Witcher-3-Background.avif");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Allow the Witcher background to show behind the page */
+html[data-theme="witcher"] main {
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   RDR2 THEME
+   ========================================================= */
+
+html[data-theme="rdr2"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
+html[data-theme="rdr2"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 10, 12, 0.18),
+      rgba(8, 10, 12, 0.3)
+    ),
+    url("/RDR2-Background.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html[data-theme="rdr2"] main {
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   GOD OF WAR THEME
+   ========================================================= */
+
+html[data-theme="gow"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
+html[data-theme="gow"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 12, 20, 0.12),
+      rgba(8, 12, 20, 0.22)
+    ),
+    url("/GOW-Background.avif");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html[data-theme="gow"] main {
+  background-color: transparent !important;
 }

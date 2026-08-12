@@ -2,7 +2,7 @@ import { ReportDto, Tier } from "../types";
 
 const API_BASE_URL =
   typeof window === "undefined"
-    ? "http://backend:8080"
+    ? process.env.INTERNAL_API_URL || "http://localhost:8080"
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 // forgive me for my sins
 
@@ -59,9 +59,100 @@ export async function createReport(
     protonVersion,
   });
 
-  const res = await fetch(`${API_BASE_URL}/reports?${params.toString()}`, {
-    method: "POST",
-  });
-  if (!res.ok) throw new Error("Failed to create report");
+  const res = await fetch(
+    `${API_BASE_URL}/reports?${params.toString()}`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
+
+  if (!res.ok) {
+    const message =
+      await res.text();
+
+    console.error(
+      'Create report failed:',
+      res.status,
+      message
+    );
+
+    throw new Error(
+      message ||
+        'Failed to create report'
+    );
+  }
+
   return res.json();
+}
+
+export async function updateReport(
+  reportId: number,
+  userId: number,
+  tier: Tier,
+  distribution: string,
+  comment: string,
+  protonVersion: string
+): Promise<ReportDto> {
+  const params =
+    new URLSearchParams({
+      tier,
+      distribution,
+      comment,
+      protonVersion,
+    });
+
+  const res = await fetch(
+    `${API_BASE_URL}/reports/${reportId}?${params.toString()}`,
+    {
+      method: 'PUT',
+      credentials: 'include',
+    }
+  );
+
+  if (!res.ok) {
+    const message =
+      await res.text();
+
+    console.error(
+      'Update report failed:',
+      res.status,
+      message
+    );
+
+    throw new Error(
+      message ||
+        'Failed to update report'
+    );
+  }
+
+  return res.json();
+}
+
+export async function deleteReport(
+  reportId: number
+): Promise<void> {
+  const res = await fetch(
+    `${API_BASE_URL}/reports/${reportId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    }
+  );
+
+  if (!res.ok) {
+    const message =
+      await res.text();
+
+    console.error(
+      'Delete report failed:',
+      res.status,
+      message
+    );
+
+    throw new Error(
+      message ||
+        'Failed to delete report'
+    );
+  }
 }
