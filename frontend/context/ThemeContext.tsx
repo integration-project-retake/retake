@@ -12,7 +12,9 @@ export type Theme =
   | 'dark'
   | 'light'
   | 'scenic'
-  | 'witcher';
+  | 'witcher'
+  | 'rdr2'
+  | 'gow';
 
 interface ThemeContextType {
   theme: Theme;
@@ -37,7 +39,9 @@ export function ThemeProvider({
       savedTheme === 'dark' ||
       savedTheme === 'light' ||
       savedTheme === 'scenic' ||
-      savedTheme === 'witcher'
+      savedTheme === 'witcher' ||
+      savedTheme === 'rdr2' ||
+      savedTheme === 'gow'
     ) {
       setThemeState(savedTheme);
     }
@@ -53,12 +57,7 @@ export function ThemeProvider({
   }
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        setTheme,
-      }}
-    >
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

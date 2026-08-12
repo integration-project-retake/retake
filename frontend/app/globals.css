@@ -113,3 +113,57 @@ html[data-theme="witcher"] body {
 html[data-theme="witcher"] main {
   background-color: transparent !important;
 }
+
+/* =========================================================
+   RDR2 THEME
+   ========================================================= */
+
+html[data-theme="rdr2"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
+html[data-theme="rdr2"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 10, 12, 0.18),
+      rgba(8, 10, 12, 0.3)
+    ),
+    url("/RDR2-Background.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html[data-theme="rdr2"] main {
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   GOD OF WAR THEME
+   ========================================================= */
+
+html[data-theme="gow"] {
+  --background: transparent;
+  --foreground: #ededed;
+}
+
+html[data-theme="gow"] body {
+  background-image:
+    linear-gradient(
+      rgba(8, 12, 20, 0.12),
+      rgba(8, 12, 20, 0.22)
+    ),
+    url("/GOW-Background.avif");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html[data-theme="gow"] main {
+  background-color: transparent !important;
+}

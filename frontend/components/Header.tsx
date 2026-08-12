@@ -65,6 +65,8 @@ export default function Header() {
                   | 'light'
                   | 'scenic'
                   | 'witcher'
+                  | 'rdr2'
+                  | 'gow'
               )
             }
             className="cursor-pointer rounded bg-gray-700 px-3 py-2 text-white hover:bg-gray-600"
@@ -74,6 +76,8 @@ export default function Header() {
             <option value="light">Light</option>
             <option value="scenic">Scenic</option>
             <option value="witcher">Witcher</option>
+            <option value="rdr2">RDR2</option>
+            <option value="gow">God of War</option>
           </select>
 
           {user ? (
