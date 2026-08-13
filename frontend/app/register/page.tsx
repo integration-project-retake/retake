@@ -121,7 +121,7 @@ export default function RegisterPage() {
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="flex w-full max-w-md flex-col gap-4 rounded-lg border border-gray-700 bg-gray-800 p-8"
+        className="theme-surface theme-border flex w-full max-w-md flex-col gap-4 rounded-lg border border-gray-700 bg-gray-800 p-8"
       >
         <h1 className="text-2xl font-bold">
           {t('createAccount')}
@@ -135,7 +135,7 @@ export default function RegisterPage() {
 
         <div className="flex flex-col gap-1">
           <label
-            className="text-sm text-gray-300"
+            className="theme-secondary-text text-sm text-gray-300"
             htmlFor="username"
           >
             {t('username')}
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                 }));
               }
             }}
-            className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
+            className={`theme-input rounded border p-2 focus:outline-none focus:ring-2 ${
               usernameHasError
                 ? 'border-red-600 focus:ring-red-600'
                 : 'border-gray-600 focus:ring-blue-500'
@@ -170,7 +170,7 @@ export default function RegisterPage() {
           {fieldErrors.username && (
             <p
               id="username-error"
-              className="text-sm text-red-400"
+              className=" text-sm text-red-400"
             >
               {fieldErrors.username}
             </p>
@@ -179,7 +179,7 @@ export default function RegisterPage() {
 
         <div className="flex flex-col gap-1">
           <label
-            className="text-sm text-gray-300"
+            className="theme-secondary-text text-sm text-gray-300"
             htmlFor="email"
           >
             {t('email')}
@@ -199,7 +199,7 @@ export default function RegisterPage() {
                 }));
               }
             }}
-            className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
+            className={`theme-input rounded border  p-2 focus:outline-none focus:ring-2 ${
               emailHasError
                 ? 'border-red-600 focus:ring-red-600'
                 : 'border-gray-600 focus:ring-blue-500'
@@ -224,7 +224,7 @@ export default function RegisterPage() {
 
         <div className="flex flex-col gap-1">
           <label
-            className="text-sm text-gray-300"
+            className=" theme-secondary-text text-sm text-gray-300"
             htmlFor="password"
           >
             {t('password')}
@@ -244,7 +244,7 @@ export default function RegisterPage() {
                 }));
               }
             }}
-            className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
+            className={`theme-input rounded border  p-2 focus:outline-none focus:ring-2 ${
               passwordHasError
                 ? 'border-red-600 focus:ring-red-600'
                 : 'border-gray-600 focus:ring-blue-500'
@@ -269,7 +269,7 @@ export default function RegisterPage() {
 
         <button
           type="submit"
-          className="mt-2 rounded bg-blue-600 p-2 font-semibold text-white transition-colors hover:bg-blue-700"
+          className="theme-accent mt-2 rounded p-2 font-semibold transition-colors"
         >
           {t('register')}
         </button>
@@ -279,7 +279,7 @@ export default function RegisterPage() {
 
           <Link
             href="/login"
-            className="text-blue-500 hover:text-blue-400"
+            className="theme-primary-text "
           >
             {t('login')}
           </Link>
