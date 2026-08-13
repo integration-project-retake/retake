@@ -89,19 +89,19 @@ export default function LoginPage() {
   const passwordHasError =
     Boolean(fieldErrors.password);
 
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-900 p-8 text-white">
+return (
+    <main className="flex min-h-screen items-center justify-center p-8">
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="flex w-full max-w-md flex-col gap-4 rounded-lg border border-gray-700 bg-gray-800 p-8"
+        className="theme-surface theme-border flex w-full max-w-md flex-col gap-4 rounded-lg border p-8"
       >
-        <h1 className="text-2xl font-bold">
+        <h1 className="theme-primary-text text-2xl font-bold">
           {t('login')}
         </h1>
 
         {error && (
-          <div className="rounded border border-red-800 bg-red-950 p-3 text-sm text-red-400">
+          <div className="rounded border border-red-800 bg-red-950/80 p-3 text-sm text-red-300">
             {error}
           </div>
         )}
@@ -109,7 +109,7 @@ export default function LoginPage() {
         <div className="flex flex-col gap-1">
           <label
             htmlFor="username"
-            className="text-sm text-gray-300"
+            className="theme-secondary-text text-sm"
           >
             {t('username')}
           </label>
@@ -133,11 +133,16 @@ export default function LoginPage() {
               }
             }}
             placeholder={t('username')}
-            className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
+            className={`theme-input rounded border p-2 focus:outline-none focus:ring-2 ${
               usernameHasError
                 ? 'border-red-600 focus:ring-red-600'
-                : 'border-gray-600 focus:ring-blue-500'
+                : 'theme-border'
             }`}
+            style={
+              usernameHasError
+                ? undefined
+                : { ['--tw-ring-color' as string]: 'var(--accent)' }
+            }
             aria-invalid={usernameHasError}
             aria-describedby={
               usernameHasError
@@ -159,7 +164,7 @@ export default function LoginPage() {
         <div className="flex flex-col gap-1">
           <label
             htmlFor="password"
-            className="text-sm text-gray-300"
+            className="theme-secondary-text text-sm"
           >
             {t('password')}
           </label>
@@ -183,11 +188,16 @@ export default function LoginPage() {
               }
             }}
             placeholder={t('password')}
-            className={`rounded border bg-gray-700 p-2 text-white focus:outline-none focus:ring-2 ${
+            className={`theme-input rounded border p-2 focus:outline-none focus:ring-2 ${
               passwordHasError
                 ? 'border-red-600 focus:ring-red-600'
-                : 'border-gray-600 focus:ring-blue-500'
+                : 'theme-border'
             }`}
+            style={
+              passwordHasError
+                ? undefined
+                : { ['--tw-ring-color' as string]: 'var(--accent)' }
+            }
             aria-invalid={passwordHasError}
             aria-describedby={
               passwordHasError
@@ -208,7 +218,7 @@ export default function LoginPage() {
 
         <button
           type="submit"
-          className="rounded bg-blue-600 p-2 font-semibold text-white transition-colors hover:bg-blue-700"
+          className="theme-accent rounded p-2 font-semibold"
         >
           {t('login')}
         </button>
