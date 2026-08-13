@@ -53,31 +53,48 @@ type TierFilter =
   | 'Borked'
   | 'Pending';
 
-export default function GameSearch({ initialGames }: GameSearchProps) {
+export default function GameSearch({
+  initialGames,
+}: GameSearchProps) {
   const { language, t } = useLanguage();
 
   const [query, setQuery] = useState('');
   const [games, setGames] = useState(initialGames);
   const [error, setError] = useState('');
-  const [layout, setLayout] = useState<LayoutMode>('grid');
-  const [sortMode, setSortMode] = useState<SortMode>('default');
-  const [selectedGenre, setSelectedGenre] = useState('all');
-  const [selectedTier, setSelectedTier] = useState<TierFilter>('all');
+
+  const [layout, setLayout] =
+    useState<LayoutMode>('grid');
+
+  const [sortMode, setSortMode] =
+    useState<SortMode>('default');
+
+  const [selectedGenre, setSelectedGenre] =
+    useState('all');
+
+  const [selectedTier, setSelectedTier] =
+    useState<TierFilter>('all');
 
   const availableGenres = useMemo(() => {
-    const genres = initialGames.flatMap((game) => game.genres || []);
+    const genres = initialGames.flatMap(
+      (game) => game.genres || []
+    );
 
-    return Array.from(new Set(genres)).sort((a, b) =>
-      getGenreLabel(a, language).localeCompare(
-        getGenreLabel(b, language)
-      )
+    return Array.from(new Set(genres)).sort(
+      (a, b) =>
+        getGenreLabel(a, language).localeCompare(
+          getGenreLabel(b, language)
+        )
     );
   }, [initialGames, language]);
 
   useEffect(() => {
-    const savedLayout = localStorage.getItem('gameLayout');
+    const savedLayout =
+      localStorage.getItem('gameLayout');
 
-    if (savedLayout === 'grid' || savedLayout === 'list') {
+    if (
+      savedLayout === 'grid' ||
+      savedLayout === 'list'
+    ) {
       setLayout(savedLayout);
     }
   }, []);
@@ -92,10 +109,17 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
 
       try {
         setError('');
-        const results = await searchGames(query);
+
+        const results =
+          await searchGames(query);
+
         setGames(results);
       } catch (error) {
-        console.error('Game search failed:', error);
+        console.error(
+          'Game search failed:',
+          error
+        );
+
         setError(t('searchError'));
       }
     }, 300);
@@ -111,11 +135,16 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
 
       const matchesTier =
         selectedTier === 'all' ||
-        (game.tier || 'Pending') === selectedTier;
+        (game.tier || 'Pending') ===
+          selectedTier;
 
       return matchesGenre && matchesTier;
     });
-  }, [games, selectedGenre, selectedTier]);
+  }, [
+    games,
+    selectedGenre,
+    selectedTier,
+  ]);
 
   const sortedGames = useMemo(() => {
     const copy = [...filteredGames];
@@ -125,8 +154,12 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
         return copy.sort((a, b) =>
           a.name.localeCompare(
             b.name,
-            language === 'es' ? 'es' : 'en',
-            { sensitivity: 'base' }
+            language === 'es'
+              ? 'es'
+              : 'en',
+            {
+              sensitivity: 'base',
+            }
           )
         );
 
@@ -134,125 +167,225 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
         return copy.sort((a, b) =>
           b.name.localeCompare(
             a.name,
-            language === 'es' ? 'es' : 'en',
-            { sensitivity: 'base' }
+            language === 'es'
+              ? 'es'
+              : 'en',
+            {
+              sensitivity: 'base',
+            }
           )
         );
 
       case 'steamAsc':
-        return copy.sort((a, b) => a.steamAppid - b.steamAppid);
+        return copy.sort(
+          (a, b) =>
+            a.steamAppid -
+            b.steamAppid
+        );
 
       case 'steamDesc':
-        return copy.sort((a, b) => b.steamAppid - a.steamAppid);
+        return copy.sort(
+          (a, b) =>
+            b.steamAppid -
+            a.steamAppid
+        );
 
       case 'tierBest':
         return copy.sort(
           (a, b) =>
-            tierOrder[b.tier || 'Pending'] -
-            tierOrder[a.tier || 'Pending']
+            tierOrder[
+              b.tier || 'Pending'
+            ] -
+            tierOrder[
+              a.tier || 'Pending'
+            ]
         );
 
       case 'tierWorst':
         return copy.sort(
           (a, b) =>
-            tierOrder[a.tier || 'Pending'] -
-            tierOrder[b.tier || 'Pending']
+            tierOrder[
+              a.tier || 'Pending'
+            ] -
+            tierOrder[
+              b.tier || 'Pending'
+            ]
         );
 
       default:
         return copy;
     }
-  }, [filteredGames, sortMode, language]);
+  }, [
+    filteredGames,
+    sortMode,
+    language,
+  ]);
 
-  const handleLayoutChange = (newLayout: LayoutMode) => {
+  const handleLayoutChange = (
+    newLayout: LayoutMode
+  ) => {
     setLayout(newLayout);
-    localStorage.setItem('gameLayout', newLayout);
+
+    localStorage.setItem(
+      'gameLayout',
+      newLayout
+    );
   };
 
   return (
     <div>
+      {/* Search and filters */}
       <div className="mb-4 flex flex-col gap-2 xl:flex-row">
         <input
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={t('searchPlaceholder')}
-          className="w-full flex-1 rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-white placeholder-gray-500 focus:border-gray-500 focus:outline-none"
+          onChange={(event) =>
+            setQuery(event.target.value)
+          }
+          placeholder={t(
+            'searchPlaceholder'
+          )}
+          className="theme-input w-full flex-1 rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
         />
 
         <div className="flex flex-wrap gap-2">
+          {/* Genre filter */}
           <select
             value={selectedGenre}
-            onChange={(event) => setSelectedGenre(event.target.value)}
-            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            onChange={(event) =>
+              setSelectedGenre(
+                event.target.value
+              )
+            }
+            className="theme-input cursor-pointer rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
             aria-label="Filter games by genre"
           >
-            <option value="all">All Genres</option>
+            <option value="all">
+              All Genres
+            </option>
 
-            {availableGenres.map((genre) => (
-              <option key={genre} value={genre}>
-                {getGenreLabel(genre, language)}
-              </option>
-            ))}
+            {availableGenres.map(
+              (genre) => (
+                <option
+                  key={genre}
+                  value={genre}
+                >
+                  {getGenreLabel(
+                    genre,
+                    language
+                  )}
+                </option>
+              )
+            )}
           </select>
 
+          {/* Tier filter */}
           <select
             value={selectedTier}
             onChange={(event) =>
-              setSelectedTier(event.target.value as TierFilter)
+              setSelectedTier(
+                event.target
+                  .value as TierFilter
+              )
             }
-            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            className="theme-input cursor-pointer rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
             aria-label="Filter games by compatibility tier"
           >
-            <option value="all">All Tiers</option>
-            <option value="Platinum">{t('platinum')}</option>
-            <option value="Gold">{t('gold')}</option>
-            <option value="Silver">{t('silver')}</option>
-            <option value="Bronze">{t('bronze')}</option>
-            <option value="Borked">{t('borked')}</option>
-            <option value="Pending">{t('pending')}</option>
+            <option value="all">
+              All Tiers
+            </option>
+
+            <option value="Platinum">
+              {t('platinum')}
+            </option>
+
+            <option value="Gold">
+              {t('gold')}
+            </option>
+
+            <option value="Silver">
+              {t('silver')}
+            </option>
+
+            <option value="Bronze">
+              {t('bronze')}
+            </option>
+
+            <option value="Borked">
+              {t('borked')}
+            </option>
+
+            <option value="Pending">
+              {t('pending')}
+            </option>
           </select>
 
+          {/* Sort */}
           <select
             value={sortMode}
             onChange={(event) =>
-              setSortMode(event.target.value as SortMode)
+              setSortMode(
+                event.target
+                  .value as SortMode
+              )
             }
-            className="rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-gray-200 focus:border-gray-500 focus:outline-none"
+            className="theme-input cursor-pointer rounded-lg border px-4 py-2 transition-colors focus:border-[var(--text-secondary)] focus:outline-none"
             aria-label="Sort games"
           >
-            <option value="default">Default</option>
-            <option value="az">Name A–Z</option>
-            <option value="za">Name Z–A</option>
-            <option value="steamAsc">Steam App ID: Low → High</option>
-            <option value="steamDesc">Steam App ID: High → Low</option>
+            <option value="default">
+              Default
+            </option>
+
+            <option value="az">
+              Name A–Z
+            </option>
+
+            <option value="za">
+              Name Z–A
+            </option>
+
+            <option value="steamAsc">
+              Steam App ID: Low → High
+            </option>
+
+            <option value="steamDesc">
+              Steam App ID: High → Low
+            </option>
+
             <option value="tierBest">
               Compatibility: Best → Worst
             </option>
+
             <option value="tierWorst">
               Compatibility: Worst → Best
             </option>
           </select>
 
+          {/* Grid button */}
           <button
             type="button"
-            onClick={() => handleLayoutChange('grid')}
-            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
+            onClick={() =>
+              handleLayoutChange('grid')
+            }
+            className={`rounded-lg border px-4 py-2 font-medium transition-colors ${
               layout === 'grid'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'border-[var(--accent)] bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]'
+                : 'theme-input theme-border hover:bg-[var(--surface-hover)]'
             }`}
           >
             {t('grid')}
           </button>
 
+          {/* List button */}
           <button
             type="button"
-            onClick={() => handleLayoutChange('list')}
-            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
+            onClick={() =>
+              handleLayoutChange('list')
+            }
+            className={`rounded-lg border px-4 py-2 font-medium transition-colors ${
               layout === 'list'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'border-[var(--accent)] bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]'
+                : 'theme-input theme-border hover:bg-[var(--surface-hover)]'
             }`}
           >
             {t('list')}
@@ -260,12 +393,14 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
         </div>
       </div>
 
+      {/* Search error */}
       {error && (
         <div className="mb-4 rounded-lg border border-red-700 bg-red-950 p-3 text-red-200">
           {error}
         </div>
       )}
 
+      {/* Games */}
       <div
         className={
           layout === 'grid'
@@ -277,12 +412,13 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           <Link
             key={game.id}
             href={`/games/${game.steamAppid}`}
-            className={`overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500 ${
+            className={`theme-surface theme-border overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)] ${
               layout === 'list'
                 ? 'flex flex-col sm:flex-row'
                 : 'flex flex-col'
             }`}
           >
+            {/* Game banner */}
             <img
               src={
                 game.headerUrl ||
@@ -297,50 +433,72 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
               loading="lazy"
             />
 
+            {/* Game information */}
             <div className="flex flex-1 items-start justify-between p-4">
               <div className="min-w-0">
-                <h2 className="text-lg font-semibold">{game.name}</h2>
+                <h2 className="theme-primary-text text-lg font-semibold">
+                  {game.name}
+                </h2>
 
-                <p className="mt-1 text-sm text-gray-400">
-                  {t('steamAppId')}: {game.steamAppid}
+                <p className="theme-secondary-text mt-1 text-sm">
+                  {t('steamAppId')}:{' '}
+                  {game.steamAppid}
                 </p>
 
-                {game.genres?.length > 0 && (
+                {/* Genres */}
+                {game.genres?.length >
+                  0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {game.genres.map((genre) => (
-                      <span
-                        key={genre}
-                        className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
-                          genre
-                        )}`}
-                      >
-                        {getGenreLabel(genre, language)}
-                      </span>
-                    ))}
+                    {game.genres.map(
+                      (genre) => (
+                        <span
+                          key={genre}
+                          className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
+                            genre
+                          )}`}
+                        >
+                          {getGenreLabel(
+                            genre,
+                            language
+                          )}
+                        </span>
+                      )
+                    )}
                   </div>
                 )}
               </div>
 
+              {/* Compatibility tier */}
               <div
                 className={`ml-3 shrink-0 rounded px-2 py-1 text-xs font-bold ${
                   game.tier
-                    ? tierColors[game.tier]
+                    ? tierColors[
+                        game.tier
+                      ]
                     : tierColors.Pending
                 }`}
               >
-                {getTierLabel(game.tier || 'Pending', t)}
+                {getTierLabel(
+                  game.tier ||
+                    'Pending',
+                  t
+                )}
               </div>
             </div>
           </Link>
         ))}
 
-        {sortedGames.length === 0 && !error && (
-          <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-            {selectedGenre !== 'all' || selectedTier !== 'all'
-              ? 'No games match the selected filters.'
-              : t('noGames')}
-          </div>
-        )}
+        {/* No results */}
+        {sortedGames.length === 0 &&
+          !error && (
+            <div className="theme-surface theme-border theme-secondary-text rounded-lg border p-4 text-center">
+              {selectedGenre !==
+                'all' ||
+              selectedTier !== 'all'
+                ? 'No games match the selected filters.'
+                : t('noGames')}
+            </div>
+          )}
       </div>
     </div>
   );

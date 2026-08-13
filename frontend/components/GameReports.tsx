@@ -23,6 +23,7 @@ import type {
   GameDto,
   Tier,
 } from '@/types';
+
 import PlayerCount from './PlayerCount';
 
 const tierColors: Record<string, string> = {
@@ -77,7 +78,8 @@ export default function GameReports({
   const [deleteError, setDeleteError] = useState('');
   const [visibleCount, setVisibleCount] = useState(10);
 
-  const dateLocale = language === 'es' ? 'es-ES' : 'en-GB';
+  const dateLocale =
+    language === 'es' ? 'es-ES' : 'en-GB';
 
   const relatedGamesTitle =
     language === 'es'
@@ -220,11 +222,11 @@ export default function GameReports({
   };
 
   return (
-    <main className="min-h-screen bg-gray-900 p-8 text-white">
+    <main className="min-h-screen p-8 text-[var(--foreground)] transition-colors duration-200">
       <div className="mx-auto max-w-5xl">
 
         {/* Game header */}
-        <div className="mb-8 overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
+        <div className="theme-surface mb-8 overflow-hidden rounded-lg border">
           <img
             src={gameHeaderUrl}
             alt={`${game.name} banner`}
@@ -233,19 +235,22 @@ export default function GameReports({
 
           <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-4xl font-bold">
+              <h1 className="theme-primary-text text-4xl font-bold">
                 {game.name}
               </h1>
 
-              <p className="mt-2 text-gray-400">
+              <p className="theme-secondary-text mt-2">
                 {t('steamAppId')}: {game.steamAppid}
               </p>
-              <PlayerCount steamAppid={game.steamAppid} />
+
+              <PlayerCount
+                steamAppid={game.steamAppid}
+              />
 
               {game.genres &&
                 game.genres.length > 0 && (
                   <div className="mt-4">
-                    <p className="mb-2 text-sm text-gray-400">
+                    <p className="theme-secondary-text mb-2 text-sm">
                       {genresLabel}
                     </p>
 
@@ -293,20 +298,20 @@ export default function GameReports({
         </div>
 
         {/* Reports */}
-        <h2 className="mb-4 text-2xl font-bold">
+        <h2 className="theme-primary-text mb-4 text-2xl font-bold">
           {t('reports')}
         </h2>
 
         <div className="mb-12 flex flex-col gap-4">
           {reports.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-700 bg-gray-800/40 px-6 py-10 text-center">
-              <h3 className="text-lg font-semibold text-white">
+            <div className="theme-surface rounded-xl border border-dashed px-6 py-10 text-center">
+              <h3 className="theme-primary-text text-lg font-semibold">
                 {language === 'es'
                   ? 'Aún no hay informes de compatibilidad'
                   : 'No compatibility reports yet'}
               </h3>
 
-              <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-gray-400">
+              <p className="theme-secondary-text mx-auto mt-2 max-w-lg text-sm leading-6">
                 {language === 'es'
                   ? 'Todavía no se ha enviado ningún informe para este juego. La información de compatibilidad aparecerá cuando los usuarios comiencen a contribuir.'
                   : 'No reports have been submitted for this game yet. Compatibility information will appear once users start contributing.'}
@@ -315,7 +320,7 @@ export default function GameReports({
               {!user && (
                 <Link
                   href="/login"
-                  className="mt-5 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                  className="mt-5 inline-block rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)]"
                 >
                   {language === 'es'
                     ? 'Iniciar sesión para contribuir'
@@ -344,10 +349,10 @@ export default function GameReports({
                   return (
                     <div
                       key={report.id}
-                      className="flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-800 p-4"
+                      className="theme-surface flex flex-col gap-2 rounded-lg border p-4 transition-colors"
                     >
                       <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm text-gray-400">
+                        <p className="theme-secondary-text text-sm">
                           <Link
                             href={`/users/${report.user_id}`}
                             className="font-bold underline transition-colors hover:text-pink-600"
@@ -387,7 +392,7 @@ export default function GameReports({
                       {!isEditing && (
                         <>
                           {report.comment && (
-                            <div className="mt-2 whitespace-pre-line rounded bg-gray-900 p-3 text-sm text-gray-300">
+                            <div className="theme-surface-secondary mt-2 whitespace-pre-line rounded p-3 text-sm">
                               {report.comment}
                             </div>
                           )}
@@ -412,7 +417,7 @@ export default function GameReports({
                                 disabled={
                                   isDeleting
                                 }
-                                className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 {language === 'es'
                                   ? 'Editar'
@@ -450,7 +455,7 @@ export default function GameReports({
                             onSubmit={
                               handleUpdate
                             }
-                            className="mt-3 space-y-4 rounded border border-gray-700 bg-gray-900 p-4"
+                            className="theme-surface-secondary theme-border mt-3 space-y-4 rounded border p-4"
                           >
                             {editError && (
                               <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
@@ -461,7 +466,7 @@ export default function GameReports({
                             <div>
                               <label
                                 htmlFor={`tier-${report.id}`}
-                                className="mb-1 block text-sm font-medium text-gray-300"
+                                className="theme-primary-text mb-1 block text-sm font-medium"
                               >
                                 {t(
                                   'compatibilityRating'
@@ -480,7 +485,7 @@ export default function GameReports({
                                   })
                                 }
                                 required
-                                className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
                               >
                                 <option value="Platinum">
                                   {t('platinum')}
@@ -507,7 +512,7 @@ export default function GameReports({
                             <div>
                               <label
                                 htmlFor={`distribution-${report.id}`}
-                                className="mb-1 block text-sm font-medium text-gray-300"
+                                className="theme-primary-text mb-1 block text-sm font-medium"
                               >
                                 {t(
                                   'linuxDistribution'
@@ -528,14 +533,14 @@ export default function GameReports({
                                   })
                                 }
                                 required
-                                className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
                               />
                             </div>
 
                             <div>
                               <label
                                 htmlFor={`proton-${report.id}`}
-                                className="mb-1 block text-sm font-medium text-gray-300"
+                                className="theme-primary-text mb-1 block text-sm font-medium"
                               >
                                 {t(
                                   'protonVersion'
@@ -556,14 +561,14 @@ export default function GameReports({
                                   })
                                 }
                                 required
-                                className="w-full rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
                               />
                             </div>
 
                             <div>
                               <label
                                 htmlFor={`comment-${report.id}`}
-                                className="mb-1 block text-sm font-medium text-gray-300"
+                                className="theme-primary-text mb-1 block text-sm font-medium"
                               >
                                 {t('comment')}
                               </label>
@@ -582,7 +587,7 @@ export default function GameReports({
                                 }
                                 required
                                 rows={4}
-                                className="w-full resize-y rounded border border-gray-600 bg-gray-700 px-3 py-2 text-white focus:border-blue-500 focus:outline-none"
+                                className="theme-input w-full resize-y rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
                               />
                             </div>
 
@@ -607,7 +612,7 @@ export default function GameReports({
                                   cancelEditing
                                 }
                                 disabled={saving}
-                                className="rounded bg-gray-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="theme-input rounded border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 {language === 'es'
                                   ? 'Cancelar'
@@ -629,7 +634,7 @@ export default function GameReports({
                         visibleCount + 10
                       )
                     }
-                    className="self-center rounded bg-gray-700 px-4 py-2 hover:bg-gray-600"
+                    className="theme-input self-center rounded border px-4 py-2 transition-colors hover:bg-[var(--surface-hover)]"
                   >
                     {language === 'es'
                       ? 'Mostrar más'
@@ -642,7 +647,7 @@ export default function GameReports({
 
         {/* Related games */}
         <section>
-          <h2 className="mb-4 text-2xl font-bold">
+          <h2 className="theme-primary-text mb-4 text-2xl font-bold">
             {relatedGamesTitle}
           </h2>
 
@@ -653,7 +658,7 @@ export default function GameReports({
                   <Link
                     key={relatedGame.id}
                     href={`/games/${relatedGame.steamAppid}`}
-                    className="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500"
+                    className="theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)]"
                   >
                     <img
                       src={
@@ -668,11 +673,11 @@ export default function GameReports({
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h3 className="font-semibold">
+                          <h3 className="theme-primary-text font-semibold">
                             {relatedGame.name}
                           </h3>
 
-                          <p className="mt-1 text-sm text-gray-400">
+                          <p className="theme-secondary-text mt-1 text-sm">
                             {t(
                               'steamAppId'
                             )}
@@ -727,7 +732,7 @@ export default function GameReports({
               )}
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-gray-700 bg-gray-800/40 px-6 py-8 text-center text-gray-400">
+            <div className="theme-surface theme-secondary-text rounded-xl border border-dashed px-6 py-8 text-center">
               {noRelatedGames}
             </div>
           )}
@@ -748,18 +753,18 @@ export default function GameReports({
             }
           }}
         >
-          <div className="w-full max-w-md rounded-xl border border-gray-700 bg-gray-800 p-6 shadow-2xl">
+          <div className="theme-surface w-full max-w-md rounded-xl border p-6 shadow-2xl">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-950 text-2xl font-bold text-red-400">
               !
             </div>
 
-            <h2 className="mt-4 text-xl font-bold text-white">
+            <h2 className="theme-primary-text mt-4 text-xl font-bold">
               {language === 'es'
                 ? 'Eliminar informe'
                 : 'Delete Report'}
             </h2>
 
-            <p className="mt-3 text-sm leading-6 text-gray-300">
+            <p className="theme-secondary-text mt-3 text-sm leading-6">
               {language === 'es'
                 ? '¿Seguro que quieres eliminar este informe? Esta acción es permanente y no se puede deshacer.'
                 : 'Are you sure you want to delete this report? This action is permanent and cannot be undone.'}
@@ -774,7 +779,7 @@ export default function GameReports({
                 disabled={
                   deletingReportId !== null
                 }
-                className="rounded-lg bg-gray-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className="theme-input rounded-lg border px-4 py-2 font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {language === 'es'
                   ? 'Cancelar'

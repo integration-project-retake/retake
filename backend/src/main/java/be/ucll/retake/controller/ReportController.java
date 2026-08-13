@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
@@ -53,15 +54,23 @@ public class ReportController {
         );
     }
 
-
-        @GetMapping("/steam/{steamAppid}")
-        public List<ReportDto> getReportsBySteamAppid(@PathVariable Integer steamAppid) {
+    @GetMapping("/steam/{steamAppid}")
+    public List<ReportDto> getReportsBySteamAppid(
+            @PathVariable Integer steamAppid
+    ) {
         List<ReportDto> dtos = new ArrayList<>();
-        for (Report report : reportService.getReportsBySteamAppid(steamAppid)) {
-                dtos.add(ReportDto.from(report));
+
+        for (
+                Report report :
+                reportService.getReportsBySteamAppid(steamAppid)
+        ) {
+            dtos.add(
+                    ReportDto.from(report)
+            );
         }
+
         return dtos;
-        }
+    }
 
     @GetMapping("/game/{gameId}")
     public List<ReportDto> getReportsByGameId(
@@ -78,8 +87,7 @@ public class ReportController {
     public List<ReportDto> getReportsByUserId(
             @PathVariable Long userId
     ) {
-        List<ReportDto> dtos =
-                new ArrayList<>();
+        List<ReportDto> dtos = new ArrayList<>();
 
         for (
                 Report report :
@@ -93,21 +101,25 @@ public class ReportController {
         return dtos;
     }
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReportDto createReport(
-            @RequestParam Long userId,
             @RequestParam Long gameId,
             @RequestParam Tier tier,
             @RequestParam String distribution,
             @RequestParam String comment,
-            @RequestParam String protonVersion
+            @RequestParam String protonVersion,
+            HttpServletRequest request
     ) {
+        User user = getAuthenticatedUser(
+                request,
+                "You must be logged in to create a report"
+        );
+
         try {
             return ReportDto.from(
                     reportService.createReport(
-                            userId,
+                            user.getId(),
                             gameId,
                             tier,
                             distribution,
@@ -132,11 +144,10 @@ public class ReportController {
             @RequestParam String protonVersion,
             HttpServletRequest request
     ) {
-        User user =
-                getAuthenticatedUser(
-                        request,
-                        "You must be logged in to edit a report"
-                );
+        User user = getAuthenticatedUser(
+                request,
+                "You must be logged in to edit a report"
+        );
 
         try {
             return ReportDto.from(
@@ -168,11 +179,10 @@ public class ReportController {
             @PathVariable Long id,
             HttpServletRequest request
     ) {
-        User user =
-                getAuthenticatedUser(
-                        request,
-                        "You must be logged in to delete a report"
-                );
+        User user = getAuthenticatedUser(
+                request,
+                "You must be logged in to delete a report"
+        );
 
         try {
             reportService.deleteReport(
@@ -206,12 +216,10 @@ public class ReportController {
             );
         }
 
-        User user =
-                (User) session.getAttribute(
-                        "user"
-                );
+        Object sessionUser =
+                session.getAttribute("user");
 
-        if (user == null) {
+        if (!(sessionUser instanceof User user)) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     errorMessage
