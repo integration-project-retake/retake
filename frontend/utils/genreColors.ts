@@ -9,12 +9,12 @@ export const genreColors: Record<string, string> = {
   Metroidvania: 'bg-cyan-900 text-cyan-200',
   Simulation: 'bg-lime-900 text-lime-200',
 
-  Shooter: 'bg-slate-600 text-slate-100',
-  Multiplayer: 'bg-indigo-900 text-indigo-200',
+  Shooter: 'bg-indigo-900 text-indigo-200',
+  Multiplayer: 'bg-fuchsia-900 text-fuchsia-200',
   Horror: 'bg-stone-800 text-stone-200',
-  'Battle Royale': 'bg-amber-800 text-amber-100',
+  'Battle Royale': 'bg-amber-800 text-amber-300',
   Platformer: 'bg-sky-800 text-sky-100',
-  Puzzle: 'bg-violet-800 text-violet-100',
+  Puzzle: 'bg-yellow-700 text-yellow-100',
   Sports: 'bg-emerald-800 text-emerald-100',
 };
 
