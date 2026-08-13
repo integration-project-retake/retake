@@ -51,8 +51,7 @@ CREATE INDEX idx_game_genres_genre ON game_genres (LOWER(genre));
 -- DATA SEEDING
 
 -- Users
---
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+--CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 INSERT INTO users (username, email, password) VALUES
 ('annie', 'annie@ucll.be', crypt('password123', gen_salt('bf'))),
