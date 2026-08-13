@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,53 +14,118 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; 
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
+    private Long id;
 
-    @Column(unique = true, nullable = false, length = 30)
-    @NotBlank(message = "Username is required")
+    @Column(
+            unique = true,
+            nullable = false,
+            length = 30
+    )
+    @NotBlank(
+            message = "Username is required"
+    )
     private String username;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be in a valid format")
+    @Column(
+            unique = true,
+            nullable = false
+    )
+    @NotBlank(
+            message = "Email is required"
+    )
+    @Email(
+            message = "Email must be in a valid format"
+    )
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "avatar_url", length = 500)
+    @Column(
+            name = "avatar_url",
+            length = 500
+    )
     private String avatarUrl;
 
+        @Column(length = 500)
+        private String bio;
+
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(
+            name = "created_at",
+            nullable = false,
+            updatable = false
+    )
     private Instant createdAt;
 
-    protected User() {}
+    protected User() {
+    }
 
-    public User(String username, String email, String password) {
+    public User(
+            String username,
+            String email,
+            String password
+    ) {
         setUsername(username);
         setEmail(email);
         setPassword(password);
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public String getUsername() {
+        return username;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setUsername(
+            String username
+    ) {
+        this.username = username;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getAvatarUrl() { return avatarUrl; }
-    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+    public void setEmail(
+            String email
+    ) {
+        this.email = email;
+    }
 
-    public Instant getCreatedAt() { return createdAt; }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(
+            String password
+    ) {
+        this.password = password;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(
+            String avatarUrl
+    ) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+        public String getBio() { return bio; }
+        public void setBio(String bio) { this.bio = bio; }
 }

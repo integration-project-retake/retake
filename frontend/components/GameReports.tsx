@@ -1,51 +1,51 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import {
-  useLanguage,
-} from '@/context/LanguageContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 
 import SubmitReportForm from '@/components/SubmitReportForm';
 
 import {
-  getGenreColor,
-} from '@/utils/genreColors';
+  updateReport,
+  deleteReport,
+} from '@/services/reportService';
 
-import {
-  getGenreLabel,
-} from '@/utils/genreLabels';
-
-import {
-  getTierLabel,
-} from '@/utils/tierLabels';
+import { getGenreColor } from '@/utils/genreColors';
+import { getGenreLabel } from '@/utils/genreLabels';
+import { getTierLabel } from '@/utils/tierLabels';
 
 import type {
   ReportDto,
   GameDto,
+  Tier,
 } from '@/types';
 
-const tierColors:
-  Record<string, string> = {
-    Platinum:
-      'bg-blue-200 text-blue-900',
-    Gold:
-      'bg-yellow-400 text-yellow-900',
-    Silver:
-      'bg-gray-300 text-gray-900',
-    Bronze:
-      'bg-orange-500 text-orange-950',
-    Borked:
-      'bg-red-600 text-white',
-    Pending:
-      'bg-gray-600 text-gray-300',
-  };
+import PlayerCount from './PlayerCount';
+
+const tierColors: Record<string, string> = {
+  Platinum: 'bg-blue-200 text-blue-900',
+  Gold: 'bg-yellow-400 text-yellow-900',
+  Silver: 'bg-gray-300 text-gray-900',
+  Bronze: 'bg-orange-500 text-orange-950',
+  Borked: 'bg-red-600 text-white',
+  Pending: 'bg-gray-600 text-gray-300',
+};
 
 interface GameReportsProps {
   game: GameDto;
   reports: ReportDto[];
-  relatedGames:
-    GameDto[];
+  relatedGames: GameDto[];
+}
+
+interface EditForm {
+  tier: Tier;
+  distribution: string;
+  protonVersion: string;
+  comment: string;
 }
 
 export default function GameReports({
@@ -53,15 +53,33 @@ export default function GameReports({
   reports,
   relatedGames,
 }: GameReportsProps) {
-  const {
-    language,
-    t,
-  } = useLanguage();
+  const { language, t } = useLanguage();
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const [editingReportId, setEditingReportId] =
+    useState<number | null>(null);
+
+  const [editForm, setEditForm] =
+    useState<EditForm | null>(null);
+
+  const [editError, setEditError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const [deletingReportId, setDeletingReportId] =
+    useState<number | null>(null);
+
+  const [reportToDelete, setReportToDelete] =
+    useState<number | null>(null);
+
+  const [deleteErrorReportId, setDeleteErrorReportId] =
+    useState<number | null>(null);
+
+  const [deleteError, setDeleteError] = useState('');
+  const [visibleCount, setVisibleCount] = useState(10);
 
   const dateLocale =
-    language === 'es'
-      ? 'es-ES'
-      : 'en-GB';
+    language === 'es' ? 'es-ES' : 'en-GB';
 
   const relatedGamesTitle =
     language === 'es'
@@ -82,58 +100,165 @@ export default function GameReports({
     game.headerUrl ||
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
 
+  const startEditing = (report: ReportDto) => {
+    setEditError('');
+    setDeleteError('');
+    setDeleteErrorReportId(null);
+
+    setEditingReportId(report.id);
+
+    setEditForm({
+      tier: report.tier as Tier,
+      distribution: report.distribution ?? '',
+      protonVersion: report.protonVersion ?? '',
+      comment: report.comment ?? '',
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingReportId(null);
+    setEditForm(null);
+    setEditError('');
+  };
+
+  const handleUpdate = async (
+    event: React.FormEvent
+  ) => {
+    event.preventDefault();
+
+    if (
+      !user ||
+      editingReportId === null ||
+      editForm === null
+    ) {
+      return;
+    }
+
+    setEditError('');
+
+    if (
+      !editForm.distribution.trim() ||
+      !editForm.protonVersion.trim() ||
+      !editForm.comment.trim()
+    ) {
+      setEditError(
+        language === 'es'
+          ? 'Todos los campos son obligatorios.'
+          : 'All fields are required.'
+      );
+
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await updateReport(
+        editingReportId,
+        Number(user.id),
+        editForm.tier,
+        editForm.distribution.trim(),
+        editForm.comment.trim(),
+        editForm.protonVersion.trim()
+      );
+
+      setEditingReportId(null);
+      setEditForm(null);
+
+      router.refresh();
+    } catch (err) {
+      console.error(
+        'Failed to update report:',
+        err
+      );
+
+      setEditError(
+        language === 'es'
+          ? 'No se pudo actualizar el informe.'
+          : 'Failed to update report.'
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (
+    reportId: number
+  ) => {
+    setDeleteError('');
+    setDeleteErrorReportId(null);
+
+    try {
+      setDeletingReportId(reportId);
+
+      await deleteReport(reportId);
+
+      setReportToDelete(null);
+
+      if (editingReportId === reportId) {
+        setEditingReportId(null);
+        setEditForm(null);
+      }
+
+      router.refresh();
+    } catch (err) {
+      console.error(
+        'Failed to delete report:',
+        err
+      );
+
+      setDeleteErrorReportId(reportId);
+
+      setDeleteError(
+        language === 'es'
+          ? 'No se pudo eliminar el informe.'
+          : 'Failed to delete report.'
+      );
+
+      setReportToDelete(null);
+    } finally {
+      setDeletingReportId(null);
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-gray-900 p-8 text-white">
+    <main className="min-h-screen p-8 text-[var(--foreground)] transition-colors duration-200">
       <div className="mx-auto max-w-5xl">
 
-        <div className="mb-8 overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
+        {/* Game header */}
+        <div className="theme-surface mb-8 overflow-hidden rounded-lg border">
           <img
-            src={
-              gameHeaderUrl
-            }
+            src={gameHeaderUrl}
             alt={`${game.name} banner`}
             className="aspect-[460/215] w-full object-cover"
           />
 
           <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-4xl font-bold">
-                {
-                  game.name
-                }
+              <h1 className="theme-primary-text text-4xl font-bold">
+                {game.name}
               </h1>
 
-              <p className="mt-2 text-gray-400">
-                {t(
-                  'steamAppId'
-                )}
-                :{' '}
-                {
-                  game.steamAppid
-                }
+              <p className="theme-secondary-text mt-2">
+                {t('steamAppId')}: {game.steamAppid}
               </p>
 
+              <PlayerCount
+                steamAppid={game.steamAppid}
+              />
+
               {game.genres &&
-                game
-                  .genres
-                  .length >
-                  0 && (
+                game.genres.length > 0 && (
                   <div className="mt-4">
-                    <p className="mb-2 text-sm text-gray-400">
-                      {
-                        genresLabel
-                      }
+                    <p className="theme-secondary-text mb-2 text-sm">
+                      {genresLabel}
                     </p>
 
                     <div className="flex flex-wrap gap-2">
                       {game.genres.map(
-                        (
-                          genre
-                        ) => (
+                        (genre) => (
                           <span
-                            key={
-                              genre
-                            }
+                            key={genre}
                             className={`rounded-full px-3 py-1 text-sm ${getGenreColor(
                               genre
                             )}`}
@@ -153,141 +278,394 @@ export default function GameReports({
             <div
               className={`shrink-0 rounded px-4 py-2 text-lg font-bold ${
                 game.tier
-                  ? tierColors[
-                      game
-                        .tier
-                    ]
+                  ? tierColors[game.tier]
                   : tierColors.Pending
               }`}
             >
               {getTierLabel(
-                game.tier ||
-                  'Pending',
+                game.tier || 'Pending',
                 t
               )}
             </div>
           </div>
         </div>
 
+        {/* Submit report */}
         <div className="mb-8">
           <SubmitReportForm
-            gameId={
-              game.id
-            }
+            gameId={game.id}
           />
         </div>
 
-        <h2 className="mb-4 text-2xl font-bold">
-          {t(
-            'reports'
-          )}
+        {/* Reports */}
+        <h2 className="theme-primary-text mb-4 text-2xl font-bold">
+          {t('reports')}
         </h2>
 
         <div className="mb-12 flex flex-col gap-4">
-          {reports.map(
-            (
-              report
-            ) => (
-              <div
-                key={
-                  report.id
-                }
-                className="flex flex-col gap-2 rounded-lg border border-gray-700 bg-gray-800 p-4"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-sm text-gray-400">
-                    <Link
-                      href={`/users/${report.user_id}`}
-                      className="font-bold underline transition-colors hover:text-pink-600"
-                    >
-                      {
-                        report.username
-                      }
-                    </Link>
+          {reports.length === 0 ? (
+            <div className="theme-surface rounded-xl border border-dashed px-6 py-10 text-center">
+              <h3 className="theme-primary-text text-lg font-semibold">
+                {language === 'es'
+                  ? 'Aún no hay informes de compatibilidad'
+                  : 'No compatibility reports yet'}
+              </h3>
 
-                    {' '}
-                    •{' '}
-                    {
-                      report.distribution
-                    }{' '}
-                    •{' '}
+              <p className="theme-secondary-text mx-auto mt-2 max-w-lg text-sm leading-6">
+                {language === 'es'
+                  ? 'Todavía no se ha enviado ningún informe para este juego. La información de compatibilidad aparecerá cuando los usuarios comiencen a contribuir.'
+                  : 'No reports have been submitted for this game yet. Compatibility information will appear once users start contributing.'}
+              </p>
 
-                    {report.protonVersion
-                      ? `Proton ${report.protonVersion} • `
-                      : ''}
-
-                    {new Date(
-                      report.createdAt
-                    ).toLocaleDateString(
-                      dateLocale
-                    )}
-                  </p>
-
-                  <div
-                    className={`rounded px-4 py-1.5 font-bold ${
-                      tierColors[
-                        report
-                          .tier
-                      ]
-                    }`}
-                  >
-                    {getTierLabel(
-                      report.tier,
-                      t
-                    )}
-                  </div>
-                </div>
-
-                {report.comment && (
-                  <div className="mt-2 whitespace-pre-line rounded bg-gray-900 p-3 text-sm text-gray-300">
-                    {
-                      report.comment
-                    }
-                  </div>
-                )}
-              </div>
-            )
-          )}
-
-          {reports.length ===
-            0 && (
-            <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-              {t(
-                'noReports'
+              {!user && (
+                <Link
+                  href="/login"
+                  className="mt-5 inline-block rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)]"
+                >
+                  {language === 'es'
+                    ? 'Iniciar sesión para contribuir'
+                    : 'Log in to contribute'}
+                </Link>
               )}
             </div>
+          ) : (
+            <>
+              {reports
+                .slice(0, visibleCount)
+                .map((report) => {
+                  const isOwnReport =
+                    user !== null &&
+                    Number(user.id) ===
+                      Number(report.user_id);
+
+                  const isEditing =
+                    editingReportId ===
+                    report.id;
+
+                  const isDeleting =
+                    deletingReportId ===
+                    report.id;
+
+                  return (
+                    <div
+                      key={report.id}
+                      className="theme-surface flex flex-col gap-2 rounded-lg border p-4 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="theme-secondary-text text-sm">
+                          <Link
+                            href={`/users/${report.user_id}`}
+                            className="font-bold underline transition-colors hover:text-pink-600"
+                          >
+                            {report.username}
+                          </Link>
+
+                          {' '}•{' '}
+                          {report.distribution}
+                          {' '}•{' '}
+
+                          {report.protonVersion
+                            ? `Proton ${report.protonVersion} • `
+                            : ''}
+
+                          {new Date(
+                            report.createdAt
+                          ).toLocaleDateString(
+                            dateLocale
+                          )}
+                        </p>
+
+                        <div
+                          className={`rounded px-4 py-1.5 font-bold ${
+                            tierColors[
+                              report.tier
+                            ]
+                          }`}
+                        >
+                          {getTierLabel(
+                            report.tier,
+                            t
+                          )}
+                        </div>
+                      </div>
+
+                      {!isEditing && (
+                        <>
+                          {report.comment && (
+                            <div className="theme-surface-secondary mt-2 whitespace-pre-line rounded p-3 text-sm">
+                              {report.comment}
+                            </div>
+                          )}
+
+                          {deleteErrorReportId ===
+                            report.id &&
+                            deleteError && (
+                              <div className="mt-2 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                                {deleteError}
+                              </div>
+                            )}
+
+                          {isOwnReport && (
+                            <div className="mt-2 flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  startEditing(
+                                    report
+                                  )
+                                }
+                                disabled={
+                                  isDeleting
+                                }
+                                className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {language === 'es'
+                                  ? 'Editar'
+                                  : 'Edit'}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setReportToDelete(
+                                    report.id
+                                  )
+                                }
+                                disabled={
+                                  isDeleting
+                                }
+                                className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {isDeleting
+                                  ? language === 'es'
+                                    ? 'Eliminando...'
+                                    : 'Deleting...'
+                                  : language === 'es'
+                                    ? 'Eliminar'
+                                    : 'Delete'}
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {isEditing &&
+                        editForm && (
+                          <form
+                            onSubmit={
+                              handleUpdate
+                            }
+                            className="theme-surface-secondary theme-border mt-3 space-y-4 rounded border p-4"
+                          >
+                            {editError && (
+                              <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                                {editError}
+                              </div>
+                            )}
+
+                            <div>
+                              <label
+                                htmlFor={`tier-${report.id}`}
+                                className="theme-primary-text mb-1 block text-sm font-medium"
+                              >
+                                {t(
+                                  'compatibilityRating'
+                                )}
+                              </label>
+
+                              <select
+                                id={`tier-${report.id}`}
+                                value={editForm.tier}
+                                onChange={(event) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    tier:
+                                      event.target
+                                        .value as Tier,
+                                  })
+                                }
+                                required
+                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                              >
+                                <option value="Platinum">
+                                  {t('platinum')}
+                                </option>
+
+                                <option value="Gold">
+                                  {t('gold')}
+                                </option>
+
+                                <option value="Silver">
+                                  {t('silver')}
+                                </option>
+
+                                <option value="Bronze">
+                                  {t('bronze')}
+                                </option>
+
+                                <option value="Borked">
+                                  {t('borked')}
+                                </option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`distribution-${report.id}`}
+                                className="theme-primary-text mb-1 block text-sm font-medium"
+                              >
+                                {t(
+                                  'linuxDistribution'
+                                )}
+                              </label>
+
+                              <input
+                                id={`distribution-${report.id}`}
+                                type="text"
+                                value={
+                                  editForm.distribution
+                                }
+                                onChange={(event) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    distribution:
+                                      event.target.value,
+                                  })
+                                }
+                                required
+                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`proton-${report.id}`}
+                                className="theme-primary-text mb-1 block text-sm font-medium"
+                              >
+                                {t(
+                                  'protonVersion'
+                                )}
+                              </label>
+
+                              <input
+                                id={`proton-${report.id}`}
+                                type="text"
+                                value={
+                                  editForm.protonVersion
+                                }
+                                onChange={(event) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    protonVersion:
+                                      event.target.value,
+                                  })
+                                }
+                                required
+                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor={`comment-${report.id}`}
+                                className="theme-primary-text mb-1 block text-sm font-medium"
+                              >
+                                {t('comment')}
+                              </label>
+
+                              <textarea
+                                id={`comment-${report.id}`}
+                                value={
+                                  editForm.comment
+                                }
+                                onChange={(event) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    comment:
+                                      event.target.value,
+                                  })
+                                }
+                                required
+                                rows={4}
+                                className="theme-input w-full resize-y rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                              />
+                            </div>
+
+                            <div className="flex gap-3">
+                              <button
+                                type="submit"
+                                disabled={saving}
+                                className="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {saving
+                                  ? language === 'es'
+                                    ? 'Guardando...'
+                                    : 'Saving...'
+                                  : language === 'es'
+                                    ? 'Guardar cambios'
+                                    : 'Save Changes'}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={
+                                  cancelEditing
+                                }
+                                disabled={saving}
+                                className="theme-input rounded border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {language === 'es'
+                                  ? 'Cancelar'
+                                  : 'Cancel'}
+                              </button>
+                            </div>
+                          </form>
+                        )}
+                    </div>
+                  );
+                })}
+
+              {reports.length >
+                visibleCount && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVisibleCount(
+                        visibleCount + 10
+                      )
+                    }
+                    className="theme-input self-center rounded border px-4 py-2 transition-colors hover:bg-[var(--surface-hover)]"
+                  >
+                    {language === 'es'
+                      ? 'Mostrar más'
+                      : 'Show more'}
+                  </button>
+                )}
+            </>
           )}
         </div>
 
+        {/* Related games */}
         <section>
-          <h2 className="mb-4 text-2xl font-bold">
-            {
-              relatedGamesTitle
-            }
+          <h2 className="theme-primary-text mb-4 text-2xl font-bold">
+            {relatedGamesTitle}
           </h2>
 
-          {relatedGames.length >
-          0 ? (
+          {relatedGames.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedGames.map(
-                (
-                  relatedGame
-                ) => (
+                (relatedGame) => (
                   <Link
-                    key={
-                      relatedGame.id
-                    }
+                    key={relatedGame.id}
                     href={`/games/${relatedGame.steamAppid}`}
-                    className="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 transition-colors hover:border-gray-500"
+                    className="theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)]"
                   >
                     <img
                       src={
                         relatedGame.headerUrl ||
                         `https://cdn.cloudflare.steamstatic.com/steam/apps/${relatedGame.steamAppid}/header.jpg`
                       }
-                      alt={
-                        relatedGame.name
-                      }
+                      alt={relatedGame.name}
                       className="aspect-[460/215] w-full object-cover"
                       loading="lazy"
                     />
@@ -295,13 +673,11 @@ export default function GameReports({
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h3 className="font-semibold">
-                            {
-                              relatedGame.name
-                            }
+                          <h3 className="theme-primary-text font-semibold">
+                            {relatedGame.name}
                           </h3>
 
-                          <p className="mt-1 text-sm text-gray-400">
+                          <p className="theme-secondary-text mt-1 text-sm">
                             {t(
                               'steamAppId'
                             )}
@@ -316,8 +692,7 @@ export default function GameReports({
                           className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
                             relatedGame.tier
                               ? tierColors[
-                                  relatedGame
-                                    .tier
+                                  relatedGame.tier
                                 ]
                               : tierColors.Pending
                           }`}
@@ -331,19 +706,13 @@ export default function GameReports({
                       </div>
 
                       {relatedGame.genres &&
-                        relatedGame
-                          .genres
-                          .length >
+                        relatedGame.genres.length >
                           0 && (
                           <div className="mt-3 flex flex-wrap gap-1.5">
                             {relatedGame.genres.map(
-                              (
-                                genre
-                              ) => (
+                              (genre) => (
                                 <span
-                                  key={
-                                    genre
-                                  }
+                                  key={genre}
                                   className={`rounded-full px-2 py-1 text-xs ${getGenreColor(
                                     genre
                                   )}`}
@@ -363,14 +732,84 @@ export default function GameReports({
               )}
             </div>
           ) : (
-            <div className="rounded-lg border border-gray-700 p-4 text-center text-gray-400">
-              {
-                noRelatedGames
-              }
+            <div className="theme-surface theme-secondary-text rounded-xl border border-dashed px-6 py-8 text-center">
+              {noRelatedGames}
             </div>
           )}
         </section>
       </div>
+
+      {/* Delete confirmation */}
+      {reportToDelete !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onMouseDown={(event) => {
+            if (
+              event.target ===
+                event.currentTarget &&
+              deletingReportId === null
+            ) {
+              setReportToDelete(null);
+            }
+          }}
+        >
+          <div className="theme-surface w-full max-w-md rounded-xl border p-6 shadow-2xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-950 text-2xl font-bold text-red-400">
+              !
+            </div>
+
+            <h2 className="theme-primary-text mt-4 text-xl font-bold">
+              {language === 'es'
+                ? 'Eliminar informe'
+                : 'Delete Report'}
+            </h2>
+
+            <p className="theme-secondary-text mt-3 text-sm leading-6">
+              {language === 'es'
+                ? '¿Seguro que quieres eliminar este informe? Esta acción es permanente y no se puede deshacer.'
+                : 'Are you sure you want to delete this report? This action is permanent and cannot be undone.'}
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setReportToDelete(null)
+                }
+                disabled={
+                  deletingReportId !== null
+                }
+                className="theme-input rounded-lg border px-4 py-2 font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {language === 'es'
+                  ? 'Cancelar'
+                  : 'Cancel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleDelete(
+                    reportToDelete
+                  )
+                }
+                disabled={
+                  deletingReportId !== null
+                }
+                className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deletingReportId !== null
+                  ? language === 'es'
+                    ? 'Eliminando...'
+                    : 'Deleting...'
+                  : language === 'es'
+                    ? 'Eliminar informe'
+                    : 'Delete Report'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

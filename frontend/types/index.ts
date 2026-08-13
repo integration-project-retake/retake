@@ -30,5 +30,7 @@ export interface UserDto {
   username: string;
   email: string;
   avatarUrl: string | null;
+  bio: string | null;
+  backgroundUrl: string | null;
   createdAt: string;
 }

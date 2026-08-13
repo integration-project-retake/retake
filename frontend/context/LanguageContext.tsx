@@ -122,6 +122,7 @@ const translations = {
       'Borked',
     pending:
       'Pending',
+    profile: "Profile",
   },
 
   es: {
@@ -242,6 +243,8 @@ const translations = {
       'No funciona',
     pending:
       'Pendiente',
+
+    profile: "Perfil",
   },
 } as const;
 

@@ -5,3 +5,4 @@ backend/target/
 .vscode/
 .idea/
 backend/.idea/
+backend/src/main/resources/application.properties

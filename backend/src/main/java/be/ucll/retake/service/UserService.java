@@ -49,4 +49,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateProfile(Long id, String bio) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + id + " not found"));
+        user.setBio(bio == null || bio.isBlank() ? null : bio);
+        return userRepository.save(user);
+    }
 }

@@ -2,12 +2,17 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme, type Theme } from '@/context/ThemeContext';
+import AccountMenu from './AccountMenu';
 
 export default function Header() {
   const { user, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const { theme, setTheme } = useTheme();
+
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -19,53 +24,72 @@ export default function Header() {
     }
   };
 
+  const avatarUrl =
+    user?.avatarUrl?.trim() ||
+    'https://www.gravatar.com/avatar/?d=mp';
+
   return (
-    <header className="border-b border-gray-700 bg-gray-800 p-4">
-      <div className="mx-auto flex max-w-5xl items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-white">
+    <header className="theme-header theme-border border-b p-4 transition-colors duration-200">
+      <div className="flex w-full items-center justify-between">
+        <Link
+          href="/"
+          className="theme-primary-text text-xl font-bold transition-opacity hover:opacity-80"
+        >
           ProtonDB Clone
         </Link>
 
         <nav className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="theme-header-link px-4 py-2"
+          >
+            Home
+          </Link>
+
+          {/* Language selector */}
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as 'en' | 'es')}
-            className="cursor-pointer rounded bg-gray-700 px-3 py-2 text-white hover:bg-gray-600"
+            onChange={(e) =>
+              setLanguage(e.target.value as 'en' | 'es')
+            }
+            className="theme-input cursor-pointer rounded border px-3 py-2 transition-colors"
+            aria-label="Select language"
           >
             <option value="en">English</option>
             <option value="es">Español</option>
           </select>
 
-          {user ? (
-            <>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-              >
-                {t('logout')}
-              </button>
+          {/* Theme selector */}
+          <select
+            value={theme}
+            onChange={(e) =>
+              setTheme(e.target.value as Theme)
+            }
+            className="theme-input cursor-pointer rounded border px-3 py-2 transition-colors"
+            aria-label="Select theme"
+          >
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="scenic">Scenic</option>
+            <option value="witcher">Witcher</option>
+            <option value="rdr2">RDR2</option>
+            <option value="gow">God of War</option>
+          </select>
 
-              <Link href={`/users/${user.id}`}>
-                <img
-                  src={user.avatarUrl || 'https://www.gravatar.com/avatar/?d=mp'}
-                  alt={user.username}
-                  className="w-9 h-9 rounded-full object-cover opacity-100 hover:opacity-80 transition-opacity"
-                />
-              </Link>
-            </>
+          {user ? (
+            <AccountMenu />
           ) : (
             <>
               <Link
                 href="/login"
-                className="px-4 py-2 text-gray-300 hover:text-white"
+                className="theme-header-link px-4 py-2"
               >
                 {t('login')}
               </Link>
 
               <Link
                 href="/register"
-                className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                className="rounded bg-[var(--accent)] px-4 py-2 text-white transition-colors hover:bg-[var(--accent-hover)]"
               >
                 {t('register')}
               </Link>

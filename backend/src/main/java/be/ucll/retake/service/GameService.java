@@ -41,6 +41,20 @@ public class GameService {
                 );
     }
 
+    public Game getGameBySteamAppid(
+            Integer steamAppid
+    ) {
+        return gameRepository
+                .findBySteamAppid(steamAppid)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Game with Steam App ID "
+                                        + steamAppid
+                                        + " not found"
+                        )
+                );
+    }
+
     public Game createGame(Integer steamAppid, String name) {
         if (gameRepository.existsBySteamAppid(steamAppid)) {
             throw new IllegalArgumentException(
@@ -62,15 +76,10 @@ public class GameService {
 
         String trimmed = query.trim();
 
-        // Exact Steam App ID search
+        // Partial Steam App ID Search
         if (trimmed.matches("\\d+")) {
-            Integer steamAppid =
-                    Integer.parseInt(trimmed);
-
             return gameRepository
-                    .findBySteamAppid(steamAppid)
-                    .map(List::of)
-                    .orElse(List.of());
+                    .findBySteamAppidStartingWith(trimmed);
         }
 
         String normalizedQuery =
@@ -237,6 +246,7 @@ public class GameService {
                         queryLength - 3
                 );
 
+        //
         int maximumWindow =
                 Math.min(
                         candidate.length(),
