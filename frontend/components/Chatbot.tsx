@@ -57,6 +57,7 @@ export default function Chatbot() {
         {isOpen && (
             <div className="mb-4 flex h-96 w-80 flex-col overflow-hidden rounded-lg border border-gray-700 bg-gray-800 text-white shadow-xl">
             <div className="flex items-center justify-between bg-pink-500 p-3">
+                <img src="/logo_darkmode.png" alt="Proton AI" className="h-5 w-auto [image-rendering:pixelated]" />
                 <h3 className="m-0 text-sm font-semibold text-white">Proton AI</h3>
                 <button
                 onClick={() => setIsOpen(false)}
@@ -108,20 +109,22 @@ export default function Chatbot() {
             </div>
         )}
 
-        <button onClick={() => setIsOpen(!isOpen)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-pink-500 shadow-lg transition-all hover:scale-105 hover:bg-pink-600"
-        aria-label="Toggle AI Chat"
-        >
-        {isOpen ? (
-            <span className="text-lg text-white">✕</span>
-        ) : (
-            <span className="text-center text-xs font-semibold leading-tight text-white">
-            Proton
-            <br />
-            AI
-            </span>
-        )}
-        </button>
+          <button onClick={() => setIsOpen(!isOpen)}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-pink-500 shadow-lg transition-all hover:scale-105 hover:bg-pink-600"
+            aria-label="Toggle AI Chat"
+          >
+            {isOpen ? (
+              <span className="text-lg text-white">✕</span>
+            ) : (
+              <img
+                src="/logo_lightmode.png"
+                alt=""
+                width={40}
+                height={40}
+                className="w-10 h-10 [image-rendering:pixelated]"
+              />
+            )}
+          </button>
         </div>
     );
 }

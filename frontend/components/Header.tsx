@@ -31,13 +31,25 @@ export default function Header() {
   return (
     <header className="theme-header theme-border border-b p-4 transition-colors duration-200">
       <div className="flex w-full items-center justify-between">
-        <Link
-          href="/"
-          className="theme-primary-text text-xl font-bold transition-opacity hover:opacity-80"
-        >
-          ProtonDB Clone
+        <Link href="/" className="flex items-center gap-2 ml-4">
+          <img
+            src="/logo_darkmode.png"
+            alt=""
+            width={40}
+            height={40}
+            className="logo-on-dark w-10 h-10 shrink-0 [image-rendering:pixelated] mr-1"
+          />
+          <img
+            src="/logo_lightmode.png"
+            alt=""
+            width={40}
+            height={40}
+            className="logo-on-light w-10 h-10 shrink-0 [image-rendering:pixelated] mr-1"
+          />
+          <span className="theme-header-link text-xl font-bold transition-opacity hover:opacity-80">
+            ProtonDB Clone
+          </span>
         </Link>
-
         <nav className="flex items-center gap-3">
           <Link
             href="/"
