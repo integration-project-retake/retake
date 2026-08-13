@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
+import { fetchUser } from '@/services/userService';
 
 import SubmitReportForm from '@/components/SubmitReportForm';
 
@@ -34,6 +35,9 @@ const tierColors: Record<string, string> = {
   Borked: 'bg-red-600 text-white',
   Pending: 'bg-gray-600 text-gray-300',
 };
+
+const DEFAULT_AVATAR =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%239ca3af'/%3E%3Ccircle cx='50' cy='36' r='19' fill='%23f3f4f6'/%3E%3Cpath d='M18 91c3-22 16-34 32-34s29 12 32 34' fill='%23f3f4f6'/%3E%3C/svg%3E";
 
 interface GameReportsProps {
   game: GameDto;
@@ -77,6 +81,57 @@ export default function GameReports({
 
   const [deleteError, setDeleteError] = useState('');
   const [visibleCount, setVisibleCount] = useState(10);
+
+  const [reportAuthorAvatars, setReportAuthorAvatars] =
+    useState<Record<number, string | null>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const userIds = Array.from(
+      new Set(
+        reports
+          .map((report) => Number(report.user_id))
+          .filter((id) => Number.isFinite(id))
+      )
+    );
+
+    const loadReportAuthorAvatars = async () => {
+      const entries = await Promise.all(
+        userIds.map(async (userId) => {
+          try {
+            const reportAuthor = await fetchUser(String(userId));
+
+            return [
+              userId,
+              reportAuthor.avatarUrl || null,
+            ] as const;
+          } catch (error) {
+            console.error(
+              `Failed to fetch profile picture for user ${userId}:`,
+              error
+            );
+
+            return [userId, null] as const;
+          }
+        })
+      );
+
+      if (!cancelled) {
+        setReportAuthorAvatars(Object.fromEntries(entries));
+      }
+    };
+
+    if (userIds.length > 0) {
+      loadReportAuthorAvatars();
+    } else {
+      setReportAuthorAvatars({});
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [reports]);
 
   const dateLocale =
     language === 'es' ? 'es-ES' : 'en-GB';
@@ -352,28 +407,46 @@ export default function GameReports({
                       className="theme-surface flex flex-col gap-2 rounded-lg border p-4 transition-colors"
                     >
                       <div className="flex items-center justify-between gap-4">
-                        <p className="theme-secondary-text text-sm">
+                        <div className="flex min-w-0 items-center gap-2">
                           <Link
                             href={`/users/${report.user_id}`}
-                            className="font-bold underline transition-colors hover:text-pink-600"
+                            className="shrink-0"
+                            aria-label={`${report.username} profile`}
                           >
-                            {report.username}
+                            <img
+                              src={
+                                reportAuthorAvatars[Number(report.user_id)] ||
+                                DEFAULT_AVATAR
+                              }
+                              alt={`${report.username} profile picture`}
+                              className="h-8 w-8 rounded-full object-cover ring-1 ring-white/20"
+                              loading="lazy"
+                            />
                           </Link>
 
-                          {' '}•{' '}
-                          {report.distribution}
-                          {' '}•{' '}
+                          <p className="theme-secondary-text min-w-0 text-sm">
+                            <Link
+                              href={`/users/${report.user_id}`}
+                              className="font-bold underline transition-colors hover:text-pink-600"
+                            >
+                              {report.username}
+                            </Link>
 
-                          {report.protonVersion
-                            ? `Proton ${report.protonVersion} • `
-                            : ''}
+                            {' '}•{' '}
+                            {report.distribution}
+                            {' '}•{' '}
 
-                          {new Date(
-                            report.createdAt
-                          ).toLocaleDateString(
-                            dateLocale
-                          )}
-                        </p>
+                            {report.protonVersion
+                              ? `Proton ${report.protonVersion} • `
+                              : ''}
+
+                            {new Date(
+                              report.createdAt
+                            ).toLocaleDateString(
+                              dateLocale
+                            )}
+                          </p>
+                        </div>
 
                         <div
                           className={`rounded px-4 py-1.5 font-bold ${

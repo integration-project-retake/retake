@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -40,6 +40,8 @@ const tierColors: Record<string, string> = {
   Pending: 'bg-gray-600 text-gray-300',
 };
 
+const REPORTS_PER_PAGE = 6;
+
 export default function UserReportsList({
   profileId,
   reports,
@@ -48,14 +50,20 @@ export default function UserReportsList({
   const { language, t } = useLanguage();
   const router = useRouter();
 
+  const [currentPage, setCurrentPage] =
+    useState(1);
+
   const [editingReportId, setEditingReportId] =
     useState<number | null>(null);
 
   const [editForm, setEditForm] =
     useState<EditForm | null>(null);
 
-  const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [error, setError] =
+    useState('');
+
+  const [saving, setSaving] =
+    useState(false);
 
   const [deletingReportId, setDeletingReportId] =
     useState<number | null>(null);
@@ -63,8 +71,10 @@ export default function UserReportsList({
   const [reportToDelete, setReportToDelete] =
     useState<number | null>(null);
 
-  const [deleteErrorReportId, setDeleteErrorReportId] =
-    useState<number | null>(null);
+  const [
+    deleteErrorReportId,
+    setDeleteErrorReportId,
+  ] = useState<number | null>(null);
 
   const [deleteError, setDeleteError] =
     useState('');
@@ -73,6 +83,63 @@ export default function UserReportsList({
     user !== null &&
     Number(user.id) === profileId;
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      reports.length / REPORTS_PER_PAGE
+    )
+  );
+
+  /*
+   * If reports are deleted while the user
+   * is on the final page, make sure they
+   * never remain on a page that no longer
+   * exists.
+   */
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [
+    currentPage,
+    totalPages,
+  ]);
+
+  const startIndex =
+    (currentPage - 1) *
+    REPORTS_PER_PAGE;
+
+  const paginatedReports =
+    reports.slice(
+      startIndex,
+      startIndex +
+        REPORTS_PER_PAGE
+    );
+
+  const goToPage = (
+    page: number
+  ) => {
+    if (
+      page < 1 ||
+      page > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(page);
+
+    /*
+     * Bring the user back toward
+     * the report area after switching
+     * pages without performing a full
+     * refresh.
+     */
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   const startEditing = (
     report: ReportDto
   ) => {
@@ -80,10 +147,13 @@ export default function UserReportsList({
     setDeleteError('');
     setDeleteErrorReportId(null);
 
-    setEditingReportId(report.id);
+    setEditingReportId(
+      report.id
+    );
 
     setEditForm({
-      tier: report.tier as Tier,
+      tier:
+        report.tier as Tier,
       distribution:
         report.distribution ?? '',
       protonVersion:
@@ -106,7 +176,8 @@ export default function UserReportsList({
 
     if (
       !user ||
-      editingReportId === null ||
+      editingReportId ===
+        null ||
       editForm === null
     ) {
       return;
@@ -164,17 +235,31 @@ export default function UserReportsList({
     reportId: number
   ) => {
     setDeleteError('');
-    setDeleteErrorReportId(null);
+    setDeleteErrorReportId(
+      null
+    );
 
     try {
-      setDeletingReportId(reportId);
+      setDeletingReportId(
+        reportId
+      );
 
-      await deleteReport(reportId);
+      await deleteReport(
+        reportId
+      );
 
-      setReportToDelete(null);
+      setReportToDelete(
+        null
+      );
 
-      if (editingReportId === reportId) {
-        setEditingReportId(null);
+      if (
+        editingReportId ===
+        reportId
+      ) {
+        setEditingReportId(
+          null
+        );
+
         setEditForm(null);
       }
 
@@ -185,7 +270,9 @@ export default function UserReportsList({
         err
       );
 
-      setDeleteErrorReportId(reportId);
+      setDeleteErrorReportId(
+        reportId
+      );
 
       setDeleteError(
         language === 'es'
@@ -193,9 +280,13 @@ export default function UserReportsList({
           : 'Failed to delete report.'
       );
 
-      setReportToDelete(null);
+      setReportToDelete(
+        null
+      );
     } finally {
-      setDeletingReportId(null);
+      setDeletingReportId(
+        null
+      );
     }
   };
 
@@ -235,313 +326,455 @@ export default function UserReportsList({
   return (
     <>
       <div className="space-y-4">
-        {reports.map((report) => {
-          const isEditing =
-            editingReportId === report.id;
+        {paginatedReports.map(
+          (report) => {
+            const isEditing =
+              editingReportId ===
+              report.id;
 
-          const isDeleting =
-            deletingReportId === report.id;
+            const isDeleting =
+              deletingReportId ===
+              report.id;
 
-          return (
-            <div
-              key={report.id}
-              className="theme-surface theme-border rounded-lg border p-4 shadow-sm transition-colors duration-200"
-            >
-              <div className="mb-2 flex items-start justify-between gap-4">
-                <h2 className="theme-primary-text text-lg font-semibold underline">
-                  <Link
-                    href={`/games/${report.steamAppid}`}
-                    className="transition-colors duration-300 hover:text-[var(--accent)]"
-                  >
-                    {report.gameName}
-                  </Link>
-                </h2>
+            return (
+              <div
+                key={report.id}
+                className="theme-surface theme-border rounded-lg border p-4 shadow-sm transition-colors duration-200"
+              >
+                <div className="mb-2 flex items-start justify-between gap-4">
+                  <h2 className="theme-primary-text text-lg font-semibold underline">
+                    <Link
+                      href={`/games/${report.steamAppid}`}
+                      className="transition-colors duration-300 hover:text-[var(--accent)]"
+                    >
+                      {
+                        report.gameName
+                      }
+                    </Link>
+                  </h2>
 
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
-                      report.tier
-                        ? tierColors[
-                            report.tier
-                          ]
-                        : tierColors.Pending
-                    }`}
-                  >
-                    {getTierLabel(
-                      report.tier ||
-                        'Pending',
-                      t
-                    )}
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
+                        report.tier
+                          ? tierColors[
+                              report
+                                .tier
+                            ]
+                          : tierColors.Pending
+                      }`}
+                    >
+                      {getTierLabel(
+                        report.tier ||
+                          'Pending',
+                        t
+                      )}
+                    </div>
+
+                    <span className="theme-secondary-text text-sm italic">
+                      {new Date(
+                        report.createdAt
+                      ).toLocaleDateString(
+                        language ===
+                          'es'
+                          ? 'es-ES'
+                          : 'en-GB'
+                      )}
+                    </span>
                   </div>
-
-                  <span className="theme-secondary-text text-sm italic">
-                    {new Date(
-                      report.createdAt
-                    ).toLocaleDateString(
-                      language === 'es'
-                        ? 'es-ES'
-                        : 'en-GB'
-                    )}
-                  </span>
                 </div>
-              </div>
 
-              {!isEditing && (
-                <>
-                  <p className="theme-secondary-text mb-2 text-sm">
-                    {report.distribution}
-                    {' • '}
-                    {report.protonVersion ??
-                      'N/A'}
-                  </p>
+                {!isEditing && (
+                  <>
+                    <p className="theme-secondary-text mb-2 text-sm">
+                      {
+                        report.distribution
+                      }
+                      {' • '}
+                      {report.protonVersion ??
+                        'N/A'}
+                    </p>
 
-                  {report.comment && (
-                    <div className="theme-surface-secondary theme-border rounded border p-3">
-                      <p className="theme-primary-text whitespace-pre-line">
-                        {report.comment}
-                      </p>
-                    </div>
-                  )}
-
-                  {deleteErrorReportId ===
-                    report.id &&
-                    deleteError && (
-                      <div className="mt-3 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
-                        {deleteError}
+                    {report.comment && (
+                      <div className="theme-surface-secondary theme-border rounded border p-3">
+                        <p className="theme-primary-text whitespace-pre-line">
+                          {
+                            report.comment
+                          }
+                        </p>
                       </div>
                     )}
 
-                  {isOwnProfile && (
-                    <div className="mt-4 flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          startEditing(
-                            report
-                          )
-                        }
-                        disabled={
-                          isDeleting
-                        }
-                        className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {language === 'es'
-                          ? 'Editar'
-                          : 'Edit'}
-                      </button>
+                    {deleteErrorReportId ===
+                      report.id &&
+                      deleteError && (
+                        <div className="mt-3 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                          {
+                            deleteError
+                          }
+                        </div>
+                      )}
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setReportToDelete(
-                            report.id
-                          )
-                        }
-                        disabled={
-                          isDeleting
-                        }
-                        className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {isDeleting
-                          ? language === 'es'
-                            ? 'Eliminando...'
-                            : 'Deleting...'
-                          : language === 'es'
-                            ? 'Eliminar'
-                            : 'Delete'}
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
+                    {isOwnProfile && (
+                      <div className="mt-4 flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            startEditing(
+                              report
+                            )
+                          }
+                          disabled={
+                            isDeleting
+                          }
+                          className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {language ===
+                          'es'
+                            ? 'Editar'
+                            : 'Edit'}
+                        </button>
 
-              {isEditing &&
-                editForm && (
-                  <form
-                    onSubmit={
-                      handleUpdate
-                    }
-                    className="mt-4 space-y-4"
-                  >
-                    {error && (
-                      <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
-                        {error}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setReportToDelete(
+                              report.id
+                            )
+                          }
+                          disabled={
+                            isDeleting
+                          }
+                          className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isDeleting
+                            ? language ===
+                              'es'
+                              ? 'Eliminando...'
+                              : 'Deleting...'
+                            : language ===
+                                'es'
+                              ? 'Eliminar'
+                              : 'Delete'}
+                        </button>
                       </div>
                     )}
-
-                    <div>
-                      <label
-                        htmlFor={`tier-${report.id}`}
-                        className="theme-primary-text mb-1 block text-sm font-medium"
-                      >
-                        {t(
-                          'compatibilityRating'
-                        )}
-                      </label>
-
-                      <select
-                        id={`tier-${report.id}`}
-                        value={editForm.tier}
-                        onChange={(event) =>
-                          setEditForm({
-                            ...editForm,
-                            tier:
-                              event.target
-                                .value as Tier,
-                          })
-                        }
-                        required
-                        className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
-                      >
-                        <option value="Platinum">
-                          {t('platinum')}
-                        </option>
-
-                        <option value="Gold">
-                          {t('gold')}
-                        </option>
-
-                        <option value="Silver">
-                          {t('silver')}
-                        </option>
-
-                        <option value="Bronze">
-                          {t('bronze')}
-                        </option>
-
-                        <option value="Borked">
-                          {t('borked')}
-                        </option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor={`distribution-${report.id}`}
-                        className="theme-primary-text mb-1 block text-sm font-medium"
-                      >
-                        {t(
-                          'linuxDistribution'
-                        )}
-                      </label>
-
-                      <input
-                        id={`distribution-${report.id}`}
-                        type="text"
-                        value={
-                          editForm.distribution
-                        }
-                        onChange={(event) =>
-                          setEditForm({
-                            ...editForm,
-                            distribution:
-                              event.target.value,
-                          })
-                        }
-                        required
-                        className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor={`proton-${report.id}`}
-                        className="theme-primary-text mb-1 block text-sm font-medium"
-                      >
-                        {t(
-                          'protonVersion'
-                        )}
-                      </label>
-
-                      <input
-                        id={`proton-${report.id}`}
-                        type="text"
-                        value={
-                          editForm.protonVersion
-                        }
-                        onChange={(event) =>
-                          setEditForm({
-                            ...editForm,
-                            protonVersion:
-                              event.target.value,
-                          })
-                        }
-                        required
-                        className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor={`comment-${report.id}`}
-                        className="theme-primary-text mb-1 block text-sm font-medium"
-                      >
-                        {t('comment')}
-                      </label>
-
-                      <textarea
-                        id={`comment-${report.id}`}
-                        value={
-                          editForm.comment
-                        }
-                        onChange={(event) =>
-                          setEditForm({
-                            ...editForm,
-                            comment:
-                              event.target.value,
-                          })
-                        }
-                        required
-                        rows={4}
-                        className="theme-input w-full resize-y rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="flex gap-3">
-                      <button
-                        type="submit"
-                        disabled={saving}
-                        className="rounded bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {saving
-                          ? language === 'es'
-                            ? 'Guardando...'
-                            : 'Saving...'
-                          : language === 'es'
-                            ? 'Guardar cambios'
-                            : 'Save Changes'}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={
-                          cancelEditing
-                        }
-                        disabled={saving}
-                        className="theme-surface-secondary theme-border theme-primary-text rounded border px-4 py-2 font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {language === 'es'
-                          ? 'Cancelar'
-                          : 'Cancel'}
-                      </button>
-                    </div>
-                  </form>
+                  </>
                 )}
-            </div>
-          );
-        })}
+
+                {isEditing &&
+                  editForm && (
+                    <form
+                      onSubmit={
+                        handleUpdate
+                      }
+                      className="mt-4 space-y-4"
+                    >
+                      {error && (
+                        <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                          {
+                            error
+                          }
+                        </div>
+                      )}
+
+                      <div>
+                        <label
+                          htmlFor={`tier-${report.id}`}
+                          className="theme-primary-text mb-1 block text-sm font-medium"
+                        >
+                          {t(
+                            'compatibilityRating'
+                          )}
+                        </label>
+
+                        <select
+                          id={`tier-${report.id}`}
+                          value={
+                            editForm.tier
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm(
+                              {
+                                ...editForm,
+                                tier: event
+                                  .target
+                                  .value as Tier,
+                              }
+                            )
+                          }
+                          required
+                          className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
+                        >
+                          <option value="Platinum">
+                            {t(
+                              'platinum'
+                            )}
+                          </option>
+
+                          <option value="Gold">
+                            {t(
+                              'gold'
+                            )}
+                          </option>
+
+                          <option value="Silver">
+                            {t(
+                              'silver'
+                            )}
+                          </option>
+
+                          <option value="Bronze">
+                            {t(
+                              'bronze'
+                            )}
+                          </option>
+
+                          <option value="Borked">
+                            {t(
+                              'borked'
+                            )}
+                          </option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor={`distribution-${report.id}`}
+                          className="theme-primary-text mb-1 block text-sm font-medium"
+                        >
+                          {t(
+                            'linuxDistribution'
+                          )}
+                        </label>
+
+                        <input
+                          id={`distribution-${report.id}`}
+                          type="text"
+                          value={
+                            editForm.distribution
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm(
+                              {
+                                ...editForm,
+                                distribution:
+                                  event
+                                    .target
+                                    .value,
+                              }
+                            )
+                          }
+                          required
+                          className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor={`proton-${report.id}`}
+                          className="theme-primary-text mb-1 block text-sm font-medium"
+                        >
+                          {t(
+                            'protonVersion'
+                          )}
+                        </label>
+
+                        <input
+                          id={`proton-${report.id}`}
+                          type="text"
+                          value={
+                            editForm.protonVersion
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm(
+                              {
+                                ...editForm,
+                                protonVersion:
+                                  event
+                                    .target
+                                    .value,
+                              }
+                            )
+                          }
+                          required
+                          className="theme-input w-full rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor={`comment-${report.id}`}
+                          className="theme-primary-text mb-1 block text-sm font-medium"
+                        >
+                          {t(
+                            'comment'
+                          )}
+                        </label>
+
+                        <textarea
+                          id={`comment-${report.id}`}
+                          value={
+                            editForm.comment
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setEditForm(
+                              {
+                                ...editForm,
+                                comment:
+                                  event
+                                    .target
+                                    .value,
+                              }
+                            )
+                          }
+                          required
+                          rows={4}
+                          className="theme-input w-full resize-y rounded border px-3 py-2 transition-colors focus:border-[var(--accent)] focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          type="submit"
+                          disabled={
+                            saving
+                          }
+                          className="rounded bg-green-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {saving
+                            ? language ===
+                              'es'
+                              ? 'Guardando...'
+                              : 'Saving...'
+                            : language ===
+                                'es'
+                              ? 'Guardar cambios'
+                              : 'Save Changes'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={
+                            cancelEditing
+                          }
+                          disabled={
+                            saving
+                          }
+                          className="theme-surface-secondary theme-border theme-primary-text rounded border px-4 py-2 font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {language ===
+                          'es'
+                            ? 'Cancelar'
+                            : 'Cancel'}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+              </div>
+            );
+          }
+        )}
       </div>
 
-      {reportToDelete !== null && (
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              goToPage(
+                currentPage - 1
+              )
+            }
+            disabled={
+              currentPage === 1
+            }
+            className="theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {language === 'es'
+              ? 'Anterior'
+              : 'Previous'}
+          </button>
+
+          {Array.from(
+            {
+              length:
+                totalPages,
+            },
+            (_, index) =>
+              index + 1
+          ).map((page) => (
+            <button
+              key={page}
+              type="button"
+              onClick={() =>
+                goToPage(
+                  page
+                )
+              }
+              aria-current={
+                currentPage ===
+                page
+                  ? 'page'
+                  : undefined
+              }
+              className={
+                currentPage ===
+                page
+                  ? 'rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white'
+                  : 'theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)]'
+              }
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={() =>
+              goToPage(
+                currentPage + 1
+              )
+            }
+            disabled={
+              currentPage ===
+              totalPages
+            }
+            className="theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {language === 'es'
+              ? 'Siguiente'
+              : 'Next'}
+          </button>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION */}
+      {reportToDelete !==
+        null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
-          onMouseDown={(event) => {
+          onMouseDown={(
+            event
+          ) => {
             if (
               event.target ===
                 event.currentTarget &&
-              deletingReportId === null
+              deletingReportId ===
+                null
             ) {
-              setReportToDelete(null);
+              setReportToDelete(
+                null
+              );
             }
           }}
         >
@@ -566,10 +799,13 @@ export default function UserReportsList({
               <button
                 type="button"
                 onClick={() =>
-                  setReportToDelete(null)
+                  setReportToDelete(
+                    null
+                  )
                 }
                 disabled={
-                  deletingReportId !== null
+                  deletingReportId !==
+                  null
                 }
                 className="theme-surface-secondary theme-border theme-primary-text rounded-lg border px-4 py-2 font-semibold transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -586,15 +822,19 @@ export default function UserReportsList({
                   )
                 }
                 disabled={
-                  deletingReportId !== null
+                  deletingReportId !==
+                  null
                 }
                 className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {deletingReportId !== null
-                  ? language === 'es'
+                {deletingReportId !==
+                null
+                  ? language ===
+                    'es'
                     ? 'Eliminando...'
                     : 'Deleting...'
-                  : language === 'es'
+                  : language ===
+                      'es'
                     ? 'Eliminar informe'
                     : 'Delete Report'}
               </button>
