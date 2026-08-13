@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 export default function BioEditor({
@@ -11,6 +12,7 @@ export default function BioEditor({
   currentBio: string | null;
 }) {
   const { user } = useAuth();
+  const router = useRouter();
 
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState(currentBio || '');
@@ -20,21 +22,26 @@ export default function BioEditor({
   const save = async () => {
     const params = new URLSearchParams({ bio });
 
-    await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/${profileId}/profile?${params}`,
       {
         method: 'PATCH',
       }
     );
 
-    window.location.reload();
+    if (!response.ok) {
+      throw new Error('Failed to update bio');
+    }
+
+    setEditing(false);
+    router.refresh();
   };
 
   return (
     <div className="w-full">
       {!editing ? (
         <div className="theme-surface relative rounded-xl border-2 border-indigo-500 bg-gray-800 p-5">
-          <p className="whitespace-pre-wrap text-sm leading-6 text-gray-200">
+          <p className="whitespace-pre-wrap text-sm leading-6 text-gray-200 overflow-y: auto; height: 4em;">
             {currentBio || 'No bio yet.'}
           </p>
 
@@ -55,7 +62,7 @@ export default function BioEditor({
             rows={4}
             maxLength={190}
             placeholder="Tell people about yourself..."
-            className="w-full resize-none bg-transparent text-sm text-white outline-none"
+            className="w-full resize-none bg-transparent text-sm text-white outline-none overflow-y: auto; height: 4em;"
           />
 
           <div className="mt-3 flex items-center justify-between">
