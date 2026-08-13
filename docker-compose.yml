@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:16
     container_name: retake-db
+    entrypoint: [ "sh", "-c", "echo 'CREATE EXTENSION IF NOT EXISTS pgcrypto;' > /docker-entrypoint-initdb.d/init-extensions.sql && exec docker-entrypoint.sh postgres" ]
     environment:
       POSTGRES_DB: retake
       POSTGRES_USER: postgres

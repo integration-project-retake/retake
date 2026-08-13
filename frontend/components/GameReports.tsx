@@ -36,6 +36,23 @@ const tierColors: Record<string, string> = {
   Pending: 'bg-gray-600 text-gray-300',
 };
 
+const tierDescriptions = {
+  en: {
+    Platinum: 'Works perfectly out of the box',
+    Gold: 'Works perfectly after tweaks',
+    Silver: 'Playable with minor issues',
+    Bronze: 'Playable but has severe issues',
+    Borked: 'Completely unplayable',
+  },
+  es: {
+    Platinum: 'Funciona perfectamente sin ajustes',
+    Gold: 'Funciona perfectamente después de algunos ajustes',
+    Silver: 'Jugable con problemas menores',
+    Bronze: 'Jugable pero con problemas graves',
+    Borked: 'Completamente injugable',
+  },
+};
+
 const DEFAULT_AVATAR =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%239ca3af'/%3E%3Ccircle cx='50' cy='36' r='19' fill='%23f3f4f6'/%3E%3Cpath d='M18 91c3-22 16-34 32-34s29 12 32 34' fill='%23f3f4f6'/%3E%3C/svg%3E";
 
@@ -154,6 +171,12 @@ export default function GameReports({
   const gameHeaderUrl =
     game.headerUrl ||
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
+
+  const totalReports = reports.length;
+    const tierCounts = reports.reduce((acc, report) => {
+      acc[report.tier] = (acc[report.tier] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
 
   const startEditing = (report: ReportDto) => {
     setEditError('');
@@ -344,6 +367,40 @@ export default function GameReports({
             </div>
           </div>
         </div>
+
+        {/* Compatibility Breakdown */}
+                {totalReports > 0 && (
+                  <div className="theme-surface mb-8 rounded-lg border p-6">
+                    <h2 className="theme-primary-text mb-4 text-xl font-bold">
+                      {language === 'es' ? 'Desglose de compatibilidad' : 'Compatibility Breakdown'}
+                    </h2>
+                    <div className="space-y-4">
+                      {['Platinum', 'Gold', 'Silver', 'Bronze', 'Borked'].map((tier) => {
+                        const count = tierCounts[tier] || 0;
+                        const percentage = totalReports > 0 ? Math.round((count / totalReports) * 100) : 0;
+                        const bgClass = tierColors[tier].split(' ')[0];
+                        const desc = tierDescriptions[language as 'en' | 'es'][tier as keyof typeof tierDescriptions.en];
+
+                        return (
+                          <div key={tier} className="group flex items-center gap-4" title={desc}>
+                            <div className="w-20 shrink-0 text-sm font-semibold theme-primary-text cursor-help decoration-dotted underline-offset-4 group-hover:underline">
+                              {getTierLabel(tier, t)}
+                            </div>
+                            <div className="theme-surface-secondary flex-1 h-3 overflow-hidden rounded-full border">
+                              <div
+                                className={`h-full ${bgClass} transition-all duration-500`}
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                            <div className="w-20 shrink-0 text-right text-sm theme-secondary-text">
+                              {percentage}% ({count})
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
         {/* Submit report */}
         <div className="mb-8">
