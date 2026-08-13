@@ -30,6 +30,7 @@ export function ThemeProvider({
   children: ReactNode;
 }) {
   const [theme, setThemeState] = useState<Theme>('dark');
+  const [themeLoaded, setThemeLoaded] = useState(false);
 
   useEffect(() => {
     const savedTheme =
@@ -45,12 +46,18 @@ export function ThemeProvider({
     ) {
       setThemeState(savedTheme);
     }
+
+    setThemeLoaded(true);
   }, []);
 
   useEffect(() => {
+    if (!themeLoaded) {
+      return;
+    }
+
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, themeLoaded]);
 
   function setTheme(newTheme: Theme) {
     setThemeState(newTheme);
