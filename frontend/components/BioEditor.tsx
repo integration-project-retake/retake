@@ -34,28 +34,28 @@ export default function BioEditor({
     <div className="w-full">
       {!editing ? (
         <div className="theme-surface relative rounded-xl border-2 border-indigo-500 bg-gray-800 p-5">
-          <p className="whitespace-pre-wrap text-sm leading-6 text-gray-200">
+          <p className="theme-secondary-text whitespace-pre-wrap text-sm leading-6 text-gray-200">
             {currentBio || 'No bio yet.'}
           </p>
 
           {isOwner && (
             <button
               onClick={() => setEditing(true)}
-              className="absolute right-3 top-3 rounded px-2 py-1 text-xs text-gray-400 hover:bg-gray-700 hover:text-white"
+              className="theme-secondary-text absolute right-3 top-3 rounded px-2 py-1 text-xs text-gray-400 hover:bg-gray-700 hover:text-white"
             >
               Edit
             </button>
           )}
         </div>
       ) : (
-        <div className="rounded-xl border-2 border-indigo-500 bg-gray-800 p-4">
+        <div className="theme-surface rounded-xl border-2 border-indigo-500 bg-gray-800 p-4">
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={4}
             maxLength={190}
             placeholder="Tell people about yourself..."
-            className="w-full resize-none bg-transparent text-sm text-white outline-none"
+            className="theme-secondary-text w-full resize-none bg-transparent text-sm text-white outline-none"
           />
 
           <div className="mt-3 flex items-center justify-between">
