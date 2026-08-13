@@ -33,7 +33,7 @@ export default function BioEditor({
   return (
     <div className="w-full">
       {!editing ? (
-        <div className="relative rounded-xl border-2 border-indigo-500 bg-gray-800 p-5">
+        <div className="theme-surface relative rounded-xl border-2 border-indigo-500 bg-gray-800 p-5">
           <p className="whitespace-pre-wrap text-sm leading-6 text-gray-200">
             {currentBio || 'No bio yet.'}
           </p>
