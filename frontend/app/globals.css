@@ -443,3 +443,9 @@ html[data-theme="gow"] body {
 html[data-theme="gow"] main {
   background-color: transparent !important;
 }
+
+.logo-on-light { display: none; }
+.logo-on-dark  { display: block; }
+
+html[data-theme="light"] .logo-on-light { display: block; }
+html[data-theme="light"] .logo-on-dark  { display: none; }
