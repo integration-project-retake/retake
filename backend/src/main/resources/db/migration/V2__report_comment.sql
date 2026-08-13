@@ -1,2 +1,0 @@
-ALTER TABLE reports ADD COLUMN comment VARCHAR(2000);
-ALTER TABLE reports ADD COLUMN proton_version VARCHAR(50);

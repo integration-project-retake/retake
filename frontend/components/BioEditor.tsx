@@ -41,7 +41,7 @@ export default function BioEditor({
     <div className="w-full">
       {!editing ? (
         <div className="theme-surface relative rounded-xl border-2 border-indigo-500 bg-gray-800 p-5">
-          <p className="whitespace-pre-wrap text-sm leading-6 text-gray-200">
+          <p className="whitespace-pre-wrap text-sm leading-6 text-gray-200 overflow-y: auto; height: 4em;">
             {currentBio || 'No bio yet.'}
           </p>
 
@@ -62,7 +62,7 @@ export default function BioEditor({
             rows={4}
             maxLength={190}
             placeholder="Tell people about yourself..."
-            className="w-full resize-none bg-transparent text-sm text-white outline-none"
+            className="w-full resize-none bg-transparent text-sm text-white outline-none overflow-y: auto; height: 4em;"
           />
 
           <div className="mt-3 flex items-center justify-between">
