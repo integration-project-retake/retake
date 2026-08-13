@@ -78,6 +78,8 @@ const allTiers: TierFilter[] = [
   'Pending',
 ];
 
+const GAMES_PER_PAGE = 12;
+
 export default function GameSearch({
   initialGames,
 }: GameSearchProps) {
@@ -94,6 +96,9 @@ export default function GameSearch({
 
   const [layout, setLayout] =
     useState<LayoutMode>('grid');
+
+  const [currentPage, setCurrentPage] =
+    useState(1);
 
   const [
     selectedGenres,
@@ -471,6 +476,47 @@ export default function GameSearch({
       language,
     ]);
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      sortedGames.length / GAMES_PER_PAGE
+    )
+  );
+
+  const startIndex =
+    (currentPage - 1) * GAMES_PER_PAGE;
+
+  const paginatedGames = sortedGames.slice(
+    startIndex,
+    startIndex + GAMES_PER_PAGE
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    query,
+    selectedGenres,
+    selectedTiers,
+    nameSort,
+    steamSort,
+    tierSort,
+  ]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const goToPage = (page: number) => {
+    if (page < 1 || page > totalPages) {
+      return;
+    }
+
+    setActivePanel(null);
+    setCurrentPage(page);
+  };
+
   const handleLayoutChange = (
     newLayout: LayoutMode
   ) => {
@@ -492,6 +538,7 @@ export default function GameSearch({
     setSteamSort(null);
     setTierSort(null);
 
+    setCurrentPage(1);
     setActivePanel(null);
   };
 
@@ -1081,7 +1128,7 @@ export default function GameSearch({
             : 'flex flex-col gap-4'
         }
       >
-        {sortedGames.map(
+        {paginatedGames.map(
           (game) => (
             <Link
               key={game.id}
@@ -1186,6 +1233,64 @@ export default function GameSearch({
             </div>
           )}
       </div>
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              goToPage(currentPage - 1)
+            }
+            disabled={currentPage === 1}
+            className="theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Previous
+          </button>
+
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {Array.from(
+              { length: totalPages },
+              (_, index) => index + 1
+            ).map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => goToPage(page)}
+                aria-current={
+                  currentPage === page
+                    ? 'page'
+                    : undefined
+                }
+                className={
+                  currentPage === page
+                    ? 'rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white'
+                    : 'theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)]'
+                }
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              goToPage(currentPage + 1)
+            }
+            disabled={
+              currentPage === totalPages
+            }
+            className="theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next
+          </button>
+
+          <span className="theme-secondary-text ml-2 text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+        </div>
+      )}
+
     </div>
   );
 }
