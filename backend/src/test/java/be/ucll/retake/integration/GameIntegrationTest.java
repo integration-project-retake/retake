@@ -59,7 +59,7 @@ public class GameIntegrationTest {
     public void givenGameExists_whenGettingById_thenGameIsReturned() throws Exception {
         Game saved = gameRepository.save(new Game(570, "Dota 2"));
 
-        mockMvc.perform(get("/games/" + saved.getId()))
+        mockMvc.perform(get("/games/" + saved.getSteamAppid()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Dota 2"));
     }

@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
 public class ReportIntegrationTest {
@@ -55,15 +57,22 @@ public class ReportIntegrationTest {
         game = gameRepository.save(new Game(570, "Dota 2"));
     }
 
-    @Test
+    @WithMockUser(username = "anh")
     public void givenUserAndGame_whenCreatingReport_thenReportIsSaved() throws Exception {
+        String jsonPayload = """
+            {
+                "userId": %d,
+                "gameId": %d,
+                "tier": "Gold",
+                "distribution": "Ubuntu",
+                "comment": "test",
+                "protonVersion": "version"
+            }
+            """.formatted(user.getId(), game.getId());
+
         mockMvc.perform(post("/reports")
-                        .param("userId", user.getId().toString())
-                        .param("gameId", game.getId().toString())
-                        .param("tier", "Gold")
-                        .param("distribution", "Ubuntu")
-                        .param("comment", "test")
-                        .param("protonVersion", "version"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.tier").value("Gold"))
                 .andExpect(jsonPath("$.distribution").value("Ubuntu"));
