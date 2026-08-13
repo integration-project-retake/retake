@@ -27,12 +27,24 @@ export default async function UserProfile({
     return `${day} ${month} ${year}`;
   };
 
+  const tierCounts = reports.reduce((acc, r) => {
+    acc[r.tier] = (acc[r.tier] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const tierColors: Record<string, string> = {
+    Platinum: 'bg-blue-200 text-blue-900',
+    Gold: 'bg-yellow-400 text-yellow-900',
+    Silver: 'bg-gray-300 text-gray-900',
+    Bronze: 'bg-orange-500 text-orange-950',
+    Borked: 'bg-red-600 text-white',
+  };
+
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-4xl">
         <section className="theme-surface relative mb-10 rounded-xl bg-gray-800 p-6 sm:p-8">
           <div className="flex items-start gap-6">
-            {/* Avatar — fixed size, doesn't grow */}
             <div className="shrink-0">
               <AvatarEditor
                 profileId={Number(id)}
@@ -56,15 +68,24 @@ export default async function UserProfile({
 
           </div>
         </section>
+        <div className='flex flex-wrap gap-4'>
+          <p className="theme-primary-text font-medium">
+            {reports.length}{' '}
+            {reports.length === 1
+              ? 'report contributed'
+              : 'reports contributed'}
+          </p>
 
-        {/* Contribution count */}
-        <p className="theme-secondary-text mb-6">
-          {reports.length}{' '}
-          {reports.length === 1
-            ? 'report contributed'
-            : 'reports contributed'}
-        </p>
-
+          {reports.length > 0 ? (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {Object.entries(tierCounts).map(([tier, count]) => (
+              <span key={tier} className={`rounded-full px-3 py-1 text-sm font-semibold ${tierColors[tier]}`}>
+                {tier}: {count}
+              </span>
+            ))}
+          </div>
+        ) : null}
+        </div>
         {/* User reports */}
         <UserReportsList
           profileId={Number(id)}
