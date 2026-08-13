@@ -190,4 +190,9 @@ public class UserController {
                 updatedUser
         );
     }
+    @PatchMapping("/{id}/profile")
+        public UserDto updateProfile(@PathVariable Long id,
+                                @RequestParam(required = false) String bio) {
+        return UserDto.from(userService.updateProfile(id, bio));
+        }
 }

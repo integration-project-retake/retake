@@ -3,6 +3,7 @@ import { fetchReportsByUser } from '@/services/reportService';
 
 import AvatarEditor from '@/components/AvatarEditor';
 import UserReportsList from '@/components/UserReportsList';
+import BioEditor from '@/components/BioEditor';
 
 export default async function UserProfile({
   params,
@@ -17,19 +18,26 @@ export default async function UserProfile({
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-4xl">
+        <section className="relative mb-10 rounded-xl bg-gray-800 p-6 sm:p-8">
+          <div className="flex items-start gap-6">
+            {/* Avatar — fixed size, doesn't grow */}
+            <div className="shrink-0">
+              <AvatarEditor
+                profileId={Number(id)}
+                currentAvatar={user.avatarUrl}
+                username={user.username}
+              />
+            </div>
 
-        {/* Profile header */}
-        <section className="theme-surface theme-border mb-10 rounded-xl border p-6 shadow-sm transition-colors duration-200 sm:p-8">
-          <div className="flex items-center gap-6">
-            <AvatarEditor
-              profileId={Number(id)}
-              currentAvatar={user.avatarUrl}
-              username={user.username}
-            />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-3xl font-bold transition-colors duration-200 hover:text-pink-500">
+                {user.username}
+              </h1>
+              <div className="shrink-0 mt-4">
+                <BioEditor profileId={Number(id)} currentBio={user.bio} />
+              </div>
+            </div>
 
-            <h1 className="theme-primary-text text-3xl font-bold transition-colors duration-200 hover:text-[var(--accent)]">
-              {user.username}
-            </h1>
           </div>
         </section>
 

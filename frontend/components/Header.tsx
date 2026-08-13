@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme, type Theme } from '@/context/ThemeContext';
+import AccountMenu from './AccountMenu';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -76,31 +77,7 @@ export default function Header() {
           </select>
 
           {user ? (
-            <>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="cursor-pointer rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
-              >
-                {t('logout')}
-              </button>
-
-              <Link
-                href={`/users/${user.id}`}
-                className="flex items-center"
-                aria-label={`${user.username} profile`}
-              >
-                <img
-                  src={avatarUrl}
-                  alt={user.username}
-                  className="h-9 w-9 rounded-full border border-[var(--border-color)] object-cover opacity-100 transition-opacity hover:opacity-80"
-                  onError={(event) => {
-                    event.currentTarget.src =
-                      'https://www.gravatar.com/avatar/?d=mp';
-                  }}
-                />
-              </Link>
-            </>
+            <AccountMenu />
           ) : (
             <>
               <Link

@@ -54,6 +54,9 @@ public class User {
     )
     private String avatarUrl;
 
+        @Column(length = 500)
+        private String bio;
+
     @CreationTimestamp
     @Column(
             name = "created_at",
@@ -122,4 +125,7 @@ public class User {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
+        public String getBio() { return bio; }
+        public void setBio(String bio) { this.bio = bio; }
 }
