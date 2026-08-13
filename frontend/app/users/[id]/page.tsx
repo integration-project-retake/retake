@@ -30,7 +30,7 @@ export default async function UserProfile({
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-4xl">
-        <section className="relative mb-10 rounded-xl bg-gray-800 p-6 sm:p-8">
+        <section className="theme-surface relative mb-10 rounded-xl bg-gray-800 p-6 sm:p-8">
           <div className="flex items-start gap-6">
             {/* Avatar — fixed size, doesn't grow */}
             <div className="shrink-0">
