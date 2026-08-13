@@ -15,7 +15,6 @@ export default function AvatarEditor({ profileId, currentAvatar, username }:
         const [url, setUrl] = useState('');
 
         const isOwner = user && user.id === profileId;
-    if (!user || user.id !== profileId) return null;
 
     const save = async () => {
         await fetch(
