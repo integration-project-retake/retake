@@ -44,6 +44,13 @@ const tierBadgeColors: Record<
 export default function Dashboard({
   stats,
 }: DashboardProps) {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   const largestGenre =
     Math.max(
       ...stats.genreDistribution.map(
@@ -332,22 +339,27 @@ export default function Dashboard({
               className="bg-blue-300"
               label="Platinum"
             />
+
             <Legend
               className="bg-yellow-400"
               label="Gold"
             />
+
             <Legend
               className="bg-gray-300"
               label="Silver"
             />
+
             <Legend
               className="bg-orange-500"
               label="Bronze"
             />
+
             <Legend
               className="bg-red-600"
               label="Borked"
             />
+
             <Legend
               className="bg-gray-600"
               label="Pending"
@@ -471,6 +483,16 @@ export default function Dashboard({
           </section>
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Back to top"
+        title="Back to top"
+        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-xl font-bold text-white shadow-lg transition-transform hover:scale-110 hover:bg-[var(--accent-hover)]"
+      >
+        ↑
+      </button>
     </main>
   );
 }
