@@ -87,7 +87,7 @@ export default function Dashboard({
             {t('dashboard')}
           </h1>
 
-          <p className="theme-secondary-text mt-2">
+          <p className="theme-page-text">
             {t('dashboardDescription')}
           </p>
 
@@ -112,7 +112,7 @@ export default function Dashboard({
 
           <StatCard
             title={t('reportsPerGame')}
-            value={`${(stats.averageReportsPerGame * 100).toFixed(0)}%`}
+            value={stats.averageReportsPerGame.toFixed(1)}
           />
         </section>
 

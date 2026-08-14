@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import be.ucll.retake.exception.ResourceNotFoundException;
 import be.ucll.retake.model.Game;
 import be.ucll.retake.model.Report;
 import be.ucll.retake.repository.GameRepository;
@@ -32,14 +33,14 @@ public class GameService {
         return gameRepository.findAll();
     }
 
-    public Game getGameById(Long id) {
+        public Game getGameById(Long id) {
         return gameRepository.findById(id)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "Game with id " + id + " not found"
                         )
                 );
-    }
+        }
 
     public Game getGameBySteamAppid(
             Integer steamAppid
@@ -47,7 +48,7 @@ public class GameService {
         return gameRepository
                 .findBySteamAppid(steamAppid)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "Game with Steam App ID "
                                         + steamAppid
                                         + " not found"
