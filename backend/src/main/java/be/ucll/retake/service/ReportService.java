@@ -1,5 +1,6 @@
 package be.ucll.retake.service;
 
+import be.ucll.retake.exception.ResourceNotFoundException;
 import be.ucll.retake.model.Game;
 import be.ucll.retake.model.Report;
 import be.ucll.retake.model.Tier;
@@ -8,9 +9,7 @@ import be.ucll.retake.repository.GameRepository;
 import be.ucll.retake.repository.ReportRepository;
 import be.ucll.retake.repository.UserRepository;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Service
@@ -34,20 +33,20 @@ public class ReportService {
         return reportRepository.findAll();
     }
 
-    public Report getReportById(Long id) {
+        public Report getReportById(Long id) {
         return reportRepository.findById(id)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "Report with id " + id + " not found"
                         )
                 );
-    }
+        }
 
     public List<Report> getReportsByGameId(
             Long gameId
     ) {
         if (!gameRepository.existsById(gameId)) {
-            throw new IllegalArgumentException(
+            throw new ResourceNotFoundException(
                     "Game with id " + gameId + " not found"
             );
         }
@@ -65,14 +64,14 @@ public class ReportService {
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "User with id " + userId + " not found"
                         )
                 );
 
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "Game with id " + gameId + " not found"
                         )
                 );
@@ -100,7 +99,7 @@ public class ReportService {
             Long userId
     ) {
         if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException(
+            throw new ResourceNotFoundException(
                     "User with id " + userId + " not found"
             );
         }
@@ -118,7 +117,7 @@ public class ReportService {
     ) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "Report with id " + reportId + " not found"
                         )
                 );
@@ -150,7 +149,7 @@ public class ReportService {
     ) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(
-                        () -> new IllegalArgumentException(
+                        () -> new ResourceNotFoundException(
                                 "Report with id " + reportId + " not found"
                         )
                 );
@@ -207,7 +206,7 @@ public class ReportService {
 
         public List<Report> getReportsBySteamAppid(Integer steamAppid) {
         if (!gameRepository.existsBySteamAppid(steamAppid)) {
-                throw new IllegalArgumentException("Game with steam appid " + steamAppid + " not found");
+                throw new ResourceNotFoundException("Game with steam appid " + steamAppid + " not found");
         }
         return reportRepository.findByGameSteamAppid(steamAppid);
         }

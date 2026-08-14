@@ -23,6 +23,7 @@ import be.ucll.retake.model.User;
 import be.ucll.retake.repository.GameRepository;
 import be.ucll.retake.repository.ReportRepository;
 import be.ucll.retake.repository.UserRepository;
+import be.ucll.retake.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class ReportServiceTest {
@@ -120,14 +121,14 @@ public class ReportServiceTest {
         assertSame(report, result);
     }
 
-    @Test
-    void givenUnknownReportId_whenGettingReportById_thenThrowError() {
+        @Test
+        void givenUnknownReportId_whenGettingReportById_thenThrowError() {
         when(reportRepository.findById(99L))
                 .thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ResourceNotFoundException.class,
                         () -> reportService.getReportById(99L)
                 );
 
@@ -135,7 +136,7 @@ public class ReportServiceTest {
                 "Report with id 99 not found",
                 exception.getMessage()
         );
-    }
+        }
 
     @Test
     void givenExistingSteamAppid_whenGettingReportsBySteamAppid_thenReturnReports() {
@@ -177,9 +178,9 @@ public class ReportServiceTest {
         when(gameRepository.existsBySteamAppid(999))
                 .thenReturn(false);
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ResourceNotFoundException.class,
                         () -> reportService.getReportsBySteamAppid(999)
                 );
 
@@ -229,9 +230,9 @@ public class ReportServiceTest {
         when(gameRepository.existsById(99L))
                 .thenReturn(false);
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ResourceNotFoundException.class,
                         () -> reportService.getReportsByGameId(99L)
                 );
 
@@ -293,9 +294,9 @@ public class ReportServiceTest {
         when(userRepository.findById(99L))
                 .thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ResourceNotFoundException.class,
                         () -> reportService.createReport(
                                 99L,
                                 1L,
@@ -326,9 +327,9 @@ public class ReportServiceTest {
         when(gameRepository.findById(99L))
                 .thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ResourceNotFoundException.class,
                         () -> reportService.createReport(
                                 1L,
                                 99L,
@@ -385,9 +386,9 @@ public class ReportServiceTest {
         when(userRepository.existsById(99L))
                 .thenReturn(false);
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ResourceNotFoundException.class,
                         () -> reportService.getReportsByUserId(99L)
                 );
 
