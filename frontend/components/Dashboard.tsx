@@ -566,7 +566,7 @@ function GenreBarChart({
 
                     {/* BAR */}
                     <div
-                      className="absolute bottom-0 left-1/2 w-[55%] max-w-14 -translate-x-1/2 rounded-t-md bg-[var(--accent)] transition-all duration-300 hover:brightness-110"
+                      className={`absolute bottom-0 left-1/2 w-[55%] max-w-14 -translate-x-1/2 rounded-t-md transition-all duration-300 hover:brightness-110 ${getGenreColor(genre.genre)}`}
                       style={{
                         height: `${barHeight}px`,
                         minHeight:
