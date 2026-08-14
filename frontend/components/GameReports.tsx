@@ -133,10 +133,6 @@ export default function GameReports({
     };
   }, [reports]);
 
-  const gameHeaderUrl =
-    game.headerUrl ||
-    `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
-
   const totalReports = reports.length;
 
   const tierCounts = reports.reduce(
@@ -246,10 +242,9 @@ export default function GameReports({
       <div className="mx-auto max-w-5xl">
         {/* Game header */}
         <div className="theme-surface mb-8 overflow-hidden rounded-lg border">
-          <img
-            src={gameHeaderUrl}
-            alt={`${game.name} banner`}
-            className="aspect-[460/215] w-full object-cover"
+          <GameBanner
+            game={game}
+            className="aspect-[460/215] w-full"
           />
 
           <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
@@ -632,14 +627,9 @@ export default function GameReports({
                   href={`/games/${relatedGame.steamAppid}`}
                   className="theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)]"
                 >
-                  <img
-                    src={
-                      relatedGame.headerUrl ||
-                      `https://cdn.cloudflare.steamstatic.com/steam/apps/${relatedGame.steamAppid}/header.jpg`
-                    }
-                    alt={relatedGame.name}
-                    className="aspect-[460/215] w-full object-cover"
-                    loading="lazy"
+                  <GameBanner
+                    game={relatedGame}
+                    className="aspect-[460/215] w-full"
                   />
 
                   <div className="p-4">
@@ -747,4 +737,108 @@ export default function GameReports({
       )}
     </main>
   );
+}
+
+function GameBanner({
+  game,
+  className,
+}: {
+  game: GameDto;
+  className: string;
+}) {
+  const steamHeaderUrl =
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
+
+  const sources = Array.from(
+    new Set(
+      [game.headerUrl?.trim(), steamHeaderUrl].filter(
+        (source): source is string => Boolean(source)
+      )
+    )
+  );
+
+  const [sourceIndex, setSourceIndex] = useState(0);
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [game.id, game.headerUrl, game.steamAppid]);
+
+  const currentSource = sources[sourceIndex];
+
+  if (currentSource) {
+    return (
+      <img
+        src={currentSource}
+        alt=""
+        className={`${className} object-cover`}
+        loading="lazy"
+        onError={() => {
+          setSourceIndex((current) => current + 1);
+        }}
+      />
+    );
+  }
+
+  const monogram = getGameMonogram(game.name);
+
+  return (
+    <div
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-black ${className}`}
+      role="img"
+      aria-label={`${game.name} artwork unavailable`}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.10),transparent_35%),radial-gradient(circle_at_75%_70%,rgba(255,255,255,0.05),transparent_40%)]" />
+
+      <span
+        aria-hidden="true"
+        className="absolute select-none text-7xl font-black tracking-widest text-white/[0.06] sm:text-8xl"
+      >
+        {monogram}
+      </span>
+
+      <div className="relative z-10 flex max-w-[85%] flex-col items-center text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/5 shadow-lg backdrop-blur-sm">
+          <span className="text-xl font-black tracking-wider text-white/80">
+            {monogram}
+          </span>
+        </div>
+
+        <p className="mt-3 line-clamp-2 text-base font-semibold text-white/90 drop-shadow-lg">
+          {game.name}
+        </p>
+
+        <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-white/45">
+          Artwork unavailable
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function getGameMonogram(gameName: string): string {
+  const words = gameName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length === 0) {
+    return 'GAME';
+  }
+
+  const numericPart =
+    [...words]
+      .reverse()
+      .find((word) => /^\d+$/.test(word)) ?? '';
+
+  const textWords = words.filter(
+    (word) => !/^\d+$/.test(word)
+  );
+
+  const letters = textWords
+    .slice(0, 2)
+    .map((word) => word.charAt(0))
+    .join('')
+    .toUpperCase();
+
+  return `${letters}${numericPart}` || 'GAME';
 }
