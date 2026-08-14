@@ -87,7 +87,7 @@ export default function Dashboard({
             {t('dashboard')}
           </h1>
 
-          <p className="theme-secondary-text mt-2">
+          <p className="theme-page-text">
             {t('dashboardDescription')}
           </p>
 
