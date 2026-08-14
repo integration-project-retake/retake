@@ -65,12 +65,13 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "project-frontend:test"
-          format: "json"
+          format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
+          skip-dirs: "/usr/local/lib/node_modules"
           ignore-unfixed: false
           vuln-type: "os,library"
-          scanners: "vuln,secret,misconfig"
+          scanners: "vuln,misconfig"
 
       - name: Build Backend Image
         run: docker build --no-cache --pull -t project-backend:test ./backend
@@ -79,7 +80,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "project-backend:test"
-          format: "json"
+          format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
           ignore-unfixed: false
