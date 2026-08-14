@@ -56,28 +56,46 @@ public class ReportIntegrationTest {
         user = userRepository.save(new User("anh", "anh@ucll.be", "password123"));
         game = gameRepository.save(new Game(570, "Dota 2"));
     }
-
+    @Test
     @WithMockUser(username = "anh")
-    public void givenUserAndGame_whenCreatingReport_thenReportIsSaved() throws Exception {
-        String jsonPayload = """
-            {
-                "userId": %d,
-                "gameId": %d,
-                "tier": "Gold",
-                "distribution": "Ubuntu",
-                "comment": "test",
-                "protonVersion": "version"
-            }
-            """.formatted(user.getId(), game.getId());
+    public void givenUserAndGame_whenCreatingReport_thenReportIsSaved()
+            throws Exception {
 
-        mockMvc.perform(post("/reports")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonPayload))
+        mockMvc.perform(
+                post("/reports")
+                        .param(
+                                "userId",
+                                user.getId().toString()
+                        )
+                        .param(
+                                "gameId",
+                                game.getId().toString()
+                        )
+                        .param("tier", "Gold")
+                        .param(
+                                "distribution",
+                                "Ubuntu"
+                        )
+                        .param("comment", "test")
+                        .param(
+                                "protonVersion",
+                                "version"
+                        )
+        )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.tier").value("Gold"))
-                .andExpect(jsonPath("$.distribution").value("Ubuntu"));
+                .andExpect(
+                        jsonPath("$.tier")
+                                .value("Gold")
+                )
+                .andExpect(
+                        jsonPath("$.distribution")
+                                .value("Ubuntu")
+                );
 
-        assertEquals(1, reportRepository.count());
+        assertEquals(
+                1,
+                reportRepository.count()
+        );
     }
 
     @Test
