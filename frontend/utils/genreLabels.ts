@@ -1,50 +1,115 @@
 import type { Language } from '@/context/LanguageContext';
 
-const genreLabels: Record<
-  string,
-  Record<Language, string>
-> = {
-  Action: {
-    en: 'Action',
-    es: 'Acción',
+
+const genreLabels: Record<Language, Record<string, string>> = {
+  en: {},
+
+  es: {
+    Action: 'Acción',
+    Adventure: 'Aventura',
+    Casual: 'Casual',
+    Indie: 'Indie',
+    'Massively Multiplayer': 'Multijugador masivo',
+    RPG: 'Rol',
+    Racing: 'Carreras',
+    Simulation: 'Simulación',
+    Sports: 'Deportes',
+    Strategy: 'Estrategia',
+    'Free to Play': 'Free to Play',
+    'Early Access': 'Acceso anticipado',
   },
-  Adventure: {
-    en: 'Adventure',
-    es: 'Aventura',
+
+  nl: {
+    Action: 'Actie',
+    Adventure: 'Avontuur',
+    Casual: 'Casual',
+    Indie: 'Indie',
+    'Massively Multiplayer': 'Massively multiplayer',
+    RPG: 'Rollenspel',
+    Racing: 'Racen',
+    Simulation: 'Simulatie',
+    Sports: 'Sport',
+    Strategy: 'Strategie',
+    'Free to Play': 'Free to play',
+    'Early Access': 'Vroege toegang',
   },
-  RPG: {
-    en: 'RPG',
-    es: 'RPG',
+
+  de: {
+    Action: 'Action',
+    Adventure: 'Abenteuer',
+    Casual: 'Casual',
+    Indie: 'Indie',
+    'Massively Multiplayer': 'Massively Multiplayer',
+    RPG: 'Rollenspiel',
+    Racing: 'Rennspiel',
+    Simulation: 'Simulation',
+    Sports: 'Sport',
+    Strategy: 'Strategie',
+    'Free to Play': 'Free to Play',
+    'Early Access': 'Early Access',
   },
-  Strategy: {
-    en: 'Strategy',
-    es: 'Estrategia',
+
+  fr: {
+    Action: 'Action',
+    Adventure: 'Aventure',
+    Casual: 'Casual',
+    Indie: 'Indépendant',
+    'Massively Multiplayer': 'Multijoueur massif',
+    RPG: 'RPG',
+    Racing: 'Course',
+    Simulation: 'Simulation',
+    Sports: 'Sport',
+    Strategy: 'Stratégie',
+    'Free to Play': 'Free to Play',
+    'Early Access': 'Accès anticipé',
   },
-  MOBA: {
-    en: 'MOBA',
-    es: 'MOBA',
+
+  zh: {
+    Action: '动作',
+    Adventure: '冒险',
+    Casual: '休闲',
+    Indie: '独立',
+    'Massively Multiplayer': '大型多人在线',
+    RPG: '角色扮演',
+    Racing: '竞速',
+    Simulation: '模拟',
+    Sports: '体育',
+    Strategy: '策略',
+    'Free to Play': '免费游玩',
+    'Early Access': '抢先体验',
   },
-  Roguelike: {
-    en: 'Roguelike',
-    es: 'Roguelike',
+
+  ja: {
+    Action: 'アクション',
+    Adventure: 'アドベンチャー',
+    Casual: 'カジュアル',
+    Indie: 'インディー',
+    'Massively Multiplayer': 'MMO',
+    RPG: 'RPG',
+    Racing: 'レース',
+    Simulation: 'シミュレーション',
+    Sports: 'スポーツ',
+    Strategy: 'ストラテジー',
+    'Free to Play': '基本プレイ無料',
+    'Early Access': '早期アクセス',
   },
-  'Open World': {
-    en: 'Open World',
-    es: 'Mundo abierto',
-  },
-  Metroidvania: {
-    en: 'Metroidvania',
-    es: 'Metroidvania',
-  },
-  Simulation: {
-    en: 'Simulation',
-    es: 'Simulación',
+
+  tr: {
+    Action: 'Aksiyon',
+    Adventure: 'Macera',
+    Casual: 'Rahat',
+    Indie: 'Bağımsız',
+    'Massively Multiplayer': 'Devasa Çok Oyunculu',
+    RPG: 'RYO',
+    Racing: 'Yarış',
+    Simulation: 'Simülasyon',
+    Sports: 'Spor',
+    Strategy: 'Strateji',
+    'Free to Play': 'Ücretsiz Oyna',
+    'Early Access': 'Erken Erişim',
   },
 };
 
-export function getGenreLabel(
-  genre: string,
-  language: Language
-): string {
-  return genreLabels[genre]?.[language] ?? genre;
+export function getGenreLabel(genre: string, language: Language): string {
+  return genreLabels[language][genre] ?? genre;
 }

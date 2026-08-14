@@ -10,20 +10,13 @@ import { fetchUser } from '@/services/userService';
 
 import SubmitReportForm from '@/components/SubmitReportForm';
 
-import {
-  updateReport,
-  deleteReport,
-} from '@/services/reportService';
+import { updateReport, deleteReport } from '@/services/reportService';
 
 import { getGenreColor } from '@/utils/genreColors';
 import { getGenreLabel } from '@/utils/genreLabels';
-import { getTierLabel } from '@/utils/tierLabels';
+import { getTierLabel, getTierDescription } from '@/utils/tierLabels';
 
-import type {
-  ReportDto,
-  GameDto,
-  Tier,
-} from '@/types';
+import type { ReportDto, GameDto, Tier } from '@/types';
 
 import PlayerCount from './PlayerCount';
 
@@ -36,22 +29,13 @@ const tierColors: Record<string, string> = {
   Pending: 'bg-gray-600 text-gray-300',
 };
 
-const tierDescriptions = {
-  en: {
-    Platinum: 'Works perfectly out of the box',
-    Gold: 'Works perfectly after tweaks',
-    Silver: 'Playable with minor issues',
-    Bronze: 'Playable but has severe issues',
-    Borked: 'Completely unplayable',
-  },
-  es: {
-    Platinum: 'Funciona perfectamente sin ajustes',
-    Gold: 'Funciona perfectamente después de algunos ajustes',
-    Silver: 'Jugable con problemas menores',
-    Bronze: 'Jugable pero con problemas graves',
-    Borked: 'Completamente injugable',
-  },
-};
+const BREAKDOWN_TIERS = [
+  'Platinum',
+  'Gold',
+  'Silver',
+  'Bronze',
+  'Borked',
+] as const;
 
 const DEFAULT_AVATAR =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%239ca3af'/%3E%3Ccircle cx='50' cy='36' r='19' fill='%23f3f4f6'/%3E%3Cpath d='M18 91c3-22 16-34 32-34s29 12 32 34' fill='%23f3f4f6'/%3E%3C/svg%3E";
@@ -74,33 +58,35 @@ export default function GameReports({
   reports,
   relatedGames,
 }: GameReportsProps) {
-  const { language, t } = useLanguage();
+  const { language, locale, t } = useLanguage();
   const { user } = useAuth();
   const router = useRouter();
 
-  const [editingReportId, setEditingReportId] =
-    useState<number | null>(null);
+  const [editingReportId, setEditingReportId] = useState<number | null>(
+    null
+  );
 
-  const [editForm, setEditForm] =
-    useState<EditForm | null>(null);
+  const [editForm, setEditForm] = useState<EditForm | null>(null);
 
   const [editError, setEditError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const [deletingReportId, setDeletingReportId] =
-    useState<number | null>(null);
+  const [deletingReportId, setDeletingReportId] = useState<number | null>(
+    null
+  );
 
-  const [reportToDelete, setReportToDelete] =
-    useState<number | null>(null);
+  const [reportToDelete, setReportToDelete] = useState<number | null>(null);
 
-  const [deleteErrorReportId, setDeleteErrorReportId] =
-    useState<number | null>(null);
+  const [deleteErrorReportId, setDeleteErrorReportId] = useState<
+    number | null
+  >(null);
 
   const [deleteError, setDeleteError] = useState('');
   const [visibleCount, setVisibleCount] = useState(10);
 
-  const [reportAuthorAvatars, setReportAuthorAvatars] =
-    useState<Record<number, string | null>>({});
+  const [reportAuthorAvatars, setReportAuthorAvatars] = useState<
+    Record<number, string | null>
+  >({});
 
   useEffect(() => {
     let cancelled = false;
@@ -119,10 +105,7 @@ export default function GameReports({
           try {
             const reportAuthor = await fetchUser(String(userId));
 
-            return [
-              userId,
-              reportAuthor.avatarUrl || null,
-            ] as const;
+            return [userId, reportAuthor.avatarUrl || null] as const;
           } catch (error) {
             console.error(
               `Failed to fetch profile picture for user ${userId}:`,
@@ -150,33 +133,20 @@ export default function GameReports({
     };
   }, [reports]);
 
-  const dateLocale =
-    language === 'es' ? 'es-ES' : 'en-GB';
-
-  const relatedGamesTitle =
-    language === 'es'
-      ? 'Juegos relacionados'
-      : 'Related Games';
-
-  const noRelatedGames =
-    language === 'es'
-      ? 'No se encontraron juegos relacionados.'
-      : 'No related games found.';
-
-  const genresLabel =
-    language === 'es'
-      ? 'Géneros'
-      : 'Genres';
-
   const gameHeaderUrl =
     game.headerUrl ||
     `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
 
   const totalReports = reports.length;
-    const tierCounts = reports.reduce((acc, report) => {
+
+  const tierCounts = reports.reduce(
+    (acc, report) => {
       acc[report.tier] = (acc[report.tier] || 0) + 1;
+
       return acc;
-    }, {} as Record<string, number>);
+    },
+    {} as Record<string, number>
+  );
 
   const startEditing = (report: ReportDto) => {
     setEditError('');
@@ -199,16 +169,10 @@ export default function GameReports({
     setEditError('');
   };
 
-  const handleUpdate = async (
-    event: React.FormEvent
-  ) => {
+  const handleUpdate = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (
-      !user ||
-      editingReportId === null ||
-      editForm === null
-    ) {
+    if (!user || editingReportId === null || editForm === null) {
       return;
     }
 
@@ -219,11 +183,7 @@ export default function GameReports({
       !editForm.protonVersion.trim() ||
       !editForm.comment.trim()
     ) {
-      setEditError(
-        language === 'es'
-          ? 'Todos los campos son obligatorios.'
-          : 'All fields are required.'
-      );
+      setEditError(t('allFieldsRequired'));
 
       return;
     }
@@ -245,24 +205,15 @@ export default function GameReports({
 
       router.refresh();
     } catch (err) {
-      console.error(
-        'Failed to update report:',
-        err
-      );
+      console.error('Failed to update report:', err);
 
-      setEditError(
-        language === 'es'
-          ? 'No se pudo actualizar el informe.'
-          : 'Failed to update report.'
-      );
+      setEditError(t('updateReportFailed'));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (
-    reportId: number
-  ) => {
+  const handleDelete = async (reportId: number) => {
     setDeleteError('');
     setDeleteErrorReportId(null);
 
@@ -280,19 +231,10 @@ export default function GameReports({
 
       router.refresh();
     } catch (err) {
-      console.error(
-        'Failed to delete report:',
-        err
-      );
+      console.error('Failed to delete report:', err);
 
       setDeleteErrorReportId(reportId);
-
-      setDeleteError(
-        language === 'es'
-          ? 'No se pudo eliminar el informe.'
-          : 'Failed to delete report.'
-      );
-
+      setDeleteError(t('deleteReportFailed'));
       setReportToDelete(null);
     } finally {
       setDeletingReportId(null);
@@ -302,7 +244,6 @@ export default function GameReports({
   return (
     <main className="min-h-screen p-8 text-[var(--foreground)] transition-colors duration-200">
       <div className="mx-auto max-w-5xl">
-
         {/* Game header */}
         <div className="theme-surface mb-8 overflow-hidden rounded-lg border">
           <img
@@ -321,92 +262,87 @@ export default function GameReports({
                 {t('steamAppId')}: {game.steamAppid}
               </p>
 
-              <PlayerCount
-                steamAppid={game.steamAppid}
-              />
+              <PlayerCount steamAppid={game.steamAppid} />
 
-              {game.genres &&
-                game.genres.length > 0 && (
-                  <div className="mt-4">
-                    <p className="theme-secondary-text mb-2 text-sm">
-                      {genresLabel}
-                    </p>
+              {game.genres && game.genres.length > 0 && (
+                <div className="mt-4">
+                  <p className="theme-secondary-text mb-2 text-sm">
+                    {t('genres')}
+                  </p>
 
-                    <div className="flex flex-wrap gap-2">
-                      {game.genres.map(
-                        (genre) => (
-                          <span
-                            key={genre}
-                            className={`rounded-full px-3 py-1 text-sm ${getGenreColor(
-                              genre
-                            )}`}
-                          >
-                            {getGenreLabel(
-                              genre,
-                              language
-                            )}
-                          </span>
-                        )
-                      )}
-                    </div>
+                  <div className="flex flex-wrap gap-2">
+                    {game.genres.map((genre) => (
+                      <span
+                        key={genre}
+                        className={`rounded-full px-3 py-1 text-sm ${getGenreColor(
+                          genre
+                        )}`}
+                      >
+                        {getGenreLabel(genre, language)}
+                      </span>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
             </div>
 
             <div
               className={`shrink-0 rounded px-4 py-2 text-lg font-bold ${
-                game.tier
-                  ? tierColors[game.tier]
-                  : tierColors.Pending
+                game.tier ? tierColors[game.tier] : tierColors.Pending
               }`}
             >
-              {getTierLabel(
-                game.tier || 'Pending',
-                t
-              )}
+              {getTierLabel(game.tier || 'Pending', t)}
             </div>
           </div>
         </div>
 
-        {/* Compatibility Breakdown */}
-                {totalReports > 0 && (
-                  <div className="theme-surface mb-8 rounded-lg border p-6">
-                    <h2 className="theme-primary-text mb-4 text-xl font-bold">
-                      {language === 'es' ? 'Desglose de compatibilidad' : 'Compatibility Breakdown'}
-                    </h2>
-                    <div className="space-y-4">
-                      {['Platinum', 'Gold', 'Silver', 'Bronze', 'Borked'].map((tier) => {
-                        const count = tierCounts[tier] || 0;
-                        const percentage = totalReports > 0 ? Math.round((count / totalReports) * 100) : 0;
-                        const bgClass = tierColors[tier].split(' ')[0];
-                        const desc = tierDescriptions[language as 'en' | 'es'][tier as keyof typeof tierDescriptions.en];
+        {/* Compatibility breakdown */}
+        {totalReports > 0 && (
+          <div className="theme-surface mb-8 rounded-lg border p-6">
+            <h2 className="theme-primary-text mb-4 text-xl font-bold">
+              {t('compatibilityBreakdown')}
+            </h2>
 
-                        return (
-                          <div key={tier} className="group flex items-center gap-4" title={desc}>
-                            <div className="w-20 shrink-0 text-sm font-semibold theme-primary-text cursor-help decoration-dotted underline-offset-4 group-hover:underline">
-                              {getTierLabel(tier, t)}
-                            </div>
-                            <div className="theme-surface-secondary flex-1 h-3 overflow-hidden rounded-full border">
-                              <div
-                                className={`h-full ${bgClass} transition-all duration-500`}
-                                style={{ width: `${percentage}%` }}
-                              />
-                            </div>
-                            <div className="w-20 shrink-0 text-right text-sm theme-secondary-text">
-                              {percentage}% ({count})
-                            </div>
-                          </div>
-                        );
-                      })}
+            <div className="space-y-4">
+              {BREAKDOWN_TIERS.map((tier) => {
+                const count = tierCounts[tier] || 0;
+
+                const percentage = Math.round(
+                  (count / totalReports) * 100
+                );
+
+                const bgClass = tierColors[tier].split(' ')[0];
+
+                return (
+                  <div
+                    key={tier}
+                    className="group flex items-center gap-4"
+                    title={getTierDescription(tier, t)}
+                  >
+                    <div className="theme-primary-text w-20 shrink-0 cursor-help text-sm font-semibold decoration-dotted underline-offset-4 group-hover:underline">
+                      {getTierLabel(tier, t)}
+                    </div>
+
+                    <div className="theme-surface-secondary h-3 flex-1 overflow-hidden rounded-full border">
+                      <div
+                        className={`h-full ${bgClass} transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+
+                    <div className="theme-secondary-text w-20 shrink-0 text-right text-sm">
+                      {percentage}% ({count})
                     </div>
                   </div>
-                )}
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Submit report */}
         <div className="mb-8">
-          <SubmitReportForm
-            gameId={game.id}
-          />
+          <SubmitReportForm gameId={game.id} />
         </div>
 
         {/* Reports */}
@@ -418,15 +354,11 @@ export default function GameReports({
           {reports.length === 0 ? (
             <div className="theme-surface rounded-xl border border-dashed px-6 py-10 text-center">
               <h3 className="theme-primary-text text-lg font-semibold">
-                {language === 'es'
-                  ? 'Aún no hay informes de compatibilidad'
-                  : 'No compatibility reports yet'}
+                {t('noReportsTitle')}
               </h3>
 
               <p className="theme-secondary-text mx-auto mt-2 max-w-lg text-sm leading-6">
-                {language === 'es'
-                  ? 'Todavía no se ha enviado ningún informe para este juego. La información de compatibilidad aparecerá cuando los usuarios comiencen a contribuir.'
-                  : 'No reports have been submitted for this game yet. Compatibility information will appear once users start contributing.'}
+                {t('noReportsDescription')}
               </p>
 
               {!user && (
@@ -434,343 +366,254 @@ export default function GameReports({
                   href="/login"
                   className="mt-5 inline-block rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)]"
                 >
-                  {language === 'es'
-                    ? 'Iniciar sesión para contribuir'
-                    : 'Log in to contribute'}
+                  {t('loginToContribute')}
                 </Link>
               )}
             </div>
           ) : (
             <>
-              {reports
-                .slice(0, visibleCount)
-                .map((report) => {
-                  const isOwnReport =
-                    user !== null &&
-                    Number(user.id) ===
-                      Number(report.user_id);
+              {reports.slice(0, visibleCount).map((report) => {
+                const isOwnReport =
+                  user !== null &&
+                  Number(user.id) === Number(report.user_id);
 
-                  const isEditing =
-                    editingReportId ===
-                    report.id;
+                const isEditing = editingReportId === report.id;
+                const isDeleting = deletingReportId === report.id;
 
-                  const isDeleting =
-                    deletingReportId ===
-                    report.id;
+                return (
+                  <div
+                    key={report.id}
+                    className="theme-surface flex flex-col gap-2 rounded-lg border p-4 transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <Link
+                          href={`/users/${report.user_id}`}
+                          className="shrink-0"
+                          aria-label={`${report.username} profile`}
+                        >
+                          <img
+                            src={
+                              reportAuthorAvatars[
+                                Number(report.user_id)
+                              ] || DEFAULT_AVATAR
+                            }
+                            alt={`${report.username} profile picture`}
+                            className="h-8 w-8 rounded-full object-cover ring-1 ring-white/20"
+                            loading="lazy"
+                          />
+                        </Link>
 
-                  return (
-                    <div
-                      key={report.id}
-                      className="theme-surface flex flex-col gap-2 rounded-lg border p-4 transition-colors"
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex min-w-0 items-center gap-2">
+                        <p className="theme-secondary-text min-w-0 text-sm">
                           <Link
                             href={`/users/${report.user_id}`}
-                            className="shrink-0"
-                            aria-label={`${report.username} profile`}
+                            className="font-bold underline transition-colors hover:text-pink-600"
                           >
-                            <img
-                              src={
-                                reportAuthorAvatars[Number(report.user_id)] ||
-                                DEFAULT_AVATAR
-                              }
-                              alt={`${report.username} profile picture`}
-                              className="h-8 w-8 rounded-full object-cover ring-1 ring-white/20"
-                              loading="lazy"
-                            />
-                          </Link>
-
-                          <p className="theme-secondary-text min-w-0 text-sm">
-                            <Link
-                              href={`/users/${report.user_id}`}
-                              className="font-bold underline transition-colors hover:text-pink-600"
-                            >
-                              {report.username}
-                            </Link>
-
-                            {' '}•{' '}
-                            {report.distribution}
-                            {' '}•{' '}
-
-                            {report.protonVersion
-                              ? `Proton ${report.protonVersion} • `
-                              : ''}
-
-                            {new Date(
-                              report.createdAt
-                            ).toLocaleDateString(
-                              dateLocale
-                            )}
-                          </p>
-                        </div>
-
-                        <div
-                          className={`rounded px-4 py-1.5 font-bold ${
-                            tierColors[
-                              report.tier
-                            ]
-                          }`}
-                        >
-                          {getTierLabel(
-                            report.tier,
-                            t
-                          )}
-                        </div>
+                            {report.username}
+                          </Link>{' '}
+                          • {report.distribution} •{' '}
+                          {report.protonVersion
+                            ? `Proton ${report.protonVersion} • `
+                            : ''}
+                          {new Date(
+                            report.createdAt
+                          ).toLocaleDateString(locale)}
+                        </p>
                       </div>
 
-                      {!isEditing && (
-                        <>
-                          {report.comment && (
-                            <div className="theme-surface-secondary mt-2 whitespace-pre-line rounded p-3 text-sm">
-                              {report.comment}
-                            </div>
-                          )}
-
-                          {deleteErrorReportId ===
-                            report.id &&
-                            deleteError && (
-                              <div className="mt-2 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
-                                {deleteError}
-                              </div>
-                            )}
-
-                          {isOwnReport && (
-                            <div className="mt-2 flex justify-end gap-2">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  startEditing(
-                                    report
-                                  )
-                                }
-                                disabled={
-                                  isDeleting
-                                }
-                                className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                              >
-                                {language === 'es'
-                                  ? 'Editar'
-                                  : 'Edit'}
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setReportToDelete(
-                                    report.id
-                                  )
-                                }
-                                disabled={
-                                  isDeleting
-                                }
-                                className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                              >
-                                {isDeleting
-                                  ? language === 'es'
-                                    ? 'Eliminando...'
-                                    : 'Deleting...'
-                                  : language === 'es'
-                                    ? 'Eliminar'
-                                    : 'Delete'}
-                              </button>
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {isEditing &&
-                        editForm && (
-                          <form
-                            onSubmit={
-                              handleUpdate
-                            }
-                            className="theme-surface-secondary theme-border mt-3 space-y-4 rounded border p-4"
-                          >
-                            {editError && (
-                              <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
-                                {editError}
-                              </div>
-                            )}
-
-                            <div>
-                              <label
-                                htmlFor={`tier-${report.id}`}
-                                className="theme-primary-text mb-1 block text-sm font-medium"
-                              >
-                                {t(
-                                  'compatibilityRating'
-                                )}
-                              </label>
-
-                              <select
-                                id={`tier-${report.id}`}
-                                value={editForm.tier}
-                                onChange={(event) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    tier:
-                                      event.target
-                                        .value as Tier,
-                                  })
-                                }
-                                required
-                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
-                              >
-                                <option value="Platinum">
-                                  {t('platinum')}
-                                </option>
-
-                                <option value="Gold">
-                                  {t('gold')}
-                                </option>
-
-                                <option value="Silver">
-                                  {t('silver')}
-                                </option>
-
-                                <option value="Bronze">
-                                  {t('bronze')}
-                                </option>
-
-                                <option value="Borked">
-                                  {t('borked')}
-                                </option>
-                              </select>
-                            </div>
-
-                            <div>
-                              <label
-                                htmlFor={`distribution-${report.id}`}
-                                className="theme-primary-text mb-1 block text-sm font-medium"
-                              >
-                                {t(
-                                  'linuxDistribution'
-                                )}
-                              </label>
-
-                              <input
-                                id={`distribution-${report.id}`}
-                                type="text"
-                                value={
-                                  editForm.distribution
-                                }
-                                onChange={(event) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    distribution:
-                                      event.target.value,
-                                  })
-                                }
-                                required
-                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
-                              />
-                            </div>
-
-                            <div>
-                              <label
-                                htmlFor={`proton-${report.id}`}
-                                className="theme-primary-text mb-1 block text-sm font-medium"
-                              >
-                                {t(
-                                  'protonVersion'
-                                )}
-                              </label>
-
-                              <input
-                                id={`proton-${report.id}`}
-                                type="text"
-                                value={
-                                  editForm.protonVersion
-                                }
-                                onChange={(event) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    protonVersion:
-                                      event.target.value,
-                                  })
-                                }
-                                required
-                                className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
-                              />
-                            </div>
-
-                            <div>
-                              <label
-                                htmlFor={`comment-${report.id}`}
-                                className="theme-primary-text mb-1 block text-sm font-medium"
-                              >
-                                {t('comment')}
-                              </label>
-
-                              <textarea
-                                id={`comment-${report.id}`}
-                                value={
-                                  editForm.comment
-                                }
-                                onChange={(event) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    comment:
-                                      event.target.value,
-                                  })
-                                }
-                                required
-                                rows={4}
-                                className="theme-input w-full resize-y rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
-                              />
-                            </div>
-
-                            <div className="flex gap-3">
-                              <button
-                                type="submit"
-                                disabled={saving}
-                                className="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
-                              >
-                                {saving
-                                  ? language === 'es'
-                                    ? 'Guardando...'
-                                    : 'Saving...'
-                                  : language === 'es'
-                                    ? 'Guardar cambios'
-                                    : 'Save Changes'}
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={
-                                  cancelEditing
-                                }
-                                disabled={saving}
-                                className="theme-input rounded border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                              >
-                                {language === 'es'
-                                  ? 'Cancelar'
-                                  : 'Cancel'}
-                              </button>
-                            </div>
-                          </form>
-                        )}
+                      <div
+                        className={`rounded px-4 py-1.5 font-bold ${
+                          tierColors[report.tier]
+                        }`}
+                      >
+                        {getTierLabel(report.tier, t)}
+                      </div>
                     </div>
-                  );
-                })}
 
-              {reports.length >
-                visibleCount && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setVisibleCount(
-                        visibleCount + 10
-                      )
-                    }
-                    className="theme-input self-center rounded border px-4 py-2 transition-colors hover:bg-[var(--surface-hover)]"
-                  >
-                    {language === 'es'
-                      ? 'Mostrar más'
-                      : 'Show more'}
-                  </button>
-                )}
+                    {!isEditing && (
+                      <>
+                        {report.comment && (
+                          <div className="theme-surface-secondary mt-2 whitespace-pre-line rounded p-3 text-sm">
+                            {report.comment}
+                          </div>
+                        )}
+
+                        {deleteErrorReportId === report.id &&
+                          deleteError && (
+                            <div className="mt-2 rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                              {deleteError}
+                            </div>
+                          )}
+
+                        {isOwnReport && (
+                          <div className="mt-2 flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => startEditing(report)}
+                              disabled={isDeleting}
+                              className="rounded bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {t('edit')}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setReportToDelete(report.id)
+                              }
+                              disabled={isDeleting}
+                              className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {isDeleting ? t('deleting') : t('delete')}
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {isEditing && editForm && (
+                      <form
+                        onSubmit={handleUpdate}
+                        className="theme-surface-secondary theme-border mt-3 space-y-4 rounded border p-4"
+                      >
+                        {editError && (
+                          <div className="rounded border border-red-700 bg-red-950 p-3 text-sm text-red-300">
+                            {editError}
+                          </div>
+                        )}
+
+                        <div>
+                          <label
+                            htmlFor={`tier-${report.id}`}
+                            className="theme-primary-text mb-1 block text-sm font-medium"
+                          >
+                            {t('compatibilityRating')}
+                          </label>
+
+                          <select
+                            id={`tier-${report.id}`}
+                            value={editForm.tier}
+                            onChange={(event) =>
+                              setEditForm({
+                                ...editForm,
+                                tier: event.target.value as Tier,
+                              })
+                            }
+                            required
+                            className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                          >
+                            <option value="Platinum">
+                              {t('platinum')}
+                            </option>
+                            <option value="Gold">{t('gold')}</option>
+                            <option value="Silver">{t('silver')}</option>
+                            <option value="Bronze">{t('bronze')}</option>
+                            <option value="Borked">{t('borked')}</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`distribution-${report.id}`}
+                            className="theme-primary-text mb-1 block text-sm font-medium"
+                          >
+                            {t('linuxDistribution')}
+                          </label>
+
+                          <input
+                            id={`distribution-${report.id}`}
+                            type="text"
+                            value={editForm.distribution}
+                            onChange={(event) =>
+                              setEditForm({
+                                ...editForm,
+                                distribution: event.target.value,
+                              })
+                            }
+                            required
+                            className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`proton-${report.id}`}
+                            className="theme-primary-text mb-1 block text-sm font-medium"
+                          >
+                            {t('protonVersion')}
+                          </label>
+
+                          <input
+                            id={`proton-${report.id}`}
+                            type="text"
+                            value={editForm.protonVersion}
+                            onChange={(event) =>
+                              setEditForm({
+                                ...editForm,
+                                protonVersion: event.target.value,
+                              })
+                            }
+                            required
+                            className="theme-input w-full rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor={`comment-${report.id}`}
+                            className="theme-primary-text mb-1 block text-sm font-medium"
+                          >
+                            {t('comment')}
+                          </label>
+
+                          <textarea
+                            id={`comment-${report.id}`}
+                            value={editForm.comment}
+                            onChange={(event) =>
+                              setEditForm({
+                                ...editForm,
+                                comment: event.target.value,
+                              })
+                            }
+                            required
+                            rows={4}
+                            className="theme-input w-full resize-y rounded border px-3 py-2 focus:border-[var(--accent)] focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="flex gap-3">
+                          <button
+                            type="submit"
+                            disabled={saving}
+                            className="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {saving ? t('saving') : t('saveChanges')}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={cancelEditing}
+                            disabled={saving}
+                            className="theme-input rounded border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {t('cancel')}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                );
+              })}
+
+              {reports.length > visibleCount && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount(visibleCount + 10)}
+                  className="theme-input self-center rounded border px-4 py-2 transition-colors hover:bg-[var(--surface-hover)]"
+                >
+                  {t('showMore')}
+                </button>
+              )}
             </>
           )}
         </div>
@@ -778,92 +621,75 @@ export default function GameReports({
         {/* Related games */}
         <section>
           <h2 className="theme-primary-text mb-4 text-2xl font-bold">
-            {relatedGamesTitle}
+            {t('relatedGames')}
           </h2>
 
           {relatedGames.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {relatedGames.map(
-                (relatedGame) => (
-                  <Link
-                    key={relatedGame.id}
-                    href={`/games/${relatedGame.steamAppid}`}
-                    className="theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)]"
-                  >
-                    <img
-                      src={
-                        relatedGame.headerUrl ||
-                        `https://cdn.cloudflare.steamstatic.com/steam/apps/${relatedGame.steamAppid}/header.jpg`
-                      }
-                      alt={relatedGame.name}
-                      className="aspect-[460/215] w-full object-cover"
-                      loading="lazy"
-                    />
+              {relatedGames.map((relatedGame) => (
+                <Link
+                  key={relatedGame.id}
+                  href={`/games/${relatedGame.steamAppid}`}
+                  className="theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)]"
+                >
+                  <img
+                    src={
+                      relatedGame.headerUrl ||
+                      `https://cdn.cloudflare.steamstatic.com/steam/apps/${relatedGame.steamAppid}/header.jpg`
+                    }
+                    alt={relatedGame.name}
+                    className="aspect-[460/215] w-full object-cover"
+                    loading="lazy"
+                  />
 
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="theme-primary-text font-semibold">
-                            {relatedGame.name}
-                          </h3>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="theme-primary-text font-semibold">
+                          {relatedGame.name}
+                        </h3>
 
-                          <p className="theme-secondary-text mt-1 text-sm">
-                            {t(
-                              'steamAppId'
-                            )}
-                            :{' '}
-                            {
-                              relatedGame.steamAppid
-                            }
-                          </p>
-                        </div>
-
-                        <div
-                          className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
-                            relatedGame.tier
-                              ? tierColors[
-                                  relatedGame.tier
-                                ]
-                              : tierColors.Pending
-                          }`}
-                        >
-                          {getTierLabel(
-                            relatedGame.tier ||
-                              'Pending',
-                            t
-                          )}
-                        </div>
+                        <p className="theme-secondary-text mt-1 text-sm">
+                          {t('steamAppId')}: {relatedGame.steamAppid}
+                        </p>
                       </div>
 
-                      {relatedGame.genres &&
-                        relatedGame.genres.length >
-                          0 && (
-                          <div className="mt-3 flex flex-wrap gap-1.5">
-                            {relatedGame.genres.map(
-                              (genre) => (
-                                <span
-                                  key={genre}
-                                  className={`rounded-full px-2 py-1 text-xs ${getGenreColor(
-                                    genre
-                                  )}`}
-                                >
-                                  {getGenreLabel(
-                                    genre,
-                                    language
-                                  )}
-                                </span>
-                              )
-                            )}
-                          </div>
+                      <div
+                        className={`shrink-0 rounded px-2 py-1 text-xs font-bold ${
+                          relatedGame.tier
+                            ? tierColors[relatedGame.tier]
+                            : tierColors.Pending
+                        }`}
+                      >
+                        {getTierLabel(
+                          relatedGame.tier || 'Pending',
+                          t
                         )}
+                      </div>
                     </div>
-                  </Link>
-                )
-              )}
+
+                    {relatedGame.genres &&
+                      relatedGame.genres.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {relatedGame.genres.map((genre) => (
+                            <span
+                              key={genre}
+                              className={`rounded-full px-2 py-1 text-xs ${getGenreColor(
+                                genre
+                              )}`}
+                            >
+                              {getGenreLabel(genre, language)}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                </Link>
+              ))}
             </div>
           ) : (
             <div className="theme-surface theme-secondary-text rounded-xl border border-dashed px-6 py-8 text-center">
-              {noRelatedGames}
+              {t('noRelatedGames')}
             </div>
           )}
         </section>
@@ -875,8 +701,7 @@ export default function GameReports({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
           onMouseDown={(event) => {
             if (
-              event.target ===
-                event.currentTarget &&
+              event.target === event.currentTarget &&
               deletingReportId === null
             ) {
               setReportToDelete(null);
@@ -889,52 +714,32 @@ export default function GameReports({
             </div>
 
             <h2 className="theme-primary-text mt-4 text-xl font-bold">
-              {language === 'es'
-                ? 'Eliminar informe'
-                : 'Delete Report'}
+              {t('deleteReportTitle')}
             </h2>
 
             <p className="theme-secondary-text mt-3 text-sm leading-6">
-              {language === 'es'
-                ? '¿Seguro que quieres eliminar este informe? Esta acción es permanente y no se puede deshacer.'
-                : 'Are you sure you want to delete this report? This action is permanent and cannot be undone.'}
+              {t('deleteReportConfirm')}
             </p>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() =>
-                  setReportToDelete(null)
-                }
-                disabled={
-                  deletingReportId !== null
-                }
+                onClick={() => setReportToDelete(null)}
+                disabled={deletingReportId !== null}
                 className="theme-input rounded-lg border px-4 py-2 font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {language === 'es'
-                  ? 'Cancelar'
-                  : 'Cancel'}
+                {t('cancel')}
               </button>
 
               <button
                 type="button"
-                onClick={() =>
-                  handleDelete(
-                    reportToDelete
-                  )
-                }
-                disabled={
-                  deletingReportId !== null
-                }
+                onClick={() => handleDelete(reportToDelete)}
+                disabled={deletingReportId !== null}
                 className="rounded-lg bg-red-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {deletingReportId !== null
-                  ? language === 'es'
-                    ? 'Eliminando...'
-                    : 'Deleting...'
-                  : language === 'es'
-                    ? 'Eliminar informe'
-                    : 'Delete Report'}
+                  ? t('deleting')
+                  : t('deleteReportButton')}
               </button>
             </div>
           </div>

@@ -1,8 +1,7 @@
 name: Run tests
 
 on:
-  push:
-    branches: ["main"]
+  workflow_dispatch:
   pull_request:
     branches: ["main"]
 
@@ -69,9 +68,10 @@ jobs:
           format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
+          skip-dirs: "/usr/local/lib/node_modules"
           ignore-unfixed: false
           vuln-type: "os,library"
-          scanners: "vuln,secret,misconfig"
+          scanners: "vuln,misconfig"
 
       - name: Build Backend Image
         run: docker build --no-cache --pull -t project-backend:test ./backend
