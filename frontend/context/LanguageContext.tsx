@@ -1470,10 +1470,6 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
   tr,
 };
 
-/* ------------------------------------------------------------------ */
-/* Context                                                             */
-/* ------------------------------------------------------------------ */
-
 export type TranslateParams = Record<string, string | number>;
 
 export type Translate = (

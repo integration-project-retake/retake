@@ -112,7 +112,7 @@ export default function Dashboard({
 
           <StatCard
             title={t('reportsPerGame')}
-            value={`${(stats.averageReportsPerGame * 100).toFixed(0)}%`}
+            value={stats.averageReportsPerGame.toFixed(1)}
           />
         </section>
 

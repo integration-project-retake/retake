@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.ucll.retake.dto.ReportDto;
+import be.ucll.retake.exception.UnauthorizedException;
 import be.ucll.retake.model.Report;
 import be.ucll.retake.model.Tier;
 import be.ucll.retake.model.User;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/reports")
@@ -166,30 +166,28 @@ public class ReportController {
         );
         }
 
-    private User getAuthenticatedUser(
-            HttpServletRequest request,
-            String errorMessage
-    ) {
+        private User getAuthenticatedUser(
+                HttpServletRequest request,
+                String errorMessage
+        ) {
         HttpSession session =
                 request.getSession(false);
 
         if (session == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    errorMessage
-            );
+                throw new UnauthorizedException(
+                        errorMessage
+                );
         }
 
-        Object sessionUser =
-                session.getAttribute("user");
+        User user =
+                (User) session.getAttribute("user");
 
-        if (!(sessionUser instanceof User user)) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    errorMessage
-            );
+        if (user == null) {
+                throw new UnauthorizedException(
+                        errorMessage
+                );
         }
 
         return user;
-    }
+        }
 }
