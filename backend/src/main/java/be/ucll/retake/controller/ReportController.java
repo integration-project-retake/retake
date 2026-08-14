@@ -101,106 +101,70 @@ public class ReportController {
         return dtos;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReportDto createReport(
-            @RequestParam Long gameId,
-            @RequestParam Tier tier,
-            @RequestParam String distribution,
-            @RequestParam String comment,
-            @RequestParam String protonVersion,
-            HttpServletRequest request
-    ) {
-        User user = getAuthenticatedUser(
-                request,
-                "You must be logged in to create a report"
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public ReportDto createReport(
+                @RequestParam Long userId,
+                @RequestParam Long gameId,
+                @RequestParam Tier tier,
+                @RequestParam String distribution,
+                @RequestParam String comment,
+                @RequestParam String protonVersion
+        ) {
+        return ReportDto.from(
+                reportService.createReport(
+                        userId,
+                        gameId,
+                        tier,
+                        distribution,
+                        comment,
+                        protonVersion
+                )
         );
-
-        try {
-            return ReportDto.from(
-                    reportService.createReport(
-                            user.getId(),
-                            gameId,
-                            tier,
-                            distribution,
-                            comment,
-                            protonVersion
-                    )
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    e.getMessage()
-            );
         }
-    }
 
-    @PutMapping("/{id}")
-    public ReportDto updateReport(
-            @PathVariable Long id,
-            @RequestParam Tier tier,
-            @RequestParam String distribution,
-            @RequestParam String comment,
-            @RequestParam String protonVersion,
-            HttpServletRequest request
-    ) {
+        @PutMapping("/{id}")
+        public ReportDto updateReport(
+                @PathVariable Long id,
+                @RequestParam Tier tier,
+                @RequestParam String distribution,
+                @RequestParam String comment,
+                @RequestParam String protonVersion,
+                HttpServletRequest request
+        ) {
         User user = getAuthenticatedUser(
                 request,
                 "You must be logged in to edit a report"
         );
 
-        try {
-            return ReportDto.from(
-                    reportService.updateReport(
-                            id,
-                            user.getId(),
-                            tier,
-                            distribution,
-                            comment,
-                            protonVersion
-                    )
-            );
-        } catch (SecurityException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    e.getMessage()
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    e.getMessage()
-            );
+        return ReportDto.from(
+                reportService.updateReport(
+                        id,
+                        user.getId(),
+                        tier,
+                        distribution,
+                        comment,
+                        protonVersion
+                )
+        );
         }
-    }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReport(
-            @PathVariable Long id,
-            HttpServletRequest request
-    ) {
+        @DeleteMapping("/{id}")
+        @ResponseStatus(HttpStatus.NO_CONTENT)
+        public void deleteReport(
+                @PathVariable Long id,
+                HttpServletRequest request
+        ) {
         User user = getAuthenticatedUser(
                 request,
                 "You must be logged in to delete a report"
         );
 
-        try {
-            reportService.deleteReport(
-                    id,
-                    user.getId()
-            );
-        } catch (SecurityException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    e.getMessage()
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    e.getMessage()
-            );
+        reportService.deleteReport(
+                id,
+                user.getId()
+        );
         }
-    }
 
     private User getAuthenticatedUser(
             HttpServletRequest request,
