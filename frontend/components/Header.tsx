@@ -87,7 +87,7 @@ export default function Header() {
             href="/dashboard"
             className="theme-header-link px-4 py-2"
           >
-            Dashboard
+            {t('dashboard')}
           </Link>
 
           {/* Language selector */}
