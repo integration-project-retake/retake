@@ -13,8 +13,8 @@ export default function HomeContent({ games }: HomeContentProps) {
 
   return (
     <main className="min-h-screen p-8 text-foreground">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="mb-6 text-3xl font-bold">
+      <div className="theme-page-text mx-auto max-w-5xl">
+        <h1 className=" mb-6 text-3xl font-bold">
           {t('games')}
         </h1>
 

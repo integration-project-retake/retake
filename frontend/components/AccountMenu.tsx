@@ -14,7 +14,6 @@ export default function AccountMenu() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // close when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -38,7 +37,7 @@ export default function AccountMenu() {
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className=" relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center"
@@ -52,7 +51,7 @@ export default function AccountMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-700 bg-gray-800 py-1 shadow-xl">
+        <div className="theme-input transition-colors absolute right-0 mt-2 w-44 rounded-lg border py-1 shadow-xl">
           <Link
             href={`/users/${user.id}`}
             onClick={() => setOpen(false)}

@@ -34,3 +34,57 @@ export interface UserDto {
   backgroundUrl: string | null;
   createdAt: string;
 }
+
+export interface DashboardTierStat {
+  tier: string;
+  count: number;
+}
+
+export interface DashboardGenreStat {
+  genre: string;
+  count: number;
+}
+
+export interface DashboardGenreCompatibilityStat {
+  genre: string;
+  platinum: number;
+  gold: number;
+  silver: number;
+  bronze: number;
+  borked: number;
+  pending: number;
+}
+
+export interface DashboardGameReportStat {
+  gameId: number;
+  steamAppid: number;
+  gameName: string;
+  reportCount: number;
+}
+
+export interface DashboardContributorStat {
+  userId: number;
+  username: string;
+  avatarUrl: string | null;
+  reportCount: number;
+}
+
+export interface DashboardStatsDto {
+  totalGames: number;
+  totalReports: number;
+  totalUsers: number;
+  averageReportsPerGame: number;
+
+  tierDistribution: DashboardTierStat[];
+
+  genreDistribution: DashboardGenreStat[];
+
+  compatibilityByGenre:
+    DashboardGenreCompatibilityStat[];
+
+  mostReportedGames:
+    DashboardGameReportStat[];
+
+  topContributors:
+    DashboardContributorStat[];
+}
