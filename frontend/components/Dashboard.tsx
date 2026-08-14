@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 
 import {
   getGenreColor,
@@ -41,15 +42,20 @@ const tierBadgeColors: Record<
     'bg-gray-600 text-gray-200',
 };
 
+const wheelColors = {
+  Platinum: '#93c5fd',
+  Gold: '#facc15',
+  Silver: '#d1d5db',
+  Bronze: '#f97316',
+  Borked: '#dc2626',
+  Pending: '#4b5563',
+};
+
 export default function Dashboard({
   stats,
 }: DashboardProps) {
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  };
+  const [selectedGenre, setSelectedGenre] =
+    useState('Action');
 
   const largestGenre =
     Math.max(
@@ -66,6 +72,29 @@ export default function Dashboard({
       ),
       1
     );
+
+  const availableGenres = useMemo(
+    () =>
+      stats.compatibilityByGenre.filter(
+        (genre) =>
+          genre.platinum +
+            genre.gold +
+            genre.silver +
+            genre.bronze +
+            genre.borked +
+            genre.pending >
+          0
+      ),
+    [stats.compatibilityByGenre]
+  );
+
+  const selectedGenreStats =
+    availableGenres.find(
+      (genre) =>
+        genre.genre === selectedGenre
+    ) ??
+    availableGenres[0] ??
+    null;
 
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
@@ -101,8 +130,9 @@ export default function Dashboard({
           <StatCard
             title="Reports / Game"
             value={
-              stats.averageReportsPerGame
-                .toFixed(1)
+              stats.averageReportsPerGame.toFixed(
+                1
+              )
             }
           />
         </section>
@@ -125,16 +155,12 @@ export default function Dashboard({
                   const percentage =
                     stats.totalGames === 0
                       ? 0
-                      : (
-                          (tier.count /
-                            stats.totalGames) *
-                          100
-                        );
+                      : (tier.count /
+                          stats.totalGames) *
+                        100;
 
                   return (
-                    <div
-                      key={tier.tier}
-                    >
+                    <div key={tier.tier}>
                       <div className="mb-1 flex items-center justify-between gap-4">
                         <span
                           className={`rounded px-2 py-1 text-xs font-bold ${
@@ -229,142 +255,59 @@ export default function Dashboard({
           </section>
         </div>
 
-        {/* COMPATIBILITY PER GENRE */}
+        {/* INTERACTIVE COMPATIBILITY BY GENRE */}
         <section className="theme-surface mt-8 rounded-xl border p-6">
-          <h2 className="theme-primary-text text-2xl font-bold">
-            Compatibility by Genre
-          </h2>
+          <div className="text-center">
+            <h2 className="theme-primary-text text-2xl font-bold">
+              Compatibility by Genre
+            </h2>
 
-          <p className="theme-secondary-text mt-1 text-sm">
-            Compatibility tier distribution
-            within each genre.
-          </p>
+            <p className="theme-secondary-text mt-1 text-sm">
+              Select a genre to explore its
+              compatibility distribution.
+            </p>
+          </div>
 
-          <div className="mt-6 space-y-5">
-            {stats.compatibilityByGenre.map(
-              (genre) => {
-                const total =
-                  genre.platinum +
-                  genre.gold +
-                  genre.silver +
-                  genre.bronze +
-                  genre.borked +
-                  genre.pending;
+          {/* GENRE SELECTOR */}
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {availableGenres.map((genre) => {
+              const isSelected =
+                selectedGenreStats?.genre ===
+                genre.genre;
 
-                if (total === 0) {
-                  return null;
-                }
-
-                return (
-                  <div
-                    key={genre.genre}
-                  >
-                    <div className="mb-2 flex items-center justify-between">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
+              return (
+                <button
+                  key={genre.genre}
+                  type="button"
+                  onClick={() =>
+                    setSelectedGenre(
+                      genre.genre
+                    )
+                  }
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                    isSelected
+                      ? `${getGenreColor(
                           genre.genre
-                        )}`}
-                      >
-                        {genre.genre}
-                      </span>
-
-                      <span className="theme-secondary-text text-sm">
-                        {total} games
-                      </span>
-                    </div>
-
-                    <div className="flex h-5 overflow-hidden rounded-full bg-black/20">
-                      <TierSegment
-                        count={
-                          genre.platinum
-                        }
-                        total={total}
-                        className="bg-blue-300"
-                        title="Platinum"
-                      />
-
-                      <TierSegment
-                        count={
-                          genre.gold
-                        }
-                        total={total}
-                        className="bg-yellow-400"
-                        title="Gold"
-                      />
-
-                      <TierSegment
-                        count={
-                          genre.silver
-                        }
-                        total={total}
-                        className="bg-gray-300"
-                        title="Silver"
-                      />
-
-                      <TierSegment
-                        count={
-                          genre.bronze
-                        }
-                        total={total}
-                        className="bg-orange-500"
-                        title="Bronze"
-                      />
-
-                      <TierSegment
-                        count={
-                          genre.borked
-                        }
-                        total={total}
-                        className="bg-red-600"
-                        title="Borked"
-                      />
-
-                      <TierSegment
-                        count={
-                          genre.pending
-                        }
-                        total={total}
-                        className="bg-gray-600"
-                        title="Pending"
-                      />
-                    </div>
-                  </div>
-                );
-              }
-            )}
+                        )} scale-105 border-white/60 shadow-md`
+                      : 'theme-surface-secondary theme-secondary-text border-white/10 hover:border-white/30 hover:text-white'
+                  }`}
+                >
+                  {genre.genre}
+                </button>
+              );
+            })}
           </div>
 
-          <div className="theme-secondary-text mt-6 flex flex-wrap gap-4 text-xs">
-            <Legend
-              className="bg-blue-300"
-              label="Platinum"
+          {selectedGenreStats ? (
+            <GenreCompatibilityWheel
+              genre={selectedGenreStats}
             />
-
-            <Legend
-              className="bg-yellow-400"
-              label="Gold"
-            />
-
-            <Legend
-              className="bg-gray-300"
-              label="Silver"
-            />
-
-            <Legend
-              className="bg-orange-500"
-              label="Bronze"
-            />
-
-            <Legend
-              className="bg-red-600"
-              label="Borked"
-            />
-
-            <Legend
-              className="bg-gray-600"
-              label="Pending"
-            />
-          </div>
+          ) : (
+            <div className="theme-secondary-text py-16 text-center">
+              No genre compatibility data
+              available.
+            </div>
+          )}
         </section>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
@@ -483,17 +426,220 @@ export default function Dashboard({
           </section>
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={scrollToTop}
-        aria-label="Back to top"
-        title="Back to top"
-        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-xl font-bold text-white shadow-lg transition-transform hover:scale-110 hover:bg-[var(--accent-hover)]"
-      >
-        ↑
-      </button>
     </main>
+  );
+}
+
+function GenreCompatibilityWheel({
+  genre,
+}: {
+  genre: DashboardStatsDto['compatibilityByGenre'][number];
+}) {
+  const tiers = [
+    {
+      name: 'Platinum',
+      count: genre.platinum,
+      color: wheelColors.Platinum,
+    },
+    {
+      name: 'Gold',
+      count: genre.gold,
+      color: wheelColors.Gold,
+    },
+    {
+      name: 'Silver',
+      count: genre.silver,
+      color: wheelColors.Silver,
+    },
+    {
+      name: 'Bronze',
+      count: genre.bronze,
+      color: wheelColors.Bronze,
+    },
+    {
+      name: 'Borked',
+      count: genre.borked,
+      color: wheelColors.Borked,
+    },
+    {
+      name: 'Pending',
+      count: genre.pending,
+      color: wheelColors.Pending,
+    },
+  ];
+
+  const total = tiers.reduce(
+    (sum, tier) => sum + tier.count,
+    0
+  );
+
+  let currentAngle = 0;
+
+  const gradientParts = tiers
+    .filter((tier) => tier.count > 0)
+    .map((tier) => {
+      const start = currentAngle;
+
+      const angle =
+        total === 0
+          ? 0
+          : (tier.count / total) * 360;
+
+      currentAngle += angle;
+
+      return `${tier.color} ${start}deg ${currentAngle}deg`;
+    });
+
+  const wheelBackground =
+    gradientParts.length > 0
+      ? `conic-gradient(${gradientParts.join(
+          ', '
+        )})`
+      : '#374151';
+
+  return (
+    <div className="mt-8">
+      <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto_1fr]">
+        {/* LEFT SIDE */}
+        <div className="order-2 flex flex-col gap-3 lg:order-1">
+          {tiers.slice(0, 3).map(
+            (tier) => (
+              <TierDetail
+                key={tier.name}
+                name={tier.name}
+                count={tier.count}
+                total={total}
+                color={tier.color}
+              />
+            )
+          )}
+        </div>
+
+        {/* WHEEL */}
+        <div className="order-1 flex flex-col items-center lg:order-2">
+          <div className="mb-5 text-center">
+            <span
+              className={`inline-block rounded-full px-4 py-1.5 text-sm font-semibold ${getGenreColor(
+                genre.genre
+              )}`}
+            >
+              {genre.genre}
+            </span>
+
+            <p className="theme-secondary-text mt-2 text-sm">
+              {total}{' '}
+              {total === 1
+                ? 'game'
+                : 'games'}
+            </p>
+          </div>
+
+          <div className="relative h-64 w-64 sm:h-72 sm:w-72">
+            <div
+              className="absolute inset-0 rounded-full shadow-2xl transition-all duration-500"
+              style={{
+                background:
+                  wheelBackground,
+              }}
+            />
+
+            <div className="theme-surface absolute inset-[20%] flex flex-col items-center justify-center rounded-full border shadow-xl">
+              <span className="theme-secondary-text text-xs font-semibold uppercase tracking-widest">
+                Genre
+              </span>
+
+              <span className="theme-primary-text mt-1 max-w-[120px] text-center text-xl font-bold">
+                {genre.genre}
+              </span>
+
+              <span className="theme-secondary-text mt-2 text-sm">
+                {total} games
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className="order-3 flex flex-col gap-3">
+          {tiers.slice(3).map(
+            (tier) => (
+              <TierDetail
+                key={tier.name}
+                name={tier.name}
+                count={tier.count}
+                total={total}
+                color={tier.color}
+              />
+            )
+          )}
+        </div>
+      </div>
+
+      {/* LEGEND */}
+      <div className="theme-secondary-text mt-8 flex flex-wrap justify-center gap-x-5 gap-y-3 text-xs">
+        {tiers.map((tier) => (
+          <span
+            key={tier.name}
+            className="flex items-center gap-2"
+          >
+            <span
+              className="h-3 w-3 rounded-full"
+              style={{
+                backgroundColor:
+                  tier.color,
+              }}
+            />
+
+            {tier.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TierDetail({
+  name,
+  count,
+  total,
+  color,
+}: {
+  name: string;
+  count: number;
+  total: number;
+  color: string;
+}) {
+  const percentage =
+    total === 0
+      ? 0
+      : (count / total) * 100;
+
+  return (
+    <div className="theme-surface-secondary rounded-lg border p-3">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span
+            className="h-3 w-3 rounded-full"
+            style={{
+              backgroundColor: color,
+            }}
+          />
+
+          <span className="theme-primary-text text-sm font-semibold">
+            {name}
+          </span>
+        </div>
+
+        <span className="theme-secondary-text text-sm">
+          {percentage.toFixed(1)}%
+        </span>
+      </div>
+
+      <div className="theme-secondary-text mt-1 text-xs">
+        {count}{' '}
+        {count === 1 ? 'game' : 'games'}
+      </div>
+    </div>
   );
 }
 
@@ -514,54 +660,5 @@ function StatCard({
         {value}
       </p>
     </div>
-  );
-}
-
-function TierSegment({
-  count,
-  total,
-  className,
-  title,
-}: {
-  count: number;
-  total: number;
-  className: string;
-  title: string;
-}) {
-  if (count === 0) {
-    return null;
-  }
-
-  const percentage =
-    (count / total) * 100;
-
-  return (
-    <div
-      className={className}
-      style={{
-        width: `${percentage}%`,
-      }}
-      title={`${title}: ${count} (${percentage.toFixed(
-        1
-      )}%)`}
-    />
-  );
-}
-
-function Legend({
-  className,
-  label,
-}: {
-  className: string;
-  label: string;
-}) {
-  return (
-    <span className="flex items-center gap-2">
-      <span
-        className={`h-3 w-3 rounded-full ${className}`}
-      />
-
-      {label}
-    </span>
   );
 }
