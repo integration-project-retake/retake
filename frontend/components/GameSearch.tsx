@@ -46,7 +46,12 @@ type TierFilter =
 type NameSort = 'az' | 'za' | null;
 type SteamSort = 'steamAsc' | 'steamDesc' | null;
 type TierSort = 'tierBest' | 'tierWorst' | null;
-type FilterPanel = 'genres' | 'tiers' | 'ordering' | null;
+
+type FilterPanel =
+  | 'genres'
+  | 'tiers'
+  | 'ordering'
+  | null;
 
 const allTiers: TierFilter[] = [
   'Platinum',
@@ -59,38 +64,87 @@ const allTiers: TierFilter[] = [
 
 const GAMES_PER_PAGE = 12;
 
-export default function GameSearch({ initialGames }: GameSearchProps) {
-  const { language, locale, t } = useLanguage();
+export default function GameSearch({
+  initialGames,
+}: GameSearchProps) {
+  const {
+    language,
+    locale,
+    t,
+  } = useLanguage();
 
-  const [query, setQuery] = useState('');
-  const [games, setGames] = useState(initialGames);
-  const [error, setError] = useState('');
-  const [layout, setLayout] = useState<LayoutMode>('grid');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] =
+    useState('');
 
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [selectedTiers, setSelectedTiers] = useState<TierFilter[]>([]);
+  const [games, setGames] =
+    useState(initialGames);
 
-  const [nameSort, setNameSort] = useState<NameSort>(null);
-  const [steamSort, setSteamSort] = useState<SteamSort>(null);
-  const [tierSort, setTierSort] = useState<TierSort>(null);
+  const [error, setError] =
+    useState('');
 
-  const [activePanel, setActivePanel] = useState<FilterPanel>(null);
+  const [layout, setLayout] =
+    useState<LayoutMode>('grid');
 
-  const panelRef = useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] =
+    useState(1);
+
+  const [
+    selectedGenres,
+    setSelectedGenres,
+  ] = useState<string[]>([]);
+
+  const [
+    selectedTiers,
+    setSelectedTiers,
+  ] = useState<TierFilter[]>([]);
+
+  const [nameSort, setNameSort] =
+    useState<NameSort>(null);
+
+  const [steamSort, setSteamSort] =
+    useState<SteamSort>(null);
+
+  const [tierSort, setTierSort] =
+    useState<TierSort>(null);
+
+  const [
+    activePanel,
+    setActivePanel,
+  ] = useState<FilterPanel>(null);
+
+  const panelRef =
+    useRef<HTMLDivElement>(null);
 
   const availableGenres = useMemo(() => {
-    const genres = initialGames.flatMap((game) => game.genres || []);
+    const genres = initialGames.flatMap(
+      (game) => game.genres || []
+    );
 
-    return Array.from(new Set(genres)).sort((a, b) =>
-      getGenreLabel(a, language).localeCompare(getGenreLabel(b, language))
+    return Array.from(
+      new Set(genres)
+    ).sort((a, b) =>
+      getGenreLabel(
+        a,
+        language
+      ).localeCompare(
+        getGenreLabel(
+          b,
+          language
+        )
+      )
     );
   }, [initialGames, language]);
 
   useEffect(() => {
-    const savedLayout = localStorage.getItem('gameLayout');
+    const savedLayout =
+      localStorage.getItem(
+        'gameLayout'
+      );
 
-    if (savedLayout === 'grid' || savedLayout === 'list') {
+    if (
+      savedLayout === 'grid' ||
+      savedLayout === 'list'
+    ) {
       setLayout(savedLayout);
     }
   }, []);
@@ -100,154 +154,317 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
       return;
     }
 
-    const handleOutsideClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+    const handleOutsideClick = (
+      event: MouseEvent
+    ) => {
+      const target =
+        event.target as HTMLElement;
 
-      if (target.closest('[data-filter-control]')) {
+      if (
+        target.closest(
+          '[data-filter-control]'
+        )
+      ) {
         return;
       }
 
-      if (panelRef.current?.contains(target)) {
+      if (
+        panelRef.current?.contains(
+          target
+        )
+      ) {
         return;
       }
 
       setActivePanel(null);
     };
 
-    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener(
+      'mousedown',
+      handleOutsideClick
+    );
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener(
+        'mousedown',
+        handleOutsideClick
+      );
     };
   }, [activePanel]);
 
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      if (!query.trim()) {
-        setGames(initialGames);
-        setError('');
+    const timer = setTimeout(
+      async () => {
+        if (!query.trim()) {
+          setGames(initialGames);
+          setError('');
 
-        return;
-      }
+          return;
+        }
 
-      try {
-        setError('');
+        try {
+          setError('');
 
-        const results = await searchGames(query);
+          const results =
+            await searchGames(query);
 
-        setGames(results);
-      } catch (error) {
-        console.error('Game search failed:', error);
+          setGames(results);
+        } catch (error) {
+          console.error(
+            'Game search failed:',
+            error
+          );
 
-        setError(t('searchError'));
-      }
-    }, 300);
+          setError(
+            t('searchError')
+          );
+        }
+      },
+      300
+    );
 
-    return () => clearTimeout(timer);
+    return () =>
+      clearTimeout(timer);
   }, [query, initialGames, t]);
 
-  const togglePanel = (panel: Exclude<FilterPanel, null>) => {
-    setActivePanel((current) => (current === panel ? null : panel));
-  };
-
-  const toggleGenre = (genre: string) => {
-    setSelectedGenres((current) =>
-      current.includes(genre)
-        ? current.filter((item) => item !== genre)
-        : [...current, genre]
+  const togglePanel = (
+    panel: Exclude<
+      FilterPanel,
+      null
+    >
+  ) => {
+    setActivePanel((current) =>
+      current === panel
+        ? null
+        : panel
     );
   };
 
-  const toggleTier = (tier: TierFilter) => {
-    setSelectedTiers((current) =>
-      current.includes(tier)
-        ? current.filter((item) => item !== tier)
-        : [...current, tier]
+  const toggleGenre = (
+    genre: string
+  ) => {
+    setSelectedGenres(
+      (current) =>
+        current.includes(genre)
+          ? current.filter(
+              (item) =>
+                item !== genre
+            )
+          : [
+              ...current,
+              genre,
+            ]
     );
   };
 
-  const filteredGames = useMemo(() => {
-    return games.filter((game) => {
-      /* OR inside the genre group: Adventure OR RPG */
-      const matchesGenre =
-        selectedGenres.length === 0 ||
-        selectedGenres.some((genre) => game.genres?.includes(genre));
+  const toggleTier = (
+    tier: TierFilter
+  ) => {
+    setSelectedTiers(
+      (current) =>
+        current.includes(tier)
+          ? current.filter(
+              (item) =>
+                item !== tier
+            )
+          : [
+              ...current,
+              tier,
+            ]
+    );
+  };
 
-      const gameTier = (game.tier || 'Pending') as TierFilter;
+  const filteredGames =
+    useMemo(() => {
+      return games.filter(
+        (game) => {
+          /*
+           * OR inside the genre
+           * group:
+           * Adventure OR RPG
+           */
+          const matchesGenre =
+            selectedGenres.length ===
+              0 ||
+            selectedGenres.some(
+              (genre) =>
+                game.genres?.includes(
+                  genre
+                )
+            );
 
-      /* OR inside the tier group: Gold OR Platinum */
-      const matchesTier =
-        selectedTiers.length === 0 || selectedTiers.includes(gameTier);
+          const gameTier =
+            (game.tier ||
+              'Pending') as TierFilter;
 
-      /* AND between filter groups */
-      return matchesGenre && matchesTier;
-    });
-  }, [games, selectedGenres, selectedTiers]);
+          /*
+           * OR inside the tier
+           * group:
+           * Gold OR Platinum
+           */
+          const matchesTier =
+            selectedTiers.length ===
+              0 ||
+            selectedTiers.includes(
+              gameTier
+            );
 
-  const sortedGames = useMemo(() => {
-    const copy = [...filteredGames];
-
-    return copy.sort((a, b) => {
-      /* Sort priority: 1. Compatibility  2. Name  3. Steam App ID */
-
-      if (tierSort) {
-        const aTier = tierOrder[a.tier || 'Pending'];
-        const bTier = tierOrder[b.tier || 'Pending'];
-
-        const difference =
-          tierSort === 'tierBest' ? bTier - aTier : aTier - bTier;
-
-        if (difference !== 0) {
-          return difference;
+          /*
+           * AND between
+           * filter groups
+           */
+          return (
+            matchesGenre &&
+            matchesTier
+          );
         }
-      }
+      );
+    }, [
+      games,
+      selectedGenres,
+      selectedTiers,
+    ]);
 
-      if (nameSort) {
-        const comparison = a.name.localeCompare(b.name, locale, {
-          sensitivity: 'base',
-        });
+  const sortedGames =
+    useMemo(() => {
+      const copy = [
+        ...filteredGames,
+      ];
 
-        if (comparison !== 0) {
-          return nameSort === 'az' ? comparison : -comparison;
+      return copy.sort(
+        (a, b) => {
+          /*
+           * Sort priority:
+           * 1. Compatibility
+           * 2. Name
+           * 3. Steam App ID
+           */
+
+          if (tierSort) {
+            const aTier =
+              tierOrder[
+                a.tier ||
+                  'Pending'
+              ];
+
+            const bTier =
+              tierOrder[
+                b.tier ||
+                  'Pending'
+              ];
+
+            const difference =
+              tierSort ===
+              'tierBest'
+                ? bTier -
+                  aTier
+                : aTier -
+                  bTier;
+
+            if (
+              difference !== 0
+            ) {
+              return difference;
+            }
+          }
+
+          if (nameSort) {
+            const comparison =
+              a.name.localeCompare(
+                b.name,
+                locale,
+                {
+                  sensitivity:
+                    'base',
+                }
+              );
+
+            if (
+              comparison !== 0
+            ) {
+              return nameSort ===
+                'az'
+                ? comparison
+                : -comparison;
+            }
+          }
+
+          if (steamSort) {
+            const difference =
+              a.steamAppid -
+              b.steamAppid;
+
+            if (
+              difference !== 0
+            ) {
+              return steamSort ===
+                'steamAsc'
+                ? difference
+                : -difference;
+            }
+          }
+
+          return 0;
         }
-      }
-
-      if (steamSort) {
-        const difference = a.steamAppid - b.steamAppid;
-
-        if (difference !== 0) {
-          return steamSort === 'steamAsc' ? difference : -difference;
-        }
-      }
-
-      return 0;
-    });
-  }, [filteredGames, nameSort, steamSort, tierSort, locale]);
+      );
+    }, [
+      filteredGames,
+      nameSort,
+      steamSort,
+      tierSort,
+      locale,
+    ]);
 
   const totalPages = Math.max(
     1,
-    Math.ceil(sortedGames.length / GAMES_PER_PAGE)
+    Math.ceil(
+      sortedGames.length /
+        GAMES_PER_PAGE
+    )
   );
 
-  const startIndex = (currentPage - 1) * GAMES_PER_PAGE;
+  const startIndex =
+    (currentPage - 1) *
+    GAMES_PER_PAGE;
 
-  const paginatedGames = sortedGames.slice(
-    startIndex,
-    startIndex + GAMES_PER_PAGE
-  );
+  const paginatedGames =
+    sortedGames.slice(
+      startIndex,
+      startIndex +
+        GAMES_PER_PAGE
+    );
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [query, selectedGenres, selectedTiers, nameSort, steamSort, tierSort]);
+  }, [
+    query,
+    selectedGenres,
+    selectedTiers,
+    nameSort,
+    steamSort,
+    tierSort,
+  ]);
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
+    if (
+      currentPage > totalPages
+    ) {
+      setCurrentPage(
+        totalPages
+      );
     }
-  }, [currentPage, totalPages]);
+  }, [
+    currentPage,
+    totalPages,
+  ]);
 
-  const goToPage = (page: number) => {
-    if (page < 1 || page > totalPages) {
+  const goToPage = (
+    page: number
+  ) => {
+    if (
+      page < 1 ||
+      page > totalPages
+    ) {
       return;
     }
 
@@ -255,11 +472,16 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
     setCurrentPage(page);
   };
 
-  const handleLayoutChange = (newLayout: LayoutMode) => {
+  const handleLayoutChange = (
+    newLayout: LayoutMode
+  ) => {
     setActivePanel(null);
     setLayout(newLayout);
 
-    localStorage.setItem('gameLayout', newLayout);
+    localStorage.setItem(
+      'gameLayout',
+      newLayout
+    );
   };
 
   const resetFilters = () => {
@@ -285,16 +507,29 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
     selectedGenres.length === 0
       ? t('allGenres')
       : t(
-          selectedGenres.length === 1 ? 'genreCountOne' : 'genreCountMany',
-          { count: selectedGenres.length }
+          selectedGenres.length ===
+            1
+            ? 'genreCountOne'
+            : 'genreCountMany',
+          {
+            count:
+              selectedGenres.length,
+          }
         );
 
   const tierButtonLabel =
     selectedTiers.length === 0
       ? t('allTiers')
-      : t(selectedTiers.length === 1 ? 'tierCountOne' : 'tierCountMany', {
-          count: selectedTiers.length,
-        });
+      : t(
+          selectedTiers.length ===
+            1
+            ? 'tierCountOne'
+            : 'tierCountMany',
+          {
+            count:
+              selectedTiers.length,
+          }
+        );
 
   return (
     <div>
@@ -303,8 +538,14 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
         <input
           type="search"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={t('searchPlaceholder')}
+          onChange={(event) =>
+            setQuery(
+              event.target.value
+            )
+          }
+          placeholder={t(
+            'searchPlaceholder'
+          )}
           className="theme-input w-full flex-1 rounded-lg border px-4 py-2 focus:outline-none"
         />
 
@@ -313,11 +554,21 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           <button
             type="button"
             data-filter-control
-            onClick={() => togglePanel('genres')}
+            onClick={() =>
+              togglePanel(
+                'genres'
+              )
+            }
             className={`theme-input min-w-36 rounded-lg border px-4 py-2 text-left transition ${
-              activePanel === 'genres' ? 'ring-2 ring-[var(--accent)]' : ''
+              activePanel ===
+              'genres'
+                ? 'ring-2 ring-[var(--accent)]'
+                : ''
             }`}
-            aria-expanded={activePanel === 'genres'}
+            aria-expanded={
+              activePanel ===
+              'genres'
+            }
           >
             {genreButtonLabel}
           </button>
@@ -326,11 +577,21 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           <button
             type="button"
             data-filter-control
-            onClick={() => togglePanel('tiers')}
+            onClick={() =>
+              togglePanel(
+                'tiers'
+              )
+            }
             className={`theme-input min-w-32 rounded-lg border px-4 py-2 text-left transition ${
-              activePanel === 'tiers' ? 'ring-2 ring-[var(--accent)]' : ''
+              activePanel ===
+              'tiers'
+                ? 'ring-2 ring-[var(--accent)]'
+                : ''
             }`}
-            aria-expanded={activePanel === 'tiers'}
+            aria-expanded={
+              activePanel ===
+              'tiers'
+            }
           >
             {tierButtonLabel}
           </button>
@@ -339,23 +600,39 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           <button
             type="button"
             data-filter-control
-            onClick={() => togglePanel('ordering')}
+            onClick={() =>
+              togglePanel(
+                'ordering'
+              )
+            }
             className={`theme-input min-w-44 rounded-lg border px-4 py-2 text-left transition ${
-              activePanel === 'ordering'
+              activePanel ===
+              'ordering'
                 ? 'ring-2 ring-[var(--accent)]'
                 : ''
             }`}
-            aria-expanded={activePanel === 'ordering'}
+            aria-expanded={
+              activePanel ===
+              'ordering'
+            }
           >
-            {!nameSort && !steamSort && !tierSort
-              ? t('defaultOrdering')
-              : t('orderingOptions')}
+            {!nameSort &&
+            !steamSort &&
+            !tierSort
+              ? t(
+                  'defaultOrdering'
+                )
+              : t(
+                  'orderingOptions'
+                )}
           </button>
 
           {hasFilters && (
             <button
               type="button"
-              onClick={resetFilters}
+              onClick={
+                resetFilters
+              }
               className="theme-input rounded-lg border px-4 py-2 font-medium"
             >
               {t('reset')}
@@ -365,7 +642,11 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           {/* GRID */}
           <button
             type="button"
-            onClick={() => handleLayoutChange('grid')}
+            onClick={() =>
+              handleLayoutChange(
+                'grid'
+              )
+            }
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'grid'
                 ? 'bg-[var(--accent)] text-white'
@@ -378,7 +659,11 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           {/* LIST */}
           <button
             type="button"
-            onClick={() => handleLayoutChange('list')}
+            onClick={() =>
+              handleLayoutChange(
+                'list'
+              )
+            }
             className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               layout === 'list'
                 ? 'bg-[var(--accent)] text-white'
@@ -397,7 +682,8 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
           className="theme-surface mb-4 rounded-xl border p-4 shadow-lg"
         >
           {/* GENRES PANEL */}
-          {activePanel === 'genres' && (
+          {activePanel ===
+            'genres' && (
             <div>
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="theme-primary-text text-lg font-semibold">
@@ -406,7 +692,11 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
 
                 <button
                   type="button"
-                  onClick={() => setActivePanel(null)}
+                  onClick={() =>
+                    setActivePanel(
+                      null
+                    )
+                  }
                   className="theme-secondary-text rounded px-2 py-1 text-sm hover:bg-[var(--surface-hover)]"
                 >
                   {t('close')}
@@ -414,45 +704,65 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {availableGenres.map((genre) => (
-                  <label
-                    key={genre}
-                    className={`theme-primary-text flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 transition hover:bg-[var(--surface-hover)] ${
-                      selectedGenres.includes(genre)
-                        ? 'border-[var(--accent)]'
-                        : 'border-transparent'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedGenres.includes(genre)}
-                      onChange={() => toggleGenre(genre)}
-                    />
-
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs ${getGenreColor(
-                        genre
-                      )}`}
+                {availableGenres.map(
+                  (genre) => (
+                    <label
+                      key={genre}
+                      className={`theme-primary-text flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 transition hover:bg-[var(--surface-hover)] ${
+                        selectedGenres.includes(
+                          genre
+                        )
+                          ? 'border-[var(--accent)]'
+                          : 'border-transparent'
+                      }`}
                     >
-                      {getGenreLabel(genre, language)}
-                    </span>
-                  </label>
-                ))}
+                      <input
+                        type="checkbox"
+                        checked={selectedGenres.includes(
+                          genre
+                        )}
+                        onChange={() =>
+                          toggleGenre(
+                            genre
+                          )
+                        }
+                      />
+
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs ${getGenreColor(
+                          genre
+                        )}`}
+                      >
+                        {getGenreLabel(
+                          genre,
+                          language
+                        )}
+                      </span>
+                    </label>
+                  )
+                )}
               </div>
             </div>
           )}
 
           {/* TIERS PANEL */}
-          {activePanel === 'tiers' && (
+          {activePanel ===
+            'tiers' && (
             <div>
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="theme-primary-text text-lg font-semibold">
-                  {t('compatibilityTiers')}
+                  {t(
+                    'compatibilityTiers'
+                  )}
                 </h3>
 
                 <button
                   type="button"
-                  onClick={() => setActivePanel(null)}
+                  onClick={() =>
+                    setActivePanel(
+                      null
+                    )
+                  }
                   className="theme-secondary-text rounded px-2 py-1 text-sm hover:bg-[var(--surface-hover)]"
                 >
                   {t('close')}
@@ -460,49 +770,71 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                {allTiers.map((tier) => (
-                  <label
-                    key={tier}
-                    className={`theme-primary-text flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 transition hover:bg-[var(--surface-hover)] ${
-                      selectedTiers.includes(tier)
-                        ? 'border-[var(--accent)]'
-                        : 'border-transparent'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedTiers.includes(tier)}
-                      onChange={() => toggleTier(tier)}
-                    />
-
-                    <span
-                      className={`rounded px-2 py-1 text-xs font-bold ${tierColors[tier]}`}
+                {allTiers.map(
+                  (tier) => (
+                    <label
+                      key={tier}
+                      className={`theme-primary-text flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 transition hover:bg-[var(--surface-hover)] ${
+                        selectedTiers.includes(
+                          tier
+                        )
+                          ? 'border-[var(--accent)]'
+                          : 'border-transparent'
+                      }`}
                     >
-                      {getTierLabel(tier, t)}
-                    </span>
-                  </label>
-                ))}
+                      <input
+                        type="checkbox"
+                        checked={selectedTiers.includes(
+                          tier
+                        )}
+                        onChange={() =>
+                          toggleTier(
+                            tier
+                          )
+                        }
+                      />
+
+                      <span
+                        className={`rounded px-2 py-1 text-xs font-bold ${tierColors[tier]}`}
+                      >
+                        {getTierLabel(
+                          tier,
+                          t
+                        )}
+                      </span>
+                    </label>
+                  )
+                )}
               </div>
             </div>
           )}
 
           {/* ORDERING PANEL */}
-          {activePanel === 'ordering' && (
+          {activePanel ===
+            'ordering' && (
             <div>
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <h3 className="theme-primary-text text-lg font-semibold">
-                    {t('ordering')}
+                    {t(
+                      'ordering'
+                    )}
                   </h3>
 
                   <p className="theme-secondary-text mt-1 text-sm">
-                    {t('orderingHint')}
+                    {t(
+                      'orderingHint'
+                    )}
                   </p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setActivePanel(null)}
+                  onClick={() =>
+                    setActivePanel(
+                      null
+                    )
+                  }
                   className="theme-secondary-text rounded px-2 py-1 text-sm hover:bg-[var(--surface-hover)]"
                 >
                   {t('close')}
@@ -520,9 +852,17 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
                     <input
                       type="radio"
                       name="nameSort"
-                      checked={nameSort === 'az'}
-                      onChange={() => setNameSort('az')}
+                      checked={
+                        nameSort ===
+                        'az'
+                      }
+                      onChange={() =>
+                        setNameSort(
+                          'az'
+                        )
+                      }
                     />
+
                     {t('nameAsc')}
                   </label>
 
@@ -530,19 +870,33 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
                     <input
                       type="radio"
                       name="nameSort"
-                      checked={nameSort === 'za'}
-                      onChange={() => setNameSort('za')}
+                      checked={
+                        nameSort ===
+                        'za'
+                      }
+                      onChange={() =>
+                        setNameSort(
+                          'za'
+                        )
+                      }
                     />
+
                     {t('nameDesc')}
                   </label>
 
                   {nameSort && (
                     <button
                       type="button"
-                      onClick={() => setNameSort(null)}
+                      onClick={() =>
+                        setNameSort(
+                          null
+                        )
+                      }
                       className="theme-secondary-text mt-4 text-xs underline"
                     >
-                      {t('clearNameOrdering')}
+                      {t(
+                        'clearNameOrdering'
+                      )}
                     </button>
                   )}
                 </div>
@@ -550,36 +904,64 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
                 {/* STEAM APP ID */}
                 <div className="rounded-lg border p-4">
                   <p className="theme-primary-text mb-3 font-semibold">
-                    {t('steamAppId')}
+                    {t(
+                      'steamAppId'
+                    )}
                   </p>
 
                   <label className="theme-primary-text mb-3 flex cursor-pointer items-center gap-2">
                     <input
                       type="radio"
                       name="steamSort"
-                      checked={steamSort === 'steamAsc'}
-                      onChange={() => setSteamSort('steamAsc')}
+                      checked={
+                        steamSort ===
+                        'steamAsc'
+                      }
+                      onChange={() =>
+                        setSteamSort(
+                          'steamAsc'
+                        )
+                      }
                     />
-                    {t('steamAsc')}
+
+                    {t(
+                      'steamAsc'
+                    )}
                   </label>
 
                   <label className="theme-primary-text flex cursor-pointer items-center gap-2">
                     <input
                       type="radio"
                       name="steamSort"
-                      checked={steamSort === 'steamDesc'}
-                      onChange={() => setSteamSort('steamDesc')}
+                      checked={
+                        steamSort ===
+                        'steamDesc'
+                      }
+                      onChange={() =>
+                        setSteamSort(
+                          'steamDesc'
+                        )
+                      }
                     />
-                    {t('steamDesc')}
+
+                    {t(
+                      'steamDesc'
+                    )}
                   </label>
 
                   {steamSort && (
                     <button
                       type="button"
-                      onClick={() => setSteamSort(null)}
+                      onClick={() =>
+                        setSteamSort(
+                          null
+                        )
+                      }
                       className="theme-secondary-text mt-4 text-xs underline"
                     >
-                      {t('clearSteamOrdering')}
+                      {t(
+                        'clearSteamOrdering'
+                      )}
                     </button>
                   )}
                 </div>
@@ -587,36 +969,64 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
                 {/* COMPATIBILITY */}
                 <div className="rounded-lg border p-4">
                   <p className="theme-primary-text mb-3 font-semibold">
-                    {t('compatibility')}
+                    {t(
+                      'compatibility'
+                    )}
                   </p>
 
                   <label className="theme-primary-text mb-3 flex cursor-pointer items-center gap-2">
                     <input
                       type="radio"
                       name="tierSort"
-                      checked={tierSort === 'tierBest'}
-                      onChange={() => setTierSort('tierBest')}
+                      checked={
+                        tierSort ===
+                        'tierBest'
+                      }
+                      onChange={() =>
+                        setTierSort(
+                          'tierBest'
+                        )
+                      }
                     />
-                    {t('tierBest')}
+
+                    {t(
+                      'tierBest'
+                    )}
                   </label>
 
                   <label className="theme-primary-text flex cursor-pointer items-center gap-2">
                     <input
                       type="radio"
                       name="tierSort"
-                      checked={tierSort === 'tierWorst'}
-                      onChange={() => setTierSort('tierWorst')}
+                      checked={
+                        tierSort ===
+                        'tierWorst'
+                      }
+                      onChange={() =>
+                        setTierSort(
+                          'tierWorst'
+                        )
+                      }
                     />
-                    {t('tierWorst')}
+
+                    {t(
+                      'tierWorst'
+                    )}
                   </label>
 
                   {tierSort && (
                     <button
                       type="button"
-                      onClick={() => setTierSort(null)}
+                      onClick={() =>
+                        setTierSort(
+                          null
+                        )
+                      }
                       className="theme-secondary-text mt-4 text-xs underline"
                     >
-                      {t('clearTierOrdering')}
+                      {t(
+                        'clearTierOrdering'
+                      )}
                     </button>
                   )}
                 </div>
@@ -627,31 +1037,54 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
       )}
 
       {/* ACTIVE FILTER CHIPS */}
-      {(selectedGenres.length > 0 || selectedTiers.length > 0) && (
+      {(selectedGenres.length >
+        0 ||
+        selectedTiers.length >
+          0) && (
         <div className="mb-4 flex flex-wrap gap-2">
-          {selectedGenres.map((genre) => (
-            <button
-              key={genre}
-              type="button"
-              onClick={() => toggleGenre(genre)}
-              className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
-                genre
-              )}`}
-            >
-              {getGenreLabel(genre, language)} ×
-            </button>
-          ))}
+          {selectedGenres.map(
+            (genre) => (
+              <button
+                key={genre}
+                type="button"
+                onClick={() =>
+                  toggleGenre(
+                    genre
+                  )
+                }
+                className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
+                  genre
+                )}`}
+              >
+                {getGenreLabel(
+                  genre,
+                  language
+                )}{' '}
+                ×
+              </button>
+            )
+          )}
 
-          {selectedTiers.map((tier) => (
-            <button
-              key={tier}
-              type="button"
-              onClick={() => toggleTier(tier)}
-              className={`rounded-full px-3 py-1 text-xs font-bold ${tierColors[tier]}`}
-            >
-              {getTierLabel(tier, t)} ×
-            </button>
-          ))}
+          {selectedTiers.map(
+            (tier) => (
+              <button
+                key={tier}
+                type="button"
+                onClick={() =>
+                  toggleTier(
+                    tier
+                  )
+                }
+                className={`rounded-full px-3 py-1 text-xs font-bold ${tierColors[tier]}`}
+              >
+                {getTierLabel(
+                  tier,
+                  t
+                )}{' '}
+                ×
+              </button>
+            )
+          )}
         </div>
       )}
 
@@ -670,70 +1103,100 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
             : 'flex flex-col gap-4'
         }
       >
-        {paginatedGames.map((game) => (
-          <Link
-            key={game.id}
-            href={`/games/${game.steamAppid}`}
-            className={`theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)] ${
-              layout === 'list' ? 'flex flex-col sm:flex-row' : 'flex flex-col'
-            }`}
-          >
-            <img
-              src={
-                game.headerUrl ||
-                `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`
-              }
-              alt={game.name}
-              className={
-                layout === 'grid'
-                  ? 'aspect-[460/215] w-full object-cover'
-                  : 'aspect-[460/215] w-full object-cover sm:w-64'
-              }
-              loading="lazy"
-            />
+        {paginatedGames.map(
+          (game) => (
+            <Link
+              key={game.id}
+              href={`/games/${game.steamAppid}`}
+              className={`theme-surface overflow-hidden rounded-lg border transition-colors hover:bg-[var(--surface-hover)] ${
+                layout ===
+                'list'
+                  ? 'flex flex-col sm:flex-row'
+                  : 'flex flex-col'
+              }`}
+            >
+              <GameBanner
+                game={game}
+                layout={layout}
+              />
 
-            <div className="flex flex-1 items-start justify-between p-4">
-              <div className="min-w-0">
-                <h2 className="theme-primary-text text-lg font-semibold">
-                  {game.name}
-                </h2>
+              <div className="flex flex-1 items-start justify-between p-4">
+                <div className="min-w-0">
+                  <h2 className="theme-primary-text text-lg font-semibold">
+                    {game.name}
+                  </h2>
 
-                <p className="theme-secondary-text mt-1 text-sm">
-                  {t('steamAppId')}: {game.steamAppid}
-                </p>
+                  <p className="theme-secondary-text mt-1 text-sm">
+                    {t(
+                      'steamAppId'
+                    )}
+                    :{' '}
+                    {
+                      game.steamAppid
+                    }
+                  </p>
 
-                {game.genres?.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {game.genres.map((genre) => (
-                      <span
-                        key={genre}
-                        className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
+                  {game.genres
+                    ?.length >
+                    0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {game.genres.map(
+                        (
                           genre
-                        )}`}
-                      >
-                        {getGenreLabel(genre, language)}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+                        ) => (
+                          <span
+                            key={
+                              genre
+                            }
+                            className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
+                              genre
+                            )}`}
+                          >
+                            {getGenreLabel(
+                              genre,
+                              language
+                            )}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
 
-              <div
-                className={`ml-3 shrink-0 rounded px-2 py-1 text-xs font-bold ${
-                  game.tier ? tierColors[game.tier] : tierColors.Pending
-                }`}
-              >
-                {getTierLabel(game.tier || 'Pending', t)}
+                <div
+                  className={`ml-3 shrink-0 rounded px-2 py-1 text-xs font-bold ${
+                    game.tier
+                      ? tierColors[
+                          game
+                            .tier
+                        ]
+                      : tierColors.Pending
+                  }`}
+                >
+                  {getTierLabel(
+                    game.tier ||
+                      'Pending',
+                    t
+                  )}
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
-
-        {sortedGames.length === 0 && !error && (
-          <div className="theme-surface theme-secondary-text rounded-lg border p-4 text-center">
-            {hasFilters ? t('noGamesMatchFilters') : t('noGames')}
-          </div>
+            </Link>
+          )
         )}
+
+        {sortedGames.length ===
+          0 &&
+          !error && (
+            <div className="theme-surface theme-secondary-text rounded-lg border p-4 text-center">
+              {hasFilters
+                ? t(
+                    'noGamesMatchFilters'
+                  )
+                : t(
+                    'noGames'
+                  )}
+            </div>
+          )}
       </div>
 
       {/* PAGINATION */}
@@ -741,8 +1204,15 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <button
             type="button"
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
+            onClick={() =>
+              goToPage(
+                currentPage -
+                  1
+              )
+            }
+            disabled={
+              currentPage === 1
+            }
             className="theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {t('previous')}
@@ -750,16 +1220,30 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
 
           <div className="flex flex-wrap items-center justify-center gap-2">
             {Array.from(
-              { length: totalPages },
-              (_, index) => index + 1
+              {
+                length:
+                  totalPages,
+              },
+              (_, index) =>
+                index + 1
             ).map((page) => (
               <button
                 key={page}
                 type="button"
-                onClick={() => goToPage(page)}
-                aria-current={currentPage === page ? 'page' : undefined}
+                onClick={() =>
+                  goToPage(
+                    page
+                  )
+                }
+                aria-current={
+                  currentPage ===
+                  page
+                    ? 'page'
+                    : undefined
+                }
                 className={
-                  currentPage === page
+                  currentPage ===
+                  page
                     ? 'rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white'
                     : 'theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)]'
                 }
@@ -771,18 +1255,186 @@ export default function GameSearch({ initialGames }: GameSearchProps) {
 
           <button
             type="button"
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
+            onClick={() =>
+              goToPage(
+                currentPage +
+                  1
+              )
+            }
+            disabled={
+              currentPage ===
+              totalPages
+            }
             className="theme-surface theme-border theme-primary-text rounded-lg border px-4 py-2 text-sm font-semibold transition-colors hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {t('next')}
           </button>
 
           <span className="theme-page-text ml-2 text-sm">
-            {t('pageOf', { current: currentPage, total: totalPages })}
+            {t('pageOf', {
+              current:
+                currentPage,
+              total:
+                totalPages,
+            })}
           </span>
         </div>
       )}
     </div>
+  );
+}
+
+function GameBanner({
+  game,
+  layout,
+}: {
+  game: GameDto;
+  layout: LayoutMode;
+}) {
+  const steamHeaderUrl =
+    `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`;
+
+  const imageSources =
+    useMemo(() => {
+      const candidates = [
+        game.headerUrl?.trim(),
+        steamHeaderUrl,
+      ].filter(
+        (
+          source
+        ): source is string =>
+          Boolean(source)
+      );
+
+      return Array.from(
+        new Set(candidates)
+      );
+    }, [
+      game.headerUrl,
+      steamHeaderUrl,
+    ]);
+
+  const [
+    sourceIndex,
+    setSourceIndex,
+  ] = useState(0);
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [
+    game.id,
+    game.headerUrl,
+    game.steamAppid,
+  ]);
+
+  const currentSource =
+    imageSources[sourceIndex];
+
+  const imageClassName =
+    layout === 'grid'
+      ? 'aspect-[460/215] w-full object-cover'
+      : 'aspect-[460/215] w-full object-cover sm:w-64';
+
+  const fallbackClassName =
+    layout === 'grid'
+      ? 'aspect-[460/215] w-full'
+      : 'aspect-[460/215] w-full sm:w-64';
+
+  if (currentSource) {
+    return (
+      <img
+        src={currentSource}
+        alt=""
+        className={
+          imageClassName
+        }
+        loading="lazy"
+        onError={() =>
+          setSourceIndex(
+            (current) =>
+              current + 1
+          )
+        }
+      />
+    );
+  }
+
+  const monogram =
+    getGameMonogram(
+      game.name
+    );
+
+  return (
+    <div
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-black ${fallbackClassName}`}
+      aria-label={`${game.name} artwork unavailable`}
+    >
+      {/* Decorative background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.10),transparent_35%),radial-gradient(circle_at_75%_70%,rgba(255,255,255,0.05),transparent_40%)]" />
+
+      {/* Large faded monogram */}
+      <span
+        aria-hidden="true"
+        className="absolute select-none text-7xl font-black tracking-widest text-white/[0.06] sm:text-8xl"
+      >
+        {monogram}
+      </span>
+
+      {/* Foreground fallback */}
+      <div className="relative z-10 flex max-w-[85%] flex-col items-center text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/5 shadow-lg backdrop-blur-sm">
+          <span className="text-xl font-black tracking-wider text-white/80">
+            {monogram}
+          </span>
+        </div>
+
+        <p className="mt-3 line-clamp-2 text-sm font-semibold text-white/90 drop-shadow-lg">
+          {game.name}
+        </p>
+
+        <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-white/45">
+          Artwork unavailable
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function getGameMonogram(
+  gameName: string
+): string {
+  const words = gameName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length === 0) {
+    return 'GAME';
+  }
+
+  const numericPart =
+    [...words]
+      .reverse()
+      .find((word) =>
+        /^\d+$/.test(word)
+      ) ?? '';
+
+  const textWords =
+    words.filter(
+      (word) =>
+        !/^\d+$/.test(word)
+    );
+
+  const letters = textWords
+    .slice(0, 2)
+    .map((word) =>
+      word.charAt(0)
+    )
+    .join('')
+    .toUpperCase();
+
+  return (
+    `${letters}${numericPart}` ||
+    'GAME'
   );
 }
