@@ -31,25 +31,31 @@ export default function Header() {
   return (
     <header className="theme-header theme-border border-b p-4 transition-colors duration-200">
       <div className="flex w-full items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 ml-4">
+        <Link
+          href="/"
+          className="ml-4 flex items-center gap-2"
+        >
           <img
             src="/logo_darkmode.png"
             alt=""
             width={40}
             height={40}
-            className="logo-on-dark w-10 h-10 shrink-0 [image-rendering:pixelated] mr-1"
+            className="logo-on-dark mr-1 h-10 w-10 shrink-0 [image-rendering:pixelated]"
           />
+
           <img
             src="/logo_lightmode.png"
             alt=""
             width={40}
             height={40}
-            className="logo-on-light w-10 h-10 shrink-0 [image-rendering:pixelated] mr-1"
+            className="logo-on-light mr-1 h-10 w-10 shrink-0 [image-rendering:pixelated]"
           />
+
           <span className="theme-header-link text-xl font-bold transition-opacity hover:opacity-80">
             ProtonDB Clone
           </span>
         </Link>
+
         <nav className="flex items-center gap-3">
           <Link
             href="/"
@@ -58,34 +64,68 @@ export default function Header() {
             Home
           </Link>
 
+          {/* Dashboard */}
+          <Link
+            href="/dashboard"
+            className="theme-header-link px-4 py-2"
+          >
+            Dashboard
+          </Link>
+
           {/* Language selector */}
           <select
             value={language}
             onChange={(e) =>
-              setLanguage(e.target.value as 'en' | 'es')
+              setLanguage(
+                e.target.value as 'en' | 'es'
+              )
             }
             className="theme-input cursor-pointer rounded border px-3 py-2 transition-colors"
             aria-label="Select language"
           >
-            <option value="en">English</option>
-            <option value="es">Español</option>
+            <option value="en">
+              English
+            </option>
+
+            <option value="es">
+              Español
+            </option>
           </select>
 
           {/* Theme selector */}
           <select
             value={theme}
             onChange={(e) =>
-              setTheme(e.target.value as Theme)
+              setTheme(
+                e.target.value as Theme
+              )
             }
             className="theme-input cursor-pointer rounded border px-3 py-2 transition-colors"
             aria-label="Select theme"
           >
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-            <option value="scenic">Scenic</option>
-            <option value="witcher">Witcher</option>
-            <option value="rdr2">RDR2</option>
-            <option value="gow">God of War</option>
+            <option value="dark">
+              Dark
+            </option>
+
+            <option value="light">
+              Light
+            </option>
+
+            <option value="scenic">
+              Scenic
+            </option>
+
+            <option value="witcher">
+              Witcher
+            </option>
+
+            <option value="rdr2">
+              RDR2
+            </option>
+
+            <option value="gow">
+              God of War
+            </option>
           </select>
 
           {user ? (

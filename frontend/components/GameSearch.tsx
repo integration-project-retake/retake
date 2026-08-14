@@ -509,13 +509,18 @@ export default function GameSearch({
   }, [currentPage, totalPages]);
 
   const goToPage = (page: number) => {
-    if (page < 1 || page > totalPages) {
-      return;
-    }
+  if (page < 1 || page > totalPages) {
+    return;
+  }
 
-    setActivePanel(null);
-    setCurrentPage(page);
-  };
+  setActivePanel(null);
+  setCurrentPage(page);
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+};
 
   const handleLayoutChange = (
     newLayout: LayoutMode
