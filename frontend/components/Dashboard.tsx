@@ -519,7 +519,7 @@ function GenreBarChart({
             height: plotHeight,
           }}
         >
-          <div className="theme-secondary-text absolute -left-5 top-[55%] -translate-y-1/2 -rotate-90 whitespace-nowrap text-xs font-medium">
+          <div className="theme-secondary-text absolute -left-10 top-[55%] -translate-y-1/2 -rotate-90 whitespace-nowrap text-xs font-medium">
             Number of games
           </div>
 
