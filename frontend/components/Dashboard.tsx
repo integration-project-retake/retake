@@ -28,18 +28,12 @@ const tierColors: Record<string, string> = {
 };
 
 const tierBadgeColors: Record<string, string> = {
-  Platinum:
-    'bg-blue-200 text-blue-900',
-  Gold:
-    'bg-yellow-400 text-yellow-900',
-  Silver:
-    'bg-gray-300 text-gray-900',
-  Bronze:
-    'bg-orange-500 text-orange-950',
-  Borked:
-    'bg-red-600 text-white',
-  Pending:
-    'bg-gray-600 text-gray-200',
+  Platinum: 'bg-blue-200 text-blue-900',
+  Gold: 'bg-yellow-400 text-yellow-900',
+  Silver: 'bg-gray-300 text-gray-900',
+  Bronze: 'bg-orange-500 text-orange-950',
+  Borked: 'bg-red-600 text-white',
+  Pending: 'bg-gray-600 text-gray-200',
 };
 
 const wheelColors = {
@@ -56,13 +50,6 @@ export default function Dashboard({
 }: DashboardProps) {
   const [selectedGenre, setSelectedGenre] =
     useState('Action');
-
-  const largestTier = Math.max(
-    ...stats.tierDistribution.map(
-      (tier) => tier.count
-    ),
-    1
-  );
 
   const availableGenres = useMemo(
     () =>
@@ -150,66 +137,14 @@ export default function Dashboard({
           </h2>
 
           <p className="theme-secondary-text mt-1 text-sm">
-            Overall compatibility tiers
-            across the game catalogue.
+            Overall compatibility tier
+            distribution across the game catalogue.
           </p>
 
-          <div className="mt-6 space-y-5">
-            {stats.tierDistribution.map(
-              (tier) => {
-                const percentage =
-                  stats.totalGames === 0
-                    ? 0
-                    : (tier.count /
-                        stats.totalGames) *
-                      100;
-
-                return (
-                  <div key={tier.tier}>
-                    <div className="mb-2 flex items-center justify-between gap-4">
-                      <span
-                        className={`rounded px-2 py-1 text-xs font-bold ${
-                          tierBadgeColors[
-                            tier.tier
-                          ] ??
-                          tierBadgeColors.Pending
-                        }`}
-                      >
-                        {tier.tier}
-                      </span>
-
-                      <span className="theme-secondary-text text-sm">
-                        {tier.count}{' '}
-                        (
-                        {percentage.toFixed(
-                          1
-                        )}
-                        %)
-                      </span>
-                    </div>
-
-                    <div className="h-4 overflow-hidden rounded-full bg-black/20">
-                      <div
-                        className={`h-full rounded-full ${
-                          tierColors[
-                            tier.tier
-                          ] ??
-                          tierColors.Pending
-                        }`}
-                        style={{
-                          width: `${
-                            (tier.count /
-                              largestTier) *
-                            100
-                          }%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              }
-            )}
-          </div>
+          <CompatibilityOverview
+            tiers={stats.tierDistribution}
+            totalGames={stats.totalGames}
+          />
         </section>
 
         {/* COMPATIBILITY BY GENRE */}
@@ -392,6 +327,133 @@ export default function Dashboard({
   );
 }
 
+/* =========================================================
+   COMPATIBILITY OVERVIEW
+   ========================================================= */
+
+function CompatibilityOverview({
+  tiers,
+  totalGames,
+}: {
+  tiers: DashboardStatsDto['tierDistribution'];
+  totalGames: number;
+}) {
+  const orderedTiers = [
+    'Platinum',
+    'Gold',
+    'Silver',
+    'Bronze',
+    'Borked',
+    'Pending',
+  ];
+
+  const sortedTiers = orderedTiers.map(
+    (tierName) => {
+      const existing = tiers.find(
+        (tier) => tier.tier === tierName
+      );
+
+      return {
+        tier: tierName,
+        count: existing?.count ?? 0,
+      };
+    }
+  );
+
+  return (
+    <div className="mt-8">
+      {/* SINGLE STACKED DISTRIBUTION BAR */}
+      <div className="overflow-hidden rounded-full border border-white/10 bg-black/20">
+        <div className="flex h-8 w-full">
+          {sortedTiers.map((tier) => {
+            const percentage =
+              totalGames === 0
+                ? 0
+                : (tier.count /
+                    totalGames) *
+                  100;
+
+            if (percentage === 0) {
+              return null;
+            }
+
+            return (
+              <div
+                key={tier.tier}
+                className={`${tierColors[tier.tier]} relative h-full transition-all duration-300 hover:brightness-110`}
+                style={{
+                  width: `${percentage}%`,
+                }}
+                title={`${tier.tier}: ${tier.count} games (${percentage.toFixed(
+                  1
+                )}%)`}
+              >
+                {percentage >= 8 && (
+                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-black/75">
+                    {percentage.toFixed(1)}%
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* TIER CARDS */}
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {sortedTiers.map((tier) => {
+          const percentage =
+            totalGames === 0
+              ? 0
+              : (tier.count /
+                  totalGames) *
+                100;
+
+          return (
+            <div
+              key={tier.tier}
+              className="theme-surface-secondary rounded-xl border p-4 text-center transition-transform duration-200 hover:-translate-y-1"
+            >
+              <div className="flex justify-center">
+                <span
+                  className={`rounded-md px-2.5 py-1 text-xs font-bold ${
+                    tierBadgeColors[
+                      tier.tier
+                    ] ??
+                    tierBadgeColors.Pending
+                  }`}
+                >
+                  {tier.tier}
+                </span>
+              </div>
+
+              <p className="theme-primary-text mt-4 text-3xl font-bold">
+                {tier.count}
+              </p>
+
+              <p className="theme-secondary-text mt-1 text-sm">
+                {tier.count === 1
+                  ? 'game'
+                  : 'games'}
+              </p>
+
+              <div className="mt-3 border-t border-white/10 pt-3">
+                <span className="theme-secondary-text text-sm font-semibold">
+                  {percentage.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   GAMES BY GENRE BAR CHART
+   ========================================================= */
+
 function GenreBarChart({
   genres,
 }: {
@@ -430,15 +492,6 @@ function GenreBarChart({
       index * stepSize
   );
 
-  /*
-   * The graph has two deliberately separate areas:
-   *
-   * plotHeight = complete plotting section.
-   * topSpace   = room reserved for the number above a bar.
-   * barHeight  = actual Y-axis / bar area.
-   *
-   * A bar can therefore NEVER cross the X-axis.
-   */
   const plotHeight = 350;
   const topSpace = 34;
   const barAreaHeight =
@@ -458,7 +511,6 @@ function GenreBarChart({
             Number of games
           </div>
 
-          {/* Vertical Y-axis */}
           <div
             className="absolute bottom-0 right-0 border-r border-white/30"
             style={{
@@ -494,14 +546,13 @@ function GenreBarChart({
 
         {/* GRAPH + LABELS */}
         <div className="min-w-0 flex-1">
-          {/* PLOT AREA */}
           <div
             className="relative w-full"
             style={{
               height: plotHeight,
             }}
           >
-            {/* HORIZONTAL GRID LINES */}
+            {/* GRID */}
             {ticks.map(
               (tick, index) => {
                 const y =
@@ -523,15 +574,7 @@ function GenreBarChart({
               }
             )}
 
-            {/*
-              Every genre has ONE column.
-              The value and bar are positioned
-              absolutely inside that column.
-
-              Therefore:
-              value -> bar -> baseline
-              can never become misaligned.
-            */}
+            {/* BARS */}
             <div
               className="absolute inset-x-0 bottom-0 grid px-2"
               style={{
@@ -552,7 +595,6 @@ function GenreBarChart({
                     key={genre.genre}
                     className="relative min-w-0"
                   >
-                    {/* VALUE */}
                     <span
                       className="theme-primary-text absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold sm:text-sm"
                       style={{
@@ -564,14 +606,14 @@ function GenreBarChart({
                       {genre.count}
                     </span>
 
-                    {/* BAR */}
                     <div
-                      className={`absolute bottom-0 left-1/2 w-[55%] max-w-14 -translate-x-1/2 rounded-t-md transition-all duration-300 hover:brightness-110 ${getGenreColor(genre.genre)}`}
+                      className={`absolute bottom-0 left-1/2 w-[55%] max-w-14 -translate-x-1/2 rounded-t-md transition-all duration-300 hover:brightness-110 ${getGenreColor(
+                        genre.genre
+                      )}`}
                       style={{
                         height: `${barHeight}px`,
                         minHeight:
-                          genre.count >
-                          0
+                          genre.count > 0
                             ? '4px'
                             : '0px',
                       }}
@@ -583,10 +625,10 @@ function GenreBarChart({
             </div>
           </div>
 
-          {/* X-AXIS BASELINE */}
+          {/* BASELINE */}
           <div className="border-t border-white/30" />
 
-          {/* GENRE NAMES */}
+          {/* GENRE LABELS */}
           <div
             className="grid px-2"
             style={{
@@ -608,7 +650,6 @@ function GenreBarChart({
             ))}
           </div>
 
-          {/* X AXIS TITLE */}
           <div className="theme-secondary-text mt-7 text-center text-xs font-medium">
             Genre
           </div>
@@ -617,6 +658,10 @@ function GenreBarChart({
     </div>
   );
 }
+
+/* =========================================================
+   GENRE COMPATIBILITY WHEEL
+   ========================================================= */
 
 function GenreCompatibilityWheel({
   genre,
@@ -831,10 +876,7 @@ function TierDetail({
         </div>
 
         <span className="theme-secondary-text text-sm">
-          {percentage.toFixed(
-            1
-          )}
-          %
+          {percentage.toFixed(1)}%
         </span>
       </div>
 
