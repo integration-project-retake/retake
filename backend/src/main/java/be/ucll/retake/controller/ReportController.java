@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import be.ucll.retake.dto.ReportDto;
+import be.ucll.retake.exception.UnauthorizedException;
 import be.ucll.retake.model.Report;
 import be.ucll.retake.model.Tier;
 import be.ucll.retake.model.User;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/reports")
@@ -101,131 +101,93 @@ public class ReportController {
         return dtos;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReportDto createReport(
-            @RequestParam Long gameId,
-            @RequestParam Tier tier,
-            @RequestParam String distribution,
-            @RequestParam String comment,
-            @RequestParam String protonVersion,
-            HttpServletRequest request
-    ) {
-        User user = getAuthenticatedUser(
-                request,
-                "You must be logged in to create a report"
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public ReportDto createReport(
+                @RequestParam Long userId,
+                @RequestParam Long gameId,
+                @RequestParam Tier tier,
+                @RequestParam String distribution,
+                @RequestParam String comment,
+                @RequestParam String protonVersion
+        ) {
+        return ReportDto.from(
+                reportService.createReport(
+                        userId,
+                        gameId,
+                        tier,
+                        distribution,
+                        comment,
+                        protonVersion
+                )
         );
-
-        try {
-            return ReportDto.from(
-                    reportService.createReport(
-                            user.getId(),
-                            gameId,
-                            tier,
-                            distribution,
-                            comment,
-                            protonVersion
-                    )
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    e.getMessage()
-            );
         }
-    }
 
-    @PutMapping("/{id}")
-    public ReportDto updateReport(
-            @PathVariable Long id,
-            @RequestParam Tier tier,
-            @RequestParam String distribution,
-            @RequestParam String comment,
-            @RequestParam String protonVersion,
-            HttpServletRequest request
-    ) {
+        @PutMapping("/{id}")
+        public ReportDto updateReport(
+                @PathVariable Long id,
+                @RequestParam Tier tier,
+                @RequestParam String distribution,
+                @RequestParam String comment,
+                @RequestParam String protonVersion,
+                HttpServletRequest request
+        ) {
         User user = getAuthenticatedUser(
                 request,
                 "You must be logged in to edit a report"
         );
 
-        try {
-            return ReportDto.from(
-                    reportService.updateReport(
-                            id,
-                            user.getId(),
-                            tier,
-                            distribution,
-                            comment,
-                            protonVersion
-                    )
-            );
-        } catch (SecurityException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    e.getMessage()
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    e.getMessage()
-            );
+        return ReportDto.from(
+                reportService.updateReport(
+                        id,
+                        user.getId(),
+                        tier,
+                        distribution,
+                        comment,
+                        protonVersion
+                )
+        );
         }
-    }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReport(
-            @PathVariable Long id,
-            HttpServletRequest request
-    ) {
+        @DeleteMapping("/{id}")
+        @ResponseStatus(HttpStatus.NO_CONTENT)
+        public void deleteReport(
+                @PathVariable Long id,
+                HttpServletRequest request
+        ) {
         User user = getAuthenticatedUser(
                 request,
                 "You must be logged in to delete a report"
         );
 
-        try {
-            reportService.deleteReport(
-                    id,
-                    user.getId()
-            );
-        } catch (SecurityException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    e.getMessage()
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    e.getMessage()
-            );
+        reportService.deleteReport(
+                id,
+                user.getId()
+        );
         }
-    }
 
-    private User getAuthenticatedUser(
-            HttpServletRequest request,
-            String errorMessage
-    ) {
+        private User getAuthenticatedUser(
+                HttpServletRequest request,
+                String errorMessage
+        ) {
         HttpSession session =
                 request.getSession(false);
 
         if (session == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    errorMessage
-            );
+                throw new UnauthorizedException(
+                        errorMessage
+                );
         }
 
-        Object sessionUser =
-                session.getAttribute("user");
+        User user =
+                (User) session.getAttribute("user");
 
-        if (!(sessionUser instanceof User user)) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    errorMessage
-            );
+        if (user == null) {
+                throw new UnauthorizedException(
+                        errorMessage
+                );
         }
 
         return user;
-    }
+        }
 }
