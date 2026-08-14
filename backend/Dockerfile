@@ -4,7 +4,9 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
+
 FROM eclipse-temurin:21-jre-alpine
+RUN apk update && apk upgrade --no-cache
 WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 COPY --from=build /app/target/*.jar app.jar
