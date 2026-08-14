@@ -65,7 +65,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "project-frontend:test"
-          format: "json"
+          format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
           ignore-unfixed: false
@@ -79,7 +79,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "project-backend:test"
-          format: "json"
+          format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
           ignore-unfixed: false
