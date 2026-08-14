@@ -221,6 +221,40 @@ const en = {
   noReportsDescription:
     'No reports have been submitted for this game yet. Compatibility information will appear once users start contributing.',
   loginToContribute: 'Log in to contribute',
+
+
+  
+  // Dashboard
+  dashboard: 'Dashboard',
+  dashboardDescription:
+    'Compatibility and community statistics across ProtonDB Clone.',
+  users: 'Users',
+  gamesByGenre: 'Games by Genre',
+  gamesByGenreDescription:
+    'Number of catalogue games belonging to each genre.',
+  compatibilityOverview: 'Compatibility Overview',
+  compatibilityOverviewDescription:
+    'Overall compatibility tier distribution across the game catalogue.',
+  compatibilityByGenre: 'Compatibility by Genre',
+  compatibilityByGenreDescription:
+    'Select a genre to explore its compatibility distribution.',
+  mostReportedGames: 'Most Reported Games',
+  topContributors: 'Top Contributors',
+  reportsPerGame: 'Reports / Game',
+  numberOfGames: 'Number of games',
+  genre: 'Genre',
+  game: 'game',
+  gamePlural: 'games',
+  reportPlural: 'reports',
+  noGenreData: 'No genre compatibility data available.',
+  noReportsYet: 'No reports yet.',
+  noContributorsYet: 'No contributors yet.',
+  backToTop: 'Back to top',
+  loadingDashboard: 'Loading dashboard...',
+  dashboardLoadFailed: 'Failed to load dashboard.',
+  dashboardBackendHint:
+    'Make sure the backend is running and the /dashboard endpoint is available.',
+  noDashboardStats: 'No dashboard statistics available.',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -362,6 +396,38 @@ const es: Record<TranslationKey, string> = {
   noReportsDescription:
     'Todavía no se ha enviado ningún informe para este juego. La información de compatibilidad aparecerá cuando los usuarios comiencen a contribuir.',
   loginToContribute: 'Iniciar sesión para contribuir',
+
+  // Dashboard
+  dashboard: 'Panel',
+  dashboardDescription:
+    'Estadísticas de compatibilidad y comunidad de ProtonDB Clone.',
+  users: 'Usuarios',
+  gamesByGenre: 'Juegos por género',
+  gamesByGenreDescription:
+    'Número de juegos del catálogo pertenecientes a cada género.',
+  compatibilityOverview: 'Resumen de compatibilidad',
+  compatibilityOverviewDescription:
+    'Distribución general de los niveles de compatibilidad del catálogo.',
+  compatibilityByGenre: 'Compatibilidad por género',
+  compatibilityByGenreDescription:
+    'Selecciona un género para explorar su distribución de compatibilidad.',
+  mostReportedGames: 'Juegos con más informes',
+  topContributors: 'Principales colaboradores',
+  reportsPerGame: 'Informes / Juego',
+  numberOfGames: 'Número de juegos',
+  genre: 'Género',
+  game: 'juego',
+  gamePlural: 'juegos',
+  reportPlural: 'informes',
+  noGenreData: 'No hay datos de compatibilidad por género.',
+  noReportsYet: 'Aún no hay informes.',
+  noContributorsYet: 'Aún no hay colaboradores.',
+  backToTop: 'Volver arriba',
+  loadingDashboard: 'Cargando panel...',
+  dashboardLoadFailed: 'No se pudo cargar el panel.',
+  dashboardBackendHint:
+    'Asegúrate de que el backend esté funcionando y que el endpoint /dashboard esté disponible.',
+  noDashboardStats: 'No hay estadísticas disponibles.',
 };
 
 const nl: Record<TranslationKey, string> = {
@@ -501,6 +567,38 @@ const nl: Record<TranslationKey, string> = {
   noReportsDescription:
     'Er zijn nog geen rapporten ingediend voor dit spel. Compatibiliteitsinformatie verschijnt zodra gebruikers beginnen bij te dragen.',
   loginToContribute: 'Inloggen om bij te dragen',
+
+  // Dashboard
+  dashboard: 'Dashboard',
+  dashboardDescription:
+    'Compatibiliteits- en communitystatistieken van ProtonDB Clone.',
+  users: 'Gebruikers',
+  gamesByGenre: 'Games per genre',
+  gamesByGenreDescription:
+    'Aantal games in de catalogus per genre.',
+  compatibilityOverview: 'Compatibiliteitsoverzicht',
+  compatibilityOverviewDescription:
+    'Algemene verdeling van compatibiliteitsniveaus in de gamecatalogus.',
+  compatibilityByGenre: 'Compatibiliteit per genre',
+  compatibilityByGenreDescription:
+    'Selecteer een genre om de compatibiliteitsverdeling te bekijken.',
+  mostReportedGames: 'Games met de meeste rapporten',
+  topContributors: 'Topbijdragers',
+  reportsPerGame: 'Rapporten / Game',
+  numberOfGames: 'Aantal games',
+  genre: 'Genre',
+  game: 'game',
+  gamePlural: 'games',
+  reportPlural: 'rapporten',
+  noGenreData: 'Geen compatibiliteitsgegevens per genre beschikbaar.',
+  noReportsYet: 'Nog geen rapporten.',
+  noContributorsYet: 'Nog geen bijdragers.',
+  backToTop: 'Terug naar boven',
+  loadingDashboard: 'Dashboard laden...',
+  dashboardLoadFailed: 'Dashboard kon niet worden geladen.',
+  dashboardBackendHint:
+    'Controleer of de backend actief is en het /dashboard-endpoint beschikbaar is.',
+  noDashboardStats: 'Geen dashboardstatistieken beschikbaar.',
 };
 
 const de: Record<TranslationKey, string> = {
@@ -641,6 +739,39 @@ const de: Record<TranslationKey, string> = {
   noReportsDescription:
     'Für dieses Spiel wurden noch keine Berichte eingereicht. Kompatibilitätsinformationen erscheinen, sobald Benutzer beitragen.',
   loginToContribute: 'Zum Beitragen anmelden',
+
+
+  // Dashboard
+  dashboard: 'Dashboard',
+  dashboardDescription:
+    'Kompatibilitäts- und Community-Statistiken von ProtonDB Clone.',
+  users: 'Benutzer',
+  gamesByGenre: 'Spiele nach Genre',
+  gamesByGenreDescription:
+    'Anzahl der Katalogspiele pro Genre.',
+  compatibilityOverview: 'Kompatibilitätsübersicht',
+  compatibilityOverviewDescription:
+    'Gesamtverteilung der Kompatibilitätsstufen im Spielekatalog.',
+  compatibilityByGenre: 'Kompatibilität nach Genre',
+  compatibilityByGenreDescription:
+    'Wähle ein Genre aus, um dessen Kompatibilitätsverteilung anzuzeigen.',
+  mostReportedGames: 'Spiele mit den meisten Berichten',
+  topContributors: 'Top-Mitwirkende',
+  reportsPerGame: 'Berichte / Spiel',
+  numberOfGames: 'Anzahl der Spiele',
+  genre: 'Genre',
+  game: 'Spiel',
+  gamePlural: 'Spiele',
+  reportPlural: 'Berichte',
+  noGenreData: 'Keine Kompatibilitätsdaten für Genres verfügbar.',
+  noReportsYet: 'Noch keine Berichte.',
+  noContributorsYet: 'Noch keine Mitwirkenden.',
+  backToTop: 'Nach oben',
+  loadingDashboard: 'Dashboard wird geladen...',
+  dashboardLoadFailed: 'Dashboard konnte nicht geladen werden.',
+  dashboardBackendHint:
+    'Stelle sicher, dass das Backend läuft und der /dashboard-Endpunkt verfügbar ist.',
+  noDashboardStats: 'Keine Dashboard-Statistiken verfügbar.',
 };
 
 const fr: Record<TranslationKey, string> = {
@@ -780,6 +911,39 @@ const fr: Record<TranslationKey, string> = {
   noReportsDescription:
     'Aucun rapport n’a encore été envoyé pour ce jeu. Les informations de compatibilité apparaîtront dès que les utilisateurs commenceront à contribuer.',
   loginToContribute: 'Connectez-vous pour contribuer',
+
+
+  // Dashboard
+  dashboard: 'Tableau de bord',
+  dashboardDescription:
+    'Statistiques de compatibilité et de communauté de ProtonDB Clone.',
+  users: 'Utilisateurs',
+  gamesByGenre: 'Jeux par genre',
+  gamesByGenreDescription:
+    'Nombre de jeux du catalogue appartenant à chaque genre.',
+  compatibilityOverview: 'Aperçu de la compatibilité',
+  compatibilityOverviewDescription:
+    'Répartition globale des niveaux de compatibilité du catalogue de jeux.',
+  compatibilityByGenre: 'Compatibilité par genre',
+  compatibilityByGenreDescription:
+    'Sélectionnez un genre pour explorer sa répartition de compatibilité.',
+  mostReportedGames: 'Jeux avec le plus de rapports',
+  topContributors: 'Meilleurs contributeurs',
+  reportsPerGame: 'Rapports / Jeu',
+  numberOfGames: 'Nombre de jeux',
+  genre: 'Genre',
+  game: 'jeu',
+  gamePlural: 'jeux',
+  reportPlural: 'rapports',
+  noGenreData: 'Aucune donnée de compatibilité par genre disponible.',
+  noReportsYet: 'Aucun rapport pour le moment.',
+  noContributorsYet: 'Aucun contributeur pour le moment.',
+  backToTop: 'Retour en haut',
+  loadingDashboard: 'Chargement du tableau de bord...',
+  dashboardLoadFailed: 'Échec du chargement du tableau de bord.',
+  dashboardBackendHint:
+    'Assurez-vous que le backend fonctionne et que le endpoint /dashboard est disponible.',
+  noDashboardStats: 'Aucune statistique disponible.',
 };
 
 /*
@@ -920,6 +1084,38 @@ const zh: Record<TranslationKey, string> = {
   noReportsDescription:
     '这款游戏还没有收到任何报告。当用户开始贡献后，兼容性信息就会显示在这里。',
   loginToContribute: '登录以贡献报告',
+
+  // Dashboard
+  dashboard: '仪表板',
+  dashboardDescription:
+    'ProtonDB Clone 的兼容性和社区统计信息。',
+  users: '用户',
+  gamesByGenre: '按类型分类的游戏',
+  gamesByGenreDescription:
+    '目录中属于各个类型的游戏数量。',
+  compatibilityOverview: '兼容性概览',
+  compatibilityOverviewDescription:
+    '游戏目录中兼容性等级的总体分布。',
+  compatibilityByGenre: '按类型查看兼容性',
+  compatibilityByGenreDescription:
+    '选择一个游戏类型以查看其兼容性分布。',
+  mostReportedGames: '报告最多的游戏',
+  topContributors: '贡献最多的用户',
+  reportsPerGame: '报告 / 游戏',
+  numberOfGames: '游戏数量',
+  genre: '类型',
+  game: '个游戏',
+  gamePlural: '个游戏',
+  reportPlural: '份报告',
+  noGenreData: '暂无游戏类型兼容性数据。',
+  noReportsYet: '暂无报告。',
+  noContributorsYet: '暂无贡献者。',
+  backToTop: '返回顶部',
+  loadingDashboard: '正在加载仪表板...',
+  dashboardLoadFailed: '无法加载仪表板。',
+  dashboardBackendHint:
+    '请确保后端正在运行，并且 /dashboard 端点可用。',
+  noDashboardStats: '暂无仪表板统计数据。',
 };
 
 const ja: Record<TranslationKey, string> = {
@@ -1058,6 +1254,38 @@ const ja: Record<TranslationKey, string> = {
   noReportsDescription:
     'このゲームにはまだレポートが投稿されていません。ユーザーが投稿を始めると互換性情報が表示されます。',
   loginToContribute: 'ログインして投稿する',
+
+  // Dashboard
+  dashboard: 'ダッシュボード',
+  dashboardDescription:
+    'ProtonDB Clone の互換性とコミュニティの統計情報。',
+  users: 'ユーザー',
+  gamesByGenre: 'ジャンル別ゲーム',
+  gamesByGenreDescription:
+    '各ジャンルに属するカタログ内のゲーム数。',
+  compatibilityOverview: '互換性の概要',
+  compatibilityOverviewDescription:
+    'ゲームカタログ全体の互換性ティア分布。',
+  compatibilityByGenre: 'ジャンル別の互換性',
+  compatibilityByGenreDescription:
+    'ジャンルを選択して互換性の分布を確認できます。',
+  mostReportedGames: 'レポート数の多いゲーム',
+  topContributors: 'トップ貢献者',
+  reportsPerGame: 'レポート / ゲーム',
+  numberOfGames: 'ゲーム数',
+  genre: 'ジャンル',
+  game: 'ゲーム',
+  gamePlural: 'ゲーム',
+  reportPlural: 'レポート',
+  noGenreData: 'ジャンル別の互換性データはありません。',
+  noReportsYet: 'まだレポートはありません。',
+  noContributorsYet: 'まだ貢献者はいません。',
+  backToTop: 'トップへ戻る',
+  loadingDashboard: 'ダッシュボードを読み込み中...',
+  dashboardLoadFailed: 'ダッシュボードを読み込めませんでした。',
+  dashboardBackendHint:
+    'バックエンドが実行中で、/dashboard エンドポイントが利用可能であることを確認してください。',
+  noDashboardStats: 'ダッシュボードの統計情報はありません。',
 };
 
 const tr: Record<TranslationKey, string> = {
@@ -1197,6 +1425,38 @@ const tr: Record<TranslationKey, string> = {
   noReportsDescription:
     'Bu oyun için henüz rapor gönderilmedi. Kullanıcılar katkıda bulunmaya başladığında uyumluluk bilgileri burada görünecek.',
   loginToContribute: 'Katkıda bulunmak için giriş yap',
+
+  // Dashboard
+  dashboard: 'Kontrol Paneli',
+  dashboardDescription:
+    'ProtonDB Clone genelindeki uyumluluk ve topluluk istatistikleri.',
+  users: 'Kullanıcılar',
+  gamesByGenre: 'Türe Göre Oyunlar',
+  gamesByGenreDescription:
+    'Her türe ait katalog oyunlarının sayısı.',
+  compatibilityOverview: 'Uyumluluk Genel Bakışı',
+  compatibilityOverviewDescription:
+    'Oyun kataloğundaki genel uyumluluk seviyesi dağılımı.',
+  compatibilityByGenre: 'Türe Göre Uyumluluk',
+  compatibilityByGenreDescription:
+    'Uyumluluk dağılımını görmek için bir tür seçin.',
+  mostReportedGames: 'En Çok Raporlanan Oyunlar',
+  topContributors: 'En Çok Katkıda Bulunanlar',
+  reportsPerGame: 'Rapor / Oyun',
+  numberOfGames: 'Oyun sayısı',
+  genre: 'Tür',
+  game: 'oyun',
+  gamePlural: 'oyun',
+  reportPlural: 'rapor',
+  noGenreData: 'Tür uyumluluğu verisi mevcut değil.',
+  noReportsYet: 'Henüz rapor yok.',
+  noContributorsYet: 'Henüz katkıda bulunan yok.',
+  backToTop: 'Başa dön',
+  loadingDashboard: 'Kontrol paneli yükleniyor...',
+  dashboardLoadFailed: 'Kontrol paneli yüklenemedi.',
+  dashboardBackendHint:
+    'Backend’in çalıştığından ve /dashboard endpointinin kullanılabilir olduğundan emin olun.',
+  noDashboardStats: 'Kontrol paneli istatistikleri mevcut değil.',
 };
 
 const translations: Record<Language, Record<TranslationKey, string>> = {

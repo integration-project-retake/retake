@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 import {
   getGenreColor,
@@ -14,6 +15,7 @@ import type {
 interface DashboardProps {
   stats: DashboardStatsDto;
 }
+
 
 const DEFAULT_AVATAR =
   'https://www.gravatar.com/avatar/?d=mp';
@@ -74,55 +76,54 @@ export default function Dashboard({
     availableGenres[0] ??
     null;
 
+  const { t } = useLanguage();
+
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
       <div className="mx-auto max-w-[1500px]">
         {/* HEADER */}
         <div className="mb-8">
-          <h1 className="theme-primary-text text-4xl font-bold">
-            Dashboard
+          <h1 className="theme-page-text text-4xl font-bold">
+            {t('dashboard')}
           </h1>
 
           <p className="theme-secondary-text mt-2">
-            Compatibility and community
-            statistics across ProtonDB Clone.
+            {t('dashboardDescription')}
           </p>
+
         </div>
 
         {/* SUMMARY */}
         <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            title="Games"
+            title={t('games')}
             value={stats.totalGames}
           />
 
           <StatCard
-            title="Reports"
+            title={t('reports')}
             value={stats.totalReports}
           />
 
           <StatCard
-            title="Users"
+            title={t('users')}
             value={stats.totalUsers}
           />
 
           <StatCard
-            title="Reports / Game"
-            value={stats.averageReportsPerGame.toFixed(
-              1
-            )}
+            title={t('reportsPerGame')}
+            value={`${(stats.averageReportsPerGame * 100).toFixed(0)}%`}
           />
         </section>
 
         {/* GAMES BY GENRE */}
         <section className="theme-surface rounded-xl border p-6 sm:p-8">
           <h2 className="theme-primary-text text-2xl font-bold">
-            Games by Genre
+            {t('gamesByGenre')}
           </h2>
 
           <p className="theme-secondary-text mt-1 text-sm">
-            Number of catalogue games
-            belonging to each genre.
+            {t('gamesByGenreDescription')}
           </p>
 
           <GenreBarChart
@@ -133,12 +134,11 @@ export default function Dashboard({
         {/* COMPATIBILITY OVERVIEW */}
         <section className="theme-surface mt-8 rounded-xl border p-6 sm:p-8">
           <h2 className="theme-primary-text text-2xl font-bold">
-            Compatibility Overview
+            {t('compatibilityOverview')}
           </h2>
 
           <p className="theme-secondary-text mt-1 text-sm">
-            Overall compatibility tier
-            distribution across the game catalogue.
+            {t('compatibilityOverviewDescription')}
           </p>
 
           <CompatibilityOverview
@@ -151,12 +151,11 @@ export default function Dashboard({
         <section className="theme-surface mt-8 rounded-xl border p-6 sm:p-8">
           <div className="text-center">
             <h2 className="theme-primary-text text-2xl font-bold">
-              Compatibility by Genre
+              {t('compatibilityByGenre')}
             </h2>
 
             <p className="theme-secondary-text mt-1 text-sm">
-              Select a genre to explore its
-              compatibility distribution.
+              {t('compatibilityByGenreDescription')}
             </p>
           </div>
 
@@ -195,8 +194,7 @@ export default function Dashboard({
             />
           ) : (
             <div className="theme-secondary-text py-16 text-center">
-              No genre compatibility data
-              available.
+              {t('noGenreData')}
             </div>
           )}
         </section>
@@ -206,7 +204,7 @@ export default function Dashboard({
           {/* MOST REPORTED */}
           <section className="theme-surface rounded-xl border p-6">
             <h2 className="theme-primary-text text-2xl font-bold">
-              Most Reported Games
+              {t('mostReportedGames')}
             </h2>
 
             <div className="mt-5 space-y-3">
@@ -265,7 +263,7 @@ export default function Dashboard({
           {/* CONTRIBUTORS */}
           <section className="theme-surface rounded-xl border p-6">
             <h2 className="theme-primary-text text-2xl font-bold">
-              Top Contributors
+              {t('topContributors')}
             </h2>
 
             <div className="mt-5 space-y-3">
@@ -350,23 +348,28 @@ function CompatibilityOverview({
   tiers: DashboardStatsDto['tierDistribution'];
   totalGames: number;
 }) {
+
+  const { t } = useLanguage();
+
   const orderedTiers = [
-    'Platinum',
-    'Gold',
-    'Silver',
-    'Bronze',
-    'Borked',
-    'Pending',
+    { key: 'Platinum', label: t('platinum') },
+    { key: 'Gold', label: t('gold') },
+    { key: 'Silver', label: t('silver') },
+    { key: 'Bronze', label: t('bronze') },
+    { key: 'Borked', label: t('borked') },
+    { key: 'Pending', label: t('pending') },
   ];
 
+
   const sortedTiers = orderedTiers.map(
-    (tierName) => {
+    ({ key, label }) => {
       const existing = tiers.find(
-        (tier) => tier.tier === tierName
+        (tier) => tier.tier === key
       );
 
       return {
-        tier: tierName,
+        tier: key,
+        label,
         count: existing?.count ?? 0,
       };
     }
@@ -444,9 +447,7 @@ function CompatibilityOverview({
               </p>
 
               <p className="theme-secondary-text mt-1 text-sm">
-                {tier.count === 1
-                  ? 'game'
-                  : 'games'}
+                {tier.count === 1 ? t('game') : t('gamePlural')}
               </p>
 
               <div className="mt-3 border-t border-white/10 pt-3">
@@ -503,7 +504,7 @@ function GenreBarChart({
       chartMaximum -
       index * stepSize
   );
-
+  const { t } = useLanguage();
   const plotHeight = 350;
   const topSpace = 34;
   const barAreaHeight =
@@ -520,7 +521,7 @@ function GenreBarChart({
           }}
         >
           <div className="theme-secondary-text absolute -left-5 top-[55%] -translate-y-1/2 -rotate-90 whitespace-nowrap text-xs font-medium">
-            Number of games
+            {t('numberOfGames')}
           </div>
 
           <div
@@ -680,39 +681,47 @@ function GenreCompatibilityWheel({
 }: {
   genre: DashboardStatsDto['compatibilityByGenre'][number];
 }) {
+  
+  const { t } = useLanguage();
   const tiers = [
     {
-      name: 'Platinum',
+      key: 'Platinum',
+      name: t('platinum'),
       count: genre.platinum,
       color: wheelColors.Platinum,
     },
     {
-      name: 'Gold',
+      key: 'Gold',
+      name: t('gold'),
       count: genre.gold,
       color: wheelColors.Gold,
     },
     {
-      name: 'Silver',
+      key: 'Silver',
+      name: t('silver'),
       count: genre.silver,
       color: wheelColors.Silver,
     },
     {
-      name: 'Bronze',
+      key: 'Bronze',
+      name: t('bronze'),
       count: genre.bronze,
       color: wheelColors.Bronze,
     },
     {
-      name: 'Borked',
+      key: 'Borked',
+      name: t('borked'),
       count: genre.borked,
       color: wheelColors.Borked,
     },
     {
-      name: 'Pending',
+      key: 'Pending',
+      name: t('pending'),
       count: genre.pending,
       color: wheelColors.Pending,
     },
   ];
-
+  
   const total = tiers.reduce(
     (sum, tier) =>
       sum + tier.count,
@@ -747,7 +756,6 @@ function GenreCompatibilityWheel({
           ', '
         )})`
       : '#374151';
-
   return (
     <div className="mt-8">
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto_1fr]">
@@ -796,7 +804,7 @@ function GenreCompatibilityWheel({
 
             <div className="theme-surface absolute inset-[20%] flex flex-col items-center justify-center rounded-full border shadow-xl">
               <span className="theme-secondary-text text-xs font-semibold uppercase tracking-widest">
-                Genre
+                {t('genre')}
               </span>
 
               <span className="theme-primary-text mt-1 max-w-[120px] text-center text-xl font-bold">
@@ -806,8 +814,7 @@ function GenreCompatibilityWheel({
               <span className="theme-secondary-text mt-2 text-sm">
                 {total}{' '}
                 {total === 1
-                  ? 'game'
-                  : 'games'}
+                  ? t('game') : t('gamePlural')}
               </span>
             </div>
           </div>
@@ -869,7 +876,7 @@ function TierDetail({
       : (count /
           total) *
         100;
-
+  const { t } = useLanguage();
   return (
     <div className="theme-surface-secondary rounded-lg border p-3">
       <div className="flex items-center justify-between gap-4">
@@ -895,8 +902,7 @@ function TierDetail({
       <div className="theme-secondary-text mt-1 text-xs">
         {count}{' '}
         {count === 1
-          ? 'game'
-          : 'games'}
+          ? t('game') : t('gamePlural')}
       </div>
     </div>
   );
