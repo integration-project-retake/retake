@@ -27,10 +27,7 @@ const tierColors: Record<string, string> = {
   Pending: 'bg-gray-600',
 };
 
-const tierBadgeColors: Record<
-  string,
-  string
-> = {
+const tierBadgeColors: Record<string, string> = {
   Platinum:
     'bg-blue-200 text-blue-900',
   Gold:
@@ -60,21 +57,12 @@ export default function Dashboard({
   const [selectedGenre, setSelectedGenre] =
     useState('Action');
 
-  const largestGenre =
-    Math.max(
-      ...stats.genreDistribution.map(
-        (genre) => genre.count
-      ),
-      1
-    );
-
-  const largestTier =
-    Math.max(
-      ...stats.tierDistribution.map(
-        (tier) => tier.count
-      ),
-      1
-    );
+  const largestTier = Math.max(
+    ...stats.tierDistribution.map(
+      (tier) => tier.count
+    ),
+    1
+  );
 
   const availableGenres = useMemo(
     () =>
@@ -101,7 +89,8 @@ export default function Dashboard({
 
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1500px]">
+        {/* HEADER */}
         <div className="mb-8">
           <h1 className="theme-primary-text text-4xl font-bold">
             Dashboard
@@ -132,134 +121,99 @@ export default function Dashboard({
 
           <StatCard
             title="Reports / Game"
-            value={
-              stats.averageReportsPerGame.toFixed(
-                1
-              )
-            }
+            value={stats.averageReportsPerGame.toFixed(
+              1
+            )}
           />
         </section>
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* TIER DISTRIBUTION */}
-          <section className="theme-surface rounded-xl border p-6">
-            <h2 className="theme-primary-text text-2xl font-bold">
-              Compatibility Overview
-            </h2>
+        {/* GAMES BY GENRE */}
+        <section className="theme-surface rounded-xl border p-6 sm:p-8">
+          <h2 className="theme-primary-text text-2xl font-bold">
+            Games by Genre
+          </h2>
 
-            <p className="theme-secondary-text mt-1 text-sm">
-              Overall compatibility tiers
-              across the game catalogue.
-            </p>
+          <p className="theme-secondary-text mt-1 text-sm">
+            Number of catalogue games
+            belonging to each genre.
+          </p>
 
-            <div className="mt-6 space-y-4">
-              {stats.tierDistribution.map(
-                (tier) => {
-                  const percentage =
-                    stats.totalGames === 0
-                      ? 0
-                      : (tier.count /
-                          stats.totalGames) *
-                        100;
+          <GenreBarChart
+            genres={stats.genreDistribution}
+          />
+        </section>
 
-                  return (
-                    <div key={tier.tier}>
-                      <div className="mb-1 flex items-center justify-between gap-4">
-                        <span
-                          className={`rounded px-2 py-1 text-xs font-bold ${
-                            tierBadgeColors[
-                              tier.tier
-                            ] ??
-                            tierBadgeColors.Pending
-                          }`}
-                        >
-                          {tier.tier}
-                        </span>
+        {/* COMPATIBILITY OVERVIEW */}
+        <section className="theme-surface mt-8 rounded-xl border p-6 sm:p-8">
+          <h2 className="theme-primary-text text-2xl font-bold">
+            Compatibility Overview
+          </h2>
 
-                        <span className="theme-secondary-text text-sm">
-                          {tier.count}{' '}
-                          (
-                          {percentage.toFixed(
-                            1
-                          )}
-                          %)
-                        </span>
-                      </div>
+          <p className="theme-secondary-text mt-1 text-sm">
+            Overall compatibility tiers
+            across the game catalogue.
+          </p>
 
-                      <div className="h-3 overflow-hidden rounded-full bg-black/20">
-                        <div
-                          className={`h-full rounded-full ${
-                            tierColors[
-                              tier.tier
-                            ] ??
-                            tierColors.Pending
-                          }`}
-                          style={{
-                            width: `${
-                              (tier.count /
-                                largestTier) *
-                              100
-                            }%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          </section>
+          <div className="mt-6 space-y-5">
+            {stats.tierDistribution.map(
+              (tier) => {
+                const percentage =
+                  stats.totalGames === 0
+                    ? 0
+                    : (tier.count /
+                        stats.totalGames) *
+                      100;
 
-          {/* GENRES */}
-          <section className="theme-surface rounded-xl border p-6">
-            <h2 className="theme-primary-text text-2xl font-bold">
-              Games by Genre
-            </h2>
-
-            <p className="theme-secondary-text mt-1 text-sm">
-              Number of catalogue games
-              belonging to each genre.
-            </p>
-
-            <div className="mt-6 max-h-96 space-y-4 overflow-y-auto pr-2">
-              {stats.genreDistribution.map(
-                (genre) => (
-                  <div key={genre.genre}>
-                    <div className="mb-1 flex justify-between gap-4">
+                return (
+                  <div key={tier.tier}>
+                    <div className="mb-2 flex items-center justify-between gap-4">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs ${getGenreColor(
-                          genre.genre
-                        )}`}
+                        className={`rounded px-2 py-1 text-xs font-bold ${
+                          tierBadgeColors[
+                            tier.tier
+                          ] ??
+                          tierBadgeColors.Pending
+                        }`}
                       >
-                        {genre.genre}
+                        {tier.tier}
                       </span>
 
                       <span className="theme-secondary-text text-sm">
-                        {genre.count}
+                        {tier.count}{' '}
+                        (
+                        {percentage.toFixed(
+                          1
+                        )}
+                        %)
                       </span>
                     </div>
 
-                    <div className="h-3 overflow-hidden rounded-full bg-black/20">
+                    <div className="h-4 overflow-hidden rounded-full bg-black/20">
                       <div
-                        className="h-full rounded-full bg-[var(--accent)]"
+                        className={`h-full rounded-full ${
+                          tierColors[
+                            tier.tier
+                          ] ??
+                          tierColors.Pending
+                        }`}
                         style={{
                           width: `${
-                            (genre.count /
-                              largestGenre) *
+                            (tier.count /
+                              largestTier) *
                             100
                           }%`,
                         }}
                       />
                     </div>
                   </div>
-                )
-              )}
-            </div>
-          </section>
-        </div>
+                );
+              }
+            )}
+          </div>
+        </section>
 
-        {/* INTERACTIVE COMPATIBILITY BY GENRE */}
-        <section className="theme-surface mt-8 rounded-xl border p-6">
+        {/* COMPATIBILITY BY GENRE */}
+        <section className="theme-surface mt-8 rounded-xl border p-6 sm:p-8">
           <div className="text-center">
             <h2 className="theme-primary-text text-2xl font-bold">
               Compatibility by Genre
@@ -271,7 +225,6 @@ export default function Dashboard({
             </p>
           </div>
 
-          {/* GENRE SELECTOR */}
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             {availableGenres.map((genre) => {
               const isSelected =
@@ -313,6 +266,7 @@ export default function Dashboard({
           )}
         </section>
 
+        {/* BOTTOM STATISTICS */}
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
           {/* MOST REPORTED */}
           <section className="theme-surface rounded-xl border p-6">
@@ -341,24 +295,18 @@ export default function Dashboard({
 
                         <div>
                           <p className="theme-primary-text font-semibold">
-                            {
-                              game.gameName
-                            }
+                            {game.gameName}
                           </p>
 
                           <p className="theme-secondary-text text-xs">
                             Steam App ID:{' '}
-                            {
-                              game.steamAppid
-                            }
+                            {game.steamAppid}
                           </p>
                         </div>
                       </div>
 
                       <span className="theme-primary-text font-bold">
-                        {
-                          game.reportCount
-                        }
+                        {game.reportCount}
                       </span>
                     </Link>
                   )
@@ -407,7 +355,8 @@ export default function Dashboard({
                           }
                           onError={(event) => {
                             if (
-                              event.currentTarget
+                              event
+                                .currentTarget
                                 .src !==
                               DEFAULT_AVATAR
                             ) {
@@ -440,6 +389,232 @@ export default function Dashboard({
         </div>
       </div>
     </main>
+  );
+}
+
+function GenreBarChart({
+  genres,
+}: {
+  genres: DashboardStatsDto['genreDistribution'];
+}) {
+  const maximumCount = Math.max(
+    ...genres.map(
+      (genre) => genre.count
+    ),
+    1
+  );
+
+  const stepSize =
+    maximumCount <= 10
+      ? 2
+      : maximumCount <= 25
+        ? 5
+        : maximumCount <= 50
+          ? 10
+          : Math.ceil(
+              maximumCount / 5 / 10
+            ) * 10;
+
+  const chartMaximum =
+    Math.ceil(
+      maximumCount / stepSize
+    ) * stepSize;
+
+  const ticks = Array.from(
+    {
+      length:
+        chartMaximum / stepSize + 1,
+    },
+    (_, index) =>
+      chartMaximum -
+      index * stepSize
+  );
+
+  /*
+   * The graph has two deliberately separate areas:
+   *
+   * plotHeight = complete plotting section.
+   * topSpace   = room reserved for the number above a bar.
+   * barHeight  = actual Y-axis / bar area.
+   *
+   * A bar can therefore NEVER cross the X-axis.
+   */
+  const plotHeight = 350;
+  const topSpace = 34;
+  const barAreaHeight =
+    plotHeight - topSpace;
+
+  return (
+    <div className="mt-8 w-full">
+      <div className="flex w-full">
+        {/* Y AXIS */}
+        <div
+          className="relative w-14 shrink-0"
+          style={{
+            height: plotHeight,
+          }}
+        >
+          <div className="theme-secondary-text absolute -left-5 top-[55%] -translate-y-1/2 -rotate-90 whitespace-nowrap text-xs font-medium">
+            Number of games
+          </div>
+
+          {/* Vertical Y-axis */}
+          <div
+            className="absolute bottom-0 right-0 border-r border-white/30"
+            style={{
+              top: `${topSpace}px`,
+            }}
+          />
+
+          {ticks.map(
+            (tick, index) => {
+              const y =
+                topSpace +
+                (index /
+                  (ticks.length -
+                    1)) *
+                  barAreaHeight;
+
+              return (
+                <span
+                  key={tick}
+                  className="theme-secondary-text absolute right-3 text-xs"
+                  style={{
+                    top: `${y}px`,
+                    transform:
+                      'translateY(-50%)',
+                  }}
+                >
+                  {tick}
+                </span>
+              );
+            }
+          )}
+        </div>
+
+        {/* GRAPH + LABELS */}
+        <div className="min-w-0 flex-1">
+          {/* PLOT AREA */}
+          <div
+            className="relative w-full"
+            style={{
+              height: plotHeight,
+            }}
+          >
+            {/* HORIZONTAL GRID LINES */}
+            {ticks.map(
+              (tick, index) => {
+                const y =
+                  topSpace +
+                  (index /
+                    (ticks.length -
+                      1)) *
+                    barAreaHeight;
+
+                return (
+                  <div
+                    key={tick}
+                    className="absolute left-0 right-0 border-t border-white/10"
+                    style={{
+                      top: `${y}px`,
+                    }}
+                  />
+                );
+              }
+            )}
+
+            {/*
+              Every genre has ONE column.
+              The value and bar are positioned
+              absolutely inside that column.
+
+              Therefore:
+              value -> bar -> baseline
+              can never become misaligned.
+            */}
+            <div
+              className="absolute inset-x-0 bottom-0 grid px-2"
+              style={{
+                top: `${topSpace}px`,
+                gridTemplateColumns: `repeat(${genres.length}, minmax(0, 1fr))`,
+              }}
+            >
+              {genres.map((genre) => {
+                const barHeight =
+                  chartMaximum === 0
+                    ? 0
+                    : (genre.count /
+                        chartMaximum) *
+                      barAreaHeight;
+
+                return (
+                  <div
+                    key={genre.genre}
+                    className="relative min-w-0"
+                  >
+                    {/* VALUE */}
+                    <span
+                      className="theme-primary-text absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold sm:text-sm"
+                      style={{
+                        bottom: `${
+                          barHeight + 7
+                        }px`,
+                      }}
+                    >
+                      {genre.count}
+                    </span>
+
+                    {/* BAR */}
+                    <div
+                      className="absolute bottom-0 left-1/2 w-[55%] max-w-14 -translate-x-1/2 rounded-t-md bg-[var(--accent)] transition-all duration-300 hover:brightness-110"
+                      style={{
+                        height: `${barHeight}px`,
+                        minHeight:
+                          genre.count >
+                          0
+                            ? '4px'
+                            : '0px',
+                      }}
+                      title={`${genre.genre}: ${genre.count} games`}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* X-AXIS BASELINE */}
+          <div className="border-t border-white/30" />
+
+          {/* GENRE NAMES */}
+          <div
+            className="grid px-2"
+            style={{
+              gridTemplateColumns: `repeat(${genres.length}, minmax(0, 1fr))`,
+            }}
+          >
+            {genres.map((genre) => (
+              <div
+                key={genre.genre}
+                className="flex min-w-0 items-start justify-center px-1 pt-3"
+              >
+                <span
+                  className="theme-secondary-text block w-full text-center text-[9px] font-medium leading-[1.15] sm:text-[10px] lg:text-[11px]"
+                  title={genre.genre}
+                >
+                  {genre.genre}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* X AXIS TITLE */}
+          <div className="theme-secondary-text mt-7 text-center text-xs font-medium">
+            Genre
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -482,21 +657,27 @@ function GenreCompatibilityWheel({
   ];
 
   const total = tiers.reduce(
-    (sum, tier) => sum + tier.count,
+    (sum, tier) =>
+      sum + tier.count,
     0
   );
 
   let currentAngle = 0;
 
   const gradientParts = tiers
-    .filter((tier) => tier.count > 0)
+    .filter(
+      (tier) => tier.count > 0
+    )
     .map((tier) => {
-      const start = currentAngle;
+      const start =
+        currentAngle;
 
       const angle =
         total === 0
           ? 0
-          : (tier.count / total) * 360;
+          : (tier.count /
+              total) *
+            360;
 
       currentAngle += angle;
 
@@ -513,10 +694,11 @@ function GenreCompatibilityWheel({
   return (
     <div className="mt-8">
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto_1fr]">
-        {/* LEFT SIDE */}
+        {/* LEFT */}
         <div className="order-2 flex flex-col gap-3 lg:order-1">
-          {tiers.slice(0, 3).map(
-            (tier) => (
+          {tiers
+            .slice(0, 3)
+            .map((tier) => (
               <TierDetail
                 key={tier.name}
                 name={tier.name}
@@ -524,8 +706,7 @@ function GenreCompatibilityWheel({
                 total={total}
                 color={tier.color}
               />
-            )
-          )}
+            ))}
         </div>
 
         {/* WHEEL */}
@@ -575,10 +756,11 @@ function GenreCompatibilityWheel({
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT */}
         <div className="order-3 flex flex-col gap-3">
-          {tiers.slice(3).map(
-            (tier) => (
+          {tiers
+            .slice(3)
+            .map((tier) => (
               <TierDetail
                 key={tier.name}
                 name={tier.name}
@@ -586,8 +768,7 @@ function GenreCompatibilityWheel({
                 total={total}
                 color={tier.color}
               />
-            )
-          )}
+            ))}
         </div>
       </div>
 
@@ -628,7 +809,9 @@ function TierDetail({
   const percentage =
     total === 0
       ? 0
-      : (count / total) * 100;
+      : (count /
+          total) *
+        100;
 
   return (
     <div className="theme-surface-secondary rounded-lg border p-3">
@@ -637,7 +820,8 @@ function TierDetail({
           <span
             className="h-3 w-3 rounded-full"
             style={{
-              backgroundColor: color,
+              backgroundColor:
+                color,
             }}
           />
 
@@ -647,13 +831,18 @@ function TierDetail({
         </div>
 
         <span className="theme-secondary-text text-sm">
-          {percentage.toFixed(1)}%
+          {percentage.toFixed(
+            1
+          )}
+          %
         </span>
       </div>
 
       <div className="theme-secondary-text mt-1 text-xs">
         {count}{' '}
-        {count === 1 ? 'game' : 'games'}
+        {count === 1
+          ? 'game'
+          : 'games'}
       </div>
     </div>
   );
