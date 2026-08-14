@@ -221,28 +221,40 @@ export default function Dashboard({
                     <Link
                       key={game.gameId}
                       href={`/games/${game.steamAppid}`}
-                      className="theme-surface-secondary flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-[var(--surface-hover)]"
+                      className="group relative flex min-h-[110px] items-center justify-between overflow-hidden rounded-lg border border-white/15 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/30"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="theme-secondary-text w-6 font-bold">
-                          {index + 1}.
-                        </span>
+                      <img
+                        src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.steamAppid}/header.jpg`}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
 
-                        <div>
-                          <p className="theme-primary-text font-semibold">
-                            {game.gameName}
-                          </p>
+                      <div className="absolute inset-0 bg-black/65 transition-colors duration-300 group-hover:bg-black/55" />
 
-                          <p className="theme-secondary-text text-xs">
-                            Steam App ID:{' '}
-                            {game.steamAppid}
-                          </p>
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/70" />
+
+                      <div className="relative z-10 flex w-full items-center justify-between p-5">
+                        <div className="flex items-center gap-4">
+                          <span className="w-7 text-lg font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                            {index + 1}.
+                          </span>
+
+                          <div>
+                            <p className="text-lg font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                              {game.gameName}
+                            </p>
+
+                            <p className="mt-0.5 text-sm text-gray-200 drop-shadow-[0_2px_3px_rgba(0,0,0,1)]">
+                              Steam App ID:{' '}
+                              {game.steamAppid}
+                            </p>
+                          </div>
                         </div>
-                      </div>
 
-                      <span className="theme-primary-text font-bold">
-                        {game.reportCount}
-                      </span>
+                        <span className="text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                          {game.reportCount}
+                        </span>
+                      </div>
                     </Link>
                   )
                 )
