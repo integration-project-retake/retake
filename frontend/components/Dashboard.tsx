@@ -15,6 +15,9 @@ interface DashboardProps {
   stats: DashboardStatsDto;
 }
 
+const DEFAULT_AVATAR =
+  'https://www.gravatar.com/avatar/?d=mp';
+
 const tierColors: Record<string, string> = {
   Platinum: 'bg-blue-300',
   Gold: 'bg-yellow-400',
@@ -397,11 +400,21 @@ export default function Dashboard({
                         <img
                           src={
                             contributor.avatarUrl ||
-                            '/default-avatar.png'
+                            DEFAULT_AVATAR
                           }
                           alt={
                             contributor.username
                           }
+                          onError={(event) => {
+                            if (
+                              event.currentTarget
+                                .src !==
+                              DEFAULT_AVATAR
+                            ) {
+                              event.currentTarget.src =
+                                DEFAULT_AVATAR;
+                            }
+                          }}
                           className="h-10 w-10 rounded-full object-cover"
                         />
 
@@ -553,7 +566,10 @@ function GenreCompatibilityWheel({
               </span>
 
               <span className="theme-secondary-text mt-2 text-sm">
-                {total} games
+                {total}{' '}
+                {total === 1
+                  ? 'game'
+                  : 'games'}
               </span>
             </div>
           </div>
